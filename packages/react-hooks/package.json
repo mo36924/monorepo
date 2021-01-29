@@ -17,6 +17,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "peerDependencies": {
     "@types/react": "^17.0.0",
     "react": "^17.0.1"

@@ -8,8 +8,9 @@
     "node": ">=14.8.0"
   },
   "scripts": {
-    "build": "run-s clean test lint format bundle",
+    "build": "run-s clean test lint format bundle field",
     "bundle": "rollup -c",
+    "field": "node field.mjs",
     "dev": "rollup -cw",
     "clean": "del \"packages/*/dist\"",
     "format": "prettier --write .",

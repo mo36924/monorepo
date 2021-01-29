@@ -27,7 +27,7 @@ import { ComponentType, createContext, lazy, Suspense, useEffect, useState } fro
 /**__imports__**/
 
 type Props = { [key: string]: string };
-type Route<T = any> = ComponentType<T> & { load: () => Promise<void> };
+type Route<T = any> = ComponentType<T>;
 type DynamicImport<T = {}> = Promise<{ default: ComponentType<T> }>;
 type StaticRoutes = { [path: string]: Route | undefined };
 type DynamicRoutes = [RegExp, string[], Route][];

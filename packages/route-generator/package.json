@@ -17,6 +17,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "peerDependencies": {
     "chokidar": "^3.5.1",
     "prettier": "^2.2.1"
