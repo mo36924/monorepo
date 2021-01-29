@@ -127,7 +127,6 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -178,3 +177,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+.vscode/
+__tests__/
+*.test.*
+*.config.*
+tsconfig.*

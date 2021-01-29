@@ -1,0 +1,129 @@
+{
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=14.8.0"
+  },
+  "scripts": {
+    "build": "run-s clean test lint format bundle",
+    "bundle": "rollup -c",
+    "dev": "rollup -cw",
+    "clean": "del \"packages/*/dist\"",
+    "format": "prettier --write .",
+    "lint": "eslint --ext .ts,.tsx --fix .",
+    "test": "jest --passWithNoTests"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "trailingComma": "all"
+  },
+  "eslintConfig": {
+    "plugins": [
+      "import",
+      "react-hooks"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "**/dist/**"
+    ],
+    "rules": {
+      "no-var": "error",
+      "import/no-absolute-path": "error",
+      "import/no-dynamic-require": "error",
+      "import/no-webpack-loader-syntax": "error",
+      "import/no-self-import": "error",
+      "import/no-useless-path-segments": "error",
+      "import/order": [
+        "error",
+        {
+          "alphabetize": {
+            "order": "asc"
+          }
+        }
+      ],
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      "padding-line-between-statements": [
+        "warn",
+        {
+          "blankLine": "always",
+          "prev": "import",
+          "next": "*"
+        },
+        {
+          "blankLine": "any",
+          "prev": "import",
+          "next": "import"
+        },
+        {
+          "blankLine": "always",
+          "prev": "*",
+          "next": "export"
+        },
+        {
+          "blankLine": "any",
+          "prev": "export",
+          "next": "export"
+        },
+        {
+          "blankLine": "always",
+          "prev": "*",
+          "next": [
+            "class",
+            "function",
+            "block",
+            "block-like",
+            "multiline-expression",
+            "multiline-const",
+            "multiline-let"
+          ]
+        },
+        {
+          "blankLine": "always",
+          "prev": [
+            "class",
+            "function",
+            "block",
+            "block-like",
+            "multiline-expression",
+            "multiline-const",
+            "multiline-let"
+          ],
+          "next": "*"
+        }
+      ]
+    }
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "snapshotSerializers": []
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^8.1.0",
+    "@types/node": "^14.14.22",
+    "@types/react": "^17.0.0",
+    "@typescript-eslint/parser": "^4.14.1",
+    "chokidar": "^3.5.1",
+    "del-cli": "^3.0.1",
+    "eslint": "^7.18.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "fast-glob": "^3.2.5",
+    "jest": "^26.6.3",
+    "lerna": "^3.22.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.2.1",
+    "react": "^17.0.1",
+    "rollup": "^2.38.1",
+    "rollup-plugin-dts": "^2.0.1",
+    "ts-jest": "^26.4.4",
+    "tslib": "^2.1.0",
+    "typescript": "^4.1.3"
+  }
+}

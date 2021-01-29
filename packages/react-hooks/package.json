@@ -1,0 +1,24 @@
+{
+  "name": "@mo36924/react-hooks",
+  "version": "1.0.5",
+  "description": "react-hooks",
+  "keywords": [],
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/react-hooks"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@types/react": "^17.0.0",
+    "react": "^17.0.1"
+  }
+}
