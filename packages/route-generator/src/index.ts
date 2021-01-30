@@ -23,11 +23,13 @@ const defaultOptions: Required<Options> = {
 };
 
 const defaultTemplate = `
-import { ComponentType, createContext, lazy, Suspense, useEffect, useState } from "react";
+import lazy from "@mo36924/preact-lazy";
+import { ComponentType, createContext } from "preact";
+import { useState, useEffect } from "preact/hooks";
 /**__imports__**/
 
 type Props = { [key: string]: string };
-type Route<T = any> = ComponentType<T>;
+type Route<T = any> = ComponentType<T> & { load: () => Promise<void> };
 type DynamicImport<T = {}> = Promise<{ default: ComponentType<T> }>;
 type StaticRoutes = { [path: string]: Route | undefined };
 type DynamicRoutes = [RegExp, string[], Route][];
@@ -50,6 +52,7 @@ export const match = (url: string | URL): RouteContextValue => {
   if (typeof url === "string") {
     url = new URL(url);
   }
+
   const path = url.pathname;
   const route = staticRoutes[path]!;
   const props: Props = {};
@@ -143,7 +146,8 @@ export default (props: { url: string | URL }) => {
 
   useEffect(() => {
     const handleChangestate = () => {
-      setState(match(location.href));
+      const context = match(location.href);
+      context.route.load().then(() => setState(context));
     };
 
     addEventListener(changestate, handleChangestate);
@@ -155,9 +159,7 @@ export default (props: { url: string | URL }) => {
 
   return (
     <Provider value={state}>
-      <Suspense>
-        <state.route {...state.props} />
-      </Suspense>
+      <state.route {...state.props} />
     </Provider>
   );
 };

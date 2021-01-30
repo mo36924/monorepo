@@ -13,7 +13,7 @@ try {
 
 pkg = {
   name: undefined,
-  version: "1.0.10",
+  version: "1.0.0",
   description: name,
   keywords: [],
   author: undefined,
