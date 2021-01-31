@@ -1,6 +1,6 @@
 import { transformSync } from "@babel/core";
-import { test, expect, describe } from "@jest/globals";
-import { test as serializerTest, serialize } from "./index";
+import { describe, expect, test } from "@jest/globals";
+import { serialize, test as serializerTest } from "./index";
 
 describe("jest-snapshot-serializer-babel", () => {
   test("test", () => {

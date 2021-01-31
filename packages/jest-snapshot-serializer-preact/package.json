@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/jest-snapshot-serializer-babel",
-  "version": "1.0.10",
-  "description": "jest-snapshot-serializer-babel",
+  "name": "@mo36924/jest-snapshot-serializer-preact",
+  "version": "1.0.0",
+  "description": "jest-snapshot-serializer-preact",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/jest-snapshot-serializer-babel"
+    "directory": "packages/jest-snapshot-serializer-preact"
   },
   "publishConfig": {
     "access": "public"
@@ -24,10 +24,5 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
-  },
-  "peerDependencies": {
-    "@babel/core": "^7.12.10",
-    "jest": "^26.6.3",
-    "prettier": "^2.2.1"
   }
 }
