@@ -19,9 +19,9 @@ for (const path of paths) {
       pkg.module = "./dist/index.mjs";
     }
 
-    if (files.includes("index.browser.js")) {
-      pkg.browser = "./dist/index.browser.js";
-      exports.browser = "./dist/index.browser.js";
+    if (files.includes("index.client.js")) {
+      pkg.browser = "./dist/index.client.js";
+      exports.browser = "./dist/index.client.js";
     }
 
     if (files.includes("bin.js")) {

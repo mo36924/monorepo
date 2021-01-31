@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/preact-lazy",
-  "version": "1.0.9",
-  "description": "preact-lazy",
+  "name": "@mo36924/jest-snapshot-serializer-babel",
+  "version": "1.0.0",
+  "description": "jest-snapshot-serializer-babel",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,23 +12,21 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/preact-lazy"
+    "directory": "packages/jest-snapshot-serializer-babel"
   },
   "publishConfig": {
     "access": "public"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "browser": "./dist/index.client.js",
   "exports": {
     ".": {
-      "browser": "./dist/index.client.js",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
   },
   "peerDependencies": {
-    "@mo36924/preact-hooks": "^1.0.7",
-    "preact": "^10.5.12"
+    "@babel/core": "^7.12.10",
+    "prettier": "^2.2.1"
   }
 }

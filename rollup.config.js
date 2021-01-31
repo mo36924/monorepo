@@ -6,7 +6,13 @@ import dts from "rollup-plugin-dts";
 export default async () => {
   /** @type {import("rollup").RollupOptions[]} */
   const options = [];
-  let paths = await glob("packages/*/src/index.{ts,tsx}");
+  const external = (id) => /^@?[A-Za-z]/.test(id);
+
+  const [paths, clients, bins] = await Promise.all([
+    glob("packages/*/src/index.{ts,tsx}"),
+    glob("packages/*/src/index.client.{ts,tsx}"),
+    glob("packages/*/src/bin.ts"),
+  ]);
 
   for (const path of paths) {
     const dir = resolve(path, "..", "..", "dist");
@@ -31,7 +37,7 @@ export default async () => {
             preferConst: true,
           },
         ],
-        external: (id) => /^@?[A-Za-z]/.test(id),
+        external,
         plugins: [typescript()],
       },
       {
@@ -40,37 +46,34 @@ export default async () => {
           file: resolve(dir, "index.d.ts"),
           format: "module",
         },
+        external,
         plugins: [dts()],
       },
     );
   }
 
-  paths = await glob("packages/*/src/index.browser.{ts,tsx}");
-
-  for (const path of paths) {
-    const dir = resolve(path, "..", "..", "dist");
+  for (const client of clients) {
+    const dir = resolve(client, "..", "..", "dist");
 
     options.push({
-      input: path,
+      input: client,
       output: {
-        file: resolve(dir, "index.browser.js"),
+        file: resolve(dir, "index.client.js"),
         format: "module",
         sourcemap: true,
         sourcemapExcludeSources: true,
         preferConst: true,
       },
-      external: (id) => /^@?[A-Za-z]/.test(id),
+      external,
       plugins: [typescript()],
     });
   }
 
-  paths = await glob("packages/*/src/bin.ts");
-
-  for (const path of paths) {
-    const dir = resolve(path, "..", "..", "dist");
+  for (const bin of bins) {
+    const dir = resolve(bin, "..", "..", "dist");
 
     options.push({
-      input: path,
+      input: bin,
       output: {
         file: resolve(dir, "bin.js"),
         format: "commonjs",
@@ -78,7 +81,7 @@ export default async () => {
         sourcemapExcludeSources: true,
         preferConst: true,
       },
-      external: (id) => /^@?[A-Za-z]/.test(id),
+      external,
       plugins: [typescript()],
     });
   }
