@@ -1,12 +1,80 @@
-import { resolve } from "path";
-import typescript from "@rollup/plugin-typescript";
+import { join, resolve } from "path";
 import glob from "fast-glob";
 import dts from "rollup-plugin-dts";
+
+import ts from "typescript";
+
+const sys = ts.sys;
+
+const formatDiagnosticsHost = {
+  getCurrentDirectory: () => cwd,
+  getCanonicalFileName: (fileName) => fileName,
+  getNewLine: () => sys.newLine,
+};
+
+const cache = Object.create(null);
+
+const host = ts.createWatchCompilerHost(
+  "tsconfig.json",
+  {
+    noEmit: false,
+    outDir: false,
+    sourceMap: true,
+    inlineSourceMap: false,
+    inlineSources: false,
+  },
+  {
+    ...sys,
+    writeFile(path, data) {
+      cache[path] = data;
+    },
+  },
+  ts.createEmitAndSemanticDiagnosticsBuilderProgram,
+  (diagnostic) => {
+    sys.write(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatDiagnosticsHost) + sys.newLine);
+  },
+  (diagnostic, newLine, _options, errorCount) => {
+    sys.write(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatDiagnosticsHost) + newLine);
+
+    if (errorCount) {
+      process.exitCode = 1;
+    }
+  },
+);
+
+ts.createWatchProgram(host).close();
+
+if (process.exitCode === 1 && process.env.NODE_ENV !== "development") {
+  process.exit();
+}
 
 export default async () => {
   /** @type {import("rollup").RollupOptions[]} */
   const options = [];
   const external = (id) => /^@?[A-Za-z]/.test(id);
+
+  const cachePlugin = {
+    resolveId(source, importer) {
+      if (!importer) {
+        return resolve(source.replace(/\.ts(x)?$/, ".js$1"));
+      }
+
+      source = join(importer, "..", source + ".js");
+
+      if (!(source in cache)) {
+        source += "x";
+      }
+
+      return source;
+    },
+    load(id) {
+      if (id in cache) {
+        return { code: cache[id], map: cache[id + ".map"] };
+      }
+
+      throw new Error(`Could not resolve '${id}'`);
+    },
+  };
 
   const [paths, clients, bins] = await Promise.all([
     glob("packages/*/src/index.{ts,tsx}"),
@@ -38,7 +106,7 @@ export default async () => {
           },
         ],
         external,
-        plugins: [typescript()],
+        plugins: [cachePlugin],
       },
       {
         input: path,
@@ -65,7 +133,7 @@ export default async () => {
         preferConst: true,
       },
       external,
-      plugins: [typescript()],
+      plugins: [cachePlugin],
     });
   }
 
@@ -82,7 +150,7 @@ export default async () => {
         preferConst: true,
       },
       external,
-      plugins: [typescript()],
+      plugins: [cachePlugin],
     });
   }
 

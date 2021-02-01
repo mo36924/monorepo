@@ -30,7 +30,7 @@ export default (
   {
     ignoreBuiltins,
     ignoreBareImport,
-    ignore,
+    ignore = [],
     baseUrl = ".",
     paths = {},
     pathRegexps: optionPathRegexps = {},
@@ -39,7 +39,8 @@ export default (
     ...resolveOptions
   }: Options,
 ): PluginObj<State> => {
-  const ignores = ignore || [];
+  // /^\0/ rollup helper
+  const ignores = [/^\0/, ...ignore];
 
   if (ignoreBuiltins) {
     ignores.push(...builtinModules);

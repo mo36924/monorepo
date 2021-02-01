@@ -1,0 +1,39 @@
+{
+  "name": "@mo36924/babel-preset-app",
+  "version": "1.0.0",
+  "description": "babel-preset-app",
+  "keywords": [],
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/babel-preset-app"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
+    "@mo36924/babel-plugin-commonjs": "^1.0.13",
+    "@mo36924/babel-plugin-dead-code-elimination": "^1.0.12",
+    "@mo36924/babel-plugin-iife-unwrap": "^1.0.12",
+    "@mo36924/babel-plugin-inject": "^1.0.13",
+    "@mo36924/babel-plugin-replace": "^1.0.12",
+    "@mo36924/babel-plugin-resolve": "^1.0.13"
+  }
+}
