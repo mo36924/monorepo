@@ -1,0 +1,32 @@
+{
+  "name": "@mo36924/babel-plugin-resolve",
+  "version": "1.0.0",
+  "description": "babel-plugin-resolve",
+  "keywords": [],
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/babel-plugin-resolve"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.12.10",
+    "enhanced-resolve": "^5.7.0"
+  }
+}
