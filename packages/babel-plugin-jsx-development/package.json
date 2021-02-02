@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/preact-prepass",
+  "name": "@mo36924/babel-plugin-jsx-development",
   "version": "1.0.14",
-  "description": "preact-prepass",
+  "description": "babel-plugin-jsx-development",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/preact-prepass"
+    "directory": "packages/babel-plugin-jsx-development"
   },
   "publishConfig": {
     "access": "public"
@@ -24,8 +24,5 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
-  },
-  "peerDependencies": {
-    "preact": "^10.5.12"
   }
 }

@@ -11,6 +11,7 @@ import commonjs, { Options as commonjsOptions } from "@mo36924/babel-plugin-comm
 import deadCodeElimination from "@mo36924/babel-plugin-dead-code-elimination";
 import iifeUnwrap from "@mo36924/babel-plugin-iife-unwrap";
 import inject, { Options as injectOptions } from "@mo36924/babel-plugin-inject";
+import jsxDev from "@mo36924/babel-plugin-jsx-development";
 import replace from "@mo36924/babel-plugin-replace";
 import resolve, { Options as resolveOptions } from "@mo36924/babel-plugin-resolve";
 
@@ -171,6 +172,7 @@ export default (_api: Api, options: Options): TransformOptions => {
       ],
       [commonjs, __SERVER__ ? false : exports],
       [inject, _inject],
+      [jsxDev, __PROD__ ? false : {}],
       [constant, __PROD__ ? {} : false],
     ],
   };

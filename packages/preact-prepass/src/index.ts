@@ -1,18 +1,18 @@
 import { options, Component, VNode } from "preact";
 
-function assign(obj: any, props: any) {
-  for (let i in props) obj[i] = props[i];
-  return obj;
+if (typeof __SERVER__ === "boolean") {
+  // options.__s = options._skipEffects
+  (options as any).__s = true;
 }
 
-function getChildren(accumulator: any[], children: any) {
+function toChildArray(children: any, array: any[] = []) {
   if (Array.isArray(children)) {
-    children.reduce(getChildren, accumulator);
+    children.forEach((child) => toChildArray(child, array));
   } else if (children && typeof children === "object") {
-    accumulator.push(children);
+    array.push(children);
   }
 
-  return accumulator;
+  return array;
 }
 
 function render(this: Component, props: any, _state: any, context: any) {
@@ -53,7 +53,7 @@ export default function prepass(vnode: VNode, context: any = {}): Promise<any> {
     }
 
     if ((type as any).getDerivedStateFromProps) {
-      c.state = assign(assign({}, c.state), (type as any).getDerivedStateFromProps(c.props, c.state));
+      c.state = Object.assign({}, c.state, (type as any).getDerivedStateFromProps(c.props, c.state));
     } else if (c.componentWillMount) {
       c.componentWillMount();
     }
@@ -63,27 +63,39 @@ export default function prepass(vnode: VNode, context: any = {}): Promise<any> {
       (options as any).__r(vnode);
     }
 
-    const doRender = () => {
-      try {
-        // options.__s = options._skipEffects
-        const previousSkipEffects = (options as any).__s;
-        (options as any).__s = true;
-        const renderResult = Promise.resolve(c.render(c.props, c.state, c.context));
-        (options as any).__s = previousSkipEffects;
-        return renderResult;
-      } catch (e) {
-        return e && e.then ? e.then(doRender, doRender) : Promise.reject(e);
-      }
-    };
+    const doRender: any =
+      typeof __SERVER__ === "boolean"
+        ? () => {
+            try {
+              return Promise.resolve(c.render(c.props, c.state, c.context));
+            } catch (e) {
+              return e && e.then ? e.then(doRender, doRender) : Promise.reject(e);
+            }
+          }
+        : () => {
+            let result: any;
+            // options.__s = options._skipEffects
+            const previousSkipEffects = (options as any).__s;
+            (options as any).__s = true;
+
+            try {
+              result = Promise.resolve(c.render(c.props, c.state, c.context));
+            } catch (e) {
+              result = e && e.then ? e.then(doRender, doRender) : Promise.reject(e);
+            }
+
+            (options as any).__s = previousSkipEffects;
+            return result;
+          };
 
     return doRender().then((rendered: any) => {
       if (c.getChildContext) {
-        context = assign(assign({}, context), c.getChildContext());
+        context = Object.assign({}, context, c.getChildContext());
       }
 
-      return Promise.all(getChildren([], rendered).map((vnode) => prepass(vnode, context)));
+      return Promise.all(toChildArray(rendered).map((vnode) => prepass(vnode, context)));
     });
   }
 
-  return Promise.all(getChildren([], props && props.children).map((vnode) => prepass(vnode, context)));
+  return Promise.all(toChildArray(props && props.children).map((vnode) => prepass(vnode, context)));
 }
