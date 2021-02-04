@@ -3,6 +3,8 @@
     "target": "ES2020",
     "module": "ES2020",
     "moduleResolution": "Node",
+    "jsx": "preserve",
+    "jsxImportSource": "preact",
     "importsNotUsedAsValues": "error",
     "baseUrl": ".",
     "paths": {

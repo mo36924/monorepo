@@ -1,1 +1,3 @@
-export { useForceUpdate } from "./useForceUpdate";
+import useForceUpdate from "./useForceUpdate";
+
+export { useForceUpdate };
