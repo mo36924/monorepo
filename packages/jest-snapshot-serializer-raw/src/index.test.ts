@@ -8,13 +8,6 @@ describe("jest-snapshot-serializer-raw", () => {
 
   it("serialize", () => {
     const value = "serialize";
-
-    expect(raw(value)).toMatchInlineSnapshot(`
-      Object {
-        Symbol(jest-snapshot-serializer-raw): "serialize",
-      }
-    `);
-
     expect(serialize(raw(value))).toEqual(value);
   });
 });

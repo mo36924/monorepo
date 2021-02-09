@@ -5487,6 +5487,11 @@ jest-serializer@^26.6.2:
   resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-preact/-/jest-snapshot-serializer-preact-1.0.11.tgz#6da075022c24e4db70ac26b81f35f61ab97035c0"
   integrity sha512-hHMsXypwxKdWYtuD580nI7LZabHmQm8/Hl9R8xnNTOVZiT+zmiJUiBHKu24Oqtvv0Q8HZLykP4aW2PpZvnDCBg==
 
+"jest-snapshot-serializer-raw@npm:@mo36924/jest-snapshot-serializer-raw@1.0.18":
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-raw/-/jest-snapshot-serializer-raw-1.0.18.tgz#0c6197a961d2c39792177661719f09f6c644172f"
+  integrity sha512-VmLPDkad2na351z+5qtlKsC/ZzuOgy8eT5qrENt7ED50zO6D0QtKzCowmxMCgDEipWK3nUirXajkFJpuTocK0g==
+
 jest-snapshot@^26.6.2:
   version "26.6.2"
   resolved "https://registry.yarnpkg.com/jest-snapshot/-/jest-snapshot-26.6.2.tgz#f3b0af1acb223316850bd14e1beea9837fb39c84"
