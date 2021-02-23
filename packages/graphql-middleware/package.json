@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/graphql-resolve-query",
-  "version": "1.0.19",
-  "description": "graphql-resolve-query",
+  "name": "@mo36924/graphql-middleware",
+  "version": "1.0.0",
+  "description": "graphql-middleware",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/graphql-resolve-query"
+    "directory": "packages/graphql-middleware"
   },
   "publishConfig": {
     "access": "public"
@@ -26,6 +26,8 @@
     }
   },
   "peerDependencies": {
-    "graphql": "^15.5.0"
+    "accepts": "^1.3.7",
+    "express-graphql": "^0.12.0",
+    "http-errors": "^1.8.0"
   }
 }

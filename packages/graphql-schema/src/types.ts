@@ -1,12 +1,19 @@
-import { parse } from "graphql";
+import { DefinitionNode, DocumentNode, GraphQLSchema, isInterfaceType, isObjectType, parse } from "graphql";
 import { getDirectives } from "./directives";
-import { copyTypes, isScalarTypeName } from "./utils";
+import { createObject, isScalarTypeName } from "./utils";
 
 export type Types = { [typeName: string]: Type };
-export type Type = { fields: Fields; directives: TypeDirectives };
+export type Type = { name: string; fields: Fields; directives: TypeDirectives };
 export type TypeDirectives = { join?: {} };
 export type Fields = { [fieldName: string]: Field };
-export type Field = { type: string; scalar: boolean; null: boolean; list: boolean; directives: FieldDirectives };
+export type Field = {
+  name: string;
+  type: string;
+  scalar: boolean;
+  nullable: boolean;
+  list: boolean;
+  directives: FieldDirectives;
+};
 export type FieldDirectives = {
   field?: { name: string; key: string };
   type?: { name: string; keys: [string, string] };
@@ -15,34 +22,66 @@ export type FieldDirectives = {
   unique?: {};
 };
 
-export const getTypes = (source: string) => {
-  const document = parse(source);
+export const buildSchemaTypes = (schema: GraphQLSchema): Types => {
+  if ((schema as any).__types) {
+    return (schema as any).__types;
+  }
+
+  const typeMap = schema.getTypeMap();
+  const definitions: DefinitionNode[] = [];
+
+  const documentNode: DocumentNode = {
+    kind: "Document",
+    definitions,
+  };
+
+  for (const type of Object.values(typeMap)) {
+    if ((isObjectType(type) || isInterfaceType(type)) && !type.name.startsWith("__")) {
+      definitions.push(type.astNode!);
+    }
+  }
+
+  return ((schema as any).__types = buildAstTypes(documentNode));
+};
+
+export const buildAstTypes = (documentNode: DocumentNode) => {
   const types: Types = Object.create(null);
 
-  for (const def of document.definitions) {
-    if (def.kind !== "ObjectTypeDefinition") {
+  for (const def of documentNode.definitions) {
+    if (def.kind !== "ObjectTypeDefinition" && def.kind !== "InterfaceTypeDefinition") {
       continue;
     }
 
-    const { fields }: Type = (types[def.name.value] = { fields: Object.create(null), directives: {} });
+    const fields: Fields = Object.create(null);
 
-    for (let { type, name, directives } of def.fields ?? []) {
-      const field: Field = (fields[name.value] = {
+    types[def.name.value] = createObject({
+      name: def.name.value,
+      fields: fields,
+      directives: Object.create(null),
+    });
+
+    for (const fieldDefNode of def.fields ?? []) {
+      const name = fieldDefNode.name;
+      const directives = fieldDefNode.directives;
+      let type = fieldDefNode.type;
+
+      const field: Field = (fields[name.value] = createObject({
+        name: name.value,
         type: "",
         scalar: false,
-        null: true,
+        nullable: true,
         list: false,
         directives: getDirectives(directives),
-      });
+      }));
 
       if (type.kind === "NonNullType") {
         type = type.type;
-        field.null = false;
+        field.nullable = false;
       }
 
       if (type.kind === "ListType") {
         type = type.type;
-        field.null = false;
+        field.nullable = false;
         field.list = true;
 
         if (type.kind === "NonNullType") {
@@ -63,7 +102,12 @@ export const getTypes = (source: string) => {
     }
   }
 
-  return copyTypes(types);
+  return types;
+};
+
+export const getTypes = (source: string) => {
+  const documentNode = parse(source);
+  return buildAstTypes(documentNode);
 };
 
 export const printTypes = (types: Types) =>
@@ -76,8 +120,8 @@ export const printTypes = (types: Types) =>
     )
     .join("");
 
-export const printFieldType = ({ type, list, null: _null }: Pick<Field, "type" | "list" | "null">) =>
-  `${list ? `[${type}!]` : type}${_null ? "" : "!"}`;
+export const printFieldType = ({ type, list, nullable }: Pick<Field, "type" | "list" | "nullable">) =>
+  `${list ? `[${type}!]` : type}${nullable ? "" : "!"}`;
 
 export const printDirectives = (directives: TypeDirectives | FieldDirectives) =>
   Object.entries(directives)

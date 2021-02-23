@@ -1,9 +1,10 @@
 import { describe, expect, it } from "@jest/globals";
+import { buildSchema, parse } from "graphql";
 import resolve from "./index";
 
 describe("graphql-resolve-query", () => {
   it("object", () => {
-    const schema = `
+    const schema = buildSchema(`
       type Query {
         users(limit: Int!): [User!]!
       }
@@ -12,16 +13,16 @@ describe("graphql-resolve-query", () => {
         id: ID!
         name: String!
       }
-    `;
+    `);
 
-    const query = `
+    const query = parse(`
       query getUsers($limit: Int!) {
         users(limit: $limit) {
           id
           name
         }
       }
-    `;
+    `);
 
     const result = resolve(schema, query, { limit: 1 });
 
@@ -37,8 +38,9 @@ describe("graphql-resolve-query", () => {
             "list": true,
             "name": "users",
             "nullable": false,
+            "parentType": "Query",
+            "returnType": "User",
             "type": "object",
-            "typeName": "User",
             "types": Object {
               "User": Object {
                 "id": Object {
@@ -48,8 +50,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "id",
                   "nullable": false,
+                  "parentType": "User",
+                  "returnType": "ID",
                   "type": "scalar",
-                  "typeName": "ID",
                   "types": Object {},
                 },
                 "name": Object {
@@ -59,8 +62,87 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "name",
                   "nullable": false,
+                  "parentType": "User",
+                  "returnType": "String",
                   "type": "scalar",
-                  "typeName": "String",
+                  "types": Object {},
+                },
+              },
+            },
+          },
+        },
+      }
+    `);
+  });
+
+  it("input", () => {
+    const schema = buildSchema(`
+      type Query {
+        users(data: Data!): [User!]!
+      }
+
+      type User {
+        id: ID!
+        name: String!
+      }
+
+      input Data {
+        id: ID!
+      }
+    `);
+
+    const query = parse(`
+      query getUsers($data: Data!) {
+        users(data: $data) {
+          id
+          name
+        }
+      }
+    `);
+
+    const result = resolve(schema, query, { data: { id: "id" } });
+
+    expect(result).toMatchInlineSnapshot(`
+      Object {
+        "Query": Object {
+          "users": Object {
+            "alias": "users",
+            "args": Object {
+              "data": Object {
+                "id": "id",
+              },
+            },
+            "directives": Object {},
+            "list": true,
+            "name": "users",
+            "nullable": false,
+            "parentType": "Query",
+            "returnType": "User",
+            "type": "object",
+            "types": Object {
+              "User": Object {
+                "id": Object {
+                  "alias": "id",
+                  "args": Object {},
+                  "directives": Object {},
+                  "list": false,
+                  "name": "id",
+                  "nullable": false,
+                  "parentType": "User",
+                  "returnType": "ID",
+                  "type": "scalar",
+                  "types": Object {},
+                },
+                "name": Object {
+                  "alias": "name",
+                  "args": Object {},
+                  "directives": Object {},
+                  "list": false,
+                  "name": "name",
+                  "nullable": false,
+                  "parentType": "User",
+                  "returnType": "String",
+                  "type": "scalar",
                   "types": Object {},
                 },
               },
@@ -72,7 +154,7 @@ describe("graphql-resolve-query", () => {
   });
 
   it("interface", () => {
-    const schema = `
+    const schema = buildSchema(`
       type Query {
         character: Character
       }
@@ -94,9 +176,9 @@ describe("graphql-resolve-query", () => {
         name: String!
         primaryFunction: String
       }
-    `;
+    `);
 
-    const query = `
+    const query = parse(`
       {
         character {
           id
@@ -109,7 +191,7 @@ describe("graphql-resolve-query", () => {
           }
         }
       }
-    `;
+    `);
 
     const result = resolve(schema, query);
 
@@ -123,8 +205,9 @@ describe("graphql-resolve-query", () => {
             "list": false,
             "name": "character",
             "nullable": true,
+            "parentType": "Query",
+            "returnType": "Character",
             "type": "interface",
-            "typeName": "Character",
             "types": Object {
               "Character": Object {
                 "id": Object {
@@ -134,8 +217,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "id",
                   "nullable": false,
+                  "parentType": "Character",
+                  "returnType": "ID",
                   "type": "scalar",
-                  "typeName": "ID",
                   "types": Object {},
                 },
                 "name": Object {
@@ -145,8 +229,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "name",
                   "nullable": false,
+                  "parentType": "Character",
+                  "returnType": "String",
                   "type": "scalar",
-                  "typeName": "String",
                   "types": Object {},
                 },
               },
@@ -158,8 +243,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "primaryFunction",
                   "nullable": true,
+                  "parentType": "Droid",
+                  "returnType": "String",
                   "type": "scalar",
-                  "typeName": "String",
                   "types": Object {},
                 },
               },
@@ -171,8 +257,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "totalCredits",
                   "nullable": true,
+                  "parentType": "Human",
+                  "returnType": "Int",
                   "type": "scalar",
-                  "typeName": "Int",
                   "types": Object {},
                 },
               },
@@ -184,7 +271,7 @@ describe("graphql-resolve-query", () => {
   });
 
   it("schema directive", () => {
-    const schema = `
+    const schema = buildSchema(`
       directive @unique on FIELD_DEFINITION
       directive @key(name: String!) on FIELD_DEFINITION
 
@@ -196,16 +283,16 @@ describe("graphql-resolve-query", () => {
         id: ID! @unique
         name: String! @key(name: "id")
       }
-    `;
+    `);
 
-    const query = `
+    const query = parse(`
       {
         users {
           id
           name
         }
       }
-    `;
+    `);
 
     const result = resolve(schema, query);
 
@@ -219,8 +306,9 @@ describe("graphql-resolve-query", () => {
             "list": true,
             "name": "users",
             "nullable": false,
+            "parentType": "Query",
+            "returnType": "User",
             "type": "object",
-            "typeName": "User",
             "types": Object {
               "User": Object {
                 "id": Object {
@@ -232,8 +320,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "id",
                   "nullable": false,
+                  "parentType": "User",
+                  "returnType": "ID",
                   "type": "scalar",
-                  "typeName": "ID",
                   "types": Object {},
                 },
                 "name": Object {
@@ -247,8 +336,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "name",
                   "nullable": false,
+                  "parentType": "User",
+                  "returnType": "String",
                   "type": "scalar",
-                  "typeName": "String",
                   "types": Object {},
                 },
               },
@@ -260,7 +350,7 @@ describe("graphql-resolve-query", () => {
   });
 
   it("query directive", () => {
-    const schema = `
+    const schema = buildSchema(`
       directive @default(value: String!) on FIELD
 
       type Query {
@@ -271,16 +361,16 @@ describe("graphql-resolve-query", () => {
         id: ID!
         name: String!
       }
-    `;
+    `);
 
-    const query = `
+    const query = parse(`
       {
         users {
           id @default(value: "1")
           name
         }
       }
-    `;
+    `);
 
     const result = resolve(schema, query);
 
@@ -294,8 +384,9 @@ describe("graphql-resolve-query", () => {
             "list": true,
             "name": "users",
             "nullable": false,
+            "parentType": "Query",
+            "returnType": "User",
             "type": "object",
-            "typeName": "User",
             "types": Object {
               "User": Object {
                 "id": Object {
@@ -309,8 +400,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "id",
                   "nullable": false,
+                  "parentType": "User",
+                  "returnType": "ID",
                   "type": "scalar",
-                  "typeName": "ID",
                   "types": Object {},
                 },
                 "name": Object {
@@ -320,8 +412,9 @@ describe("graphql-resolve-query", () => {
                   "list": false,
                   "name": "name",
                   "nullable": false,
+                  "parentType": "User",
+                  "returnType": "String",
                   "type": "scalar",
-                  "typeName": "String",
                   "types": Object {},
                 },
               },

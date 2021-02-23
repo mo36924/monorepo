@@ -1,3 +1,0 @@
-# graphql-postgres
-
-graphql-postgres

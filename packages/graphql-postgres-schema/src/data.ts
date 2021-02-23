@@ -80,8 +80,10 @@ const getInsertQueries = (types: Types, baseRecordCount = 3) => {
           value = uuid(i + 1, tableIndexes[typeName]);
         } else if (fieldName === "version") {
           value = 1;
+        } else if (fieldName === "isDeleted") {
+          value = false;
         } else if (ref) {
-          value = uuid((i % getRecordCount(ref.name)) + 1, tableIndexes[typeName]);
+          value = uuid((i % getRecordCount(ref.name)) + 1, tableIndexes[ref.name]);
         } else if (typeof defaultValue === "string") {
           value = `${fieldName}-${i + 1}`;
         } else {

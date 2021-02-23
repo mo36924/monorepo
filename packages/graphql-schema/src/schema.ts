@@ -2,6 +2,7 @@ import { buildSchema } from "graphql";
 import { baseJoinTypeFields, baseTypeFields } from "./base-fields";
 import { customScalars } from "./custom-scalars";
 import { schemaDirectives } from "./directives";
+import { sortTypes } from "./sort-types";
 import { getTypes, printDirectives, printFieldType, Types } from "./types";
 import {
   comparisonOperators,
@@ -62,29 +63,32 @@ const fixRelation = (types: Types) => {
         const typeNames = [typeName, field.type].sort();
         const keys = typeNames.map((typeName) => getKeyFieldName(typeName));
 
-        types[joinTypeName] = {
-          directives: { join: {} },
+        types[joinTypeName] = createObject({
+          name: joinTypeName,
+          directives: createObject({ join: Object.create(null) }),
           fields: createObject({
-            [keys[0]]: {
+            [keys[0]]: createObject({
+              name: keys[0],
               type: primaryKeyTypeName,
               list: false,
-              null: false,
+              nullable: false,
               scalar: true,
-              directives: {
-                ref: { name: typeNames[0] },
-              },
-            },
-            [keys[1]]: {
+              directives: createObject({
+                ref: createObject({ name: typeNames[0] }),
+              }),
+            }),
+            [keys[1]]: createObject({
+              name: keys[1],
               type: primaryKeyTypeName,
               list: false,
-              null: false,
+              nullable: false,
               scalar: true,
-              directives: {
-                ref: { name: typeNames[1] },
-              },
-            },
+              directives: createObject({
+                ref: createObject({ name: typeNames[1] }),
+              }),
+            }),
           }),
-        };
+        });
 
         continue;
       }
@@ -99,30 +103,32 @@ const fixRelation = (types: Types) => {
           continue;
         }
 
-        const _null = refTypeFields[refTypeFieldName]?.null ?? true;
+        const nullable = refTypeFields[refTypeFieldName]?.nullable ?? true;
 
-        refTypeFields[refTypeFieldName] = {
+        refTypeFields[refTypeFieldName] = createObject({
+          name: refTypeFieldName,
           type: typeName,
           list: false,
-          null: _null,
+          nullable: nullable,
           scalar: false,
-          directives: {
-            key: {
+          directives: createObject({
+            key: createObject({
               name: keyFieldName,
-            },
-          },
-        };
+            }),
+          }),
+        });
 
-        refTypeFields[keyFieldName] = {
+        refTypeFields[keyFieldName] = createObject({
+          name: keyFieldName,
           type: primaryKeyTypeName,
           list: false,
-          null: _null,
+          nullable: nullable,
           scalar: true,
-          directives: {
-            ref: { name: typeName },
-            ...(field.list ? {} : { unique: {} }),
-          },
-        };
+          directives: createObject({
+            ref: createObject({ name: typeName }),
+            ...(field.list ? {} : { unique: Object.create(null) }),
+          }),
+        });
 
         continue;
       }
@@ -160,12 +166,14 @@ const fixRelation = (types: Types) => {
         const keyFieldNames = typeNames.map((typeName) => getKeyFieldName(typeName));
 
         types[joinTypeName] = {
+          name: joinTypeName,
           directives: { join: {} },
           fields: createObject({
             [keyFieldNames[0]]: {
+              name: keyFieldNames[0],
               type: primaryKeyTypeName,
               list: false,
-              null: false,
+              nullable: false,
               scalar: true,
               directives: {
                 ref: {
@@ -174,9 +182,10 @@ const fixRelation = (types: Types) => {
               },
             },
             [keyFieldNames[1]]: {
+              name: keyFieldNames[1],
               type: primaryKeyTypeName,
               list: false,
-              null: false,
+              nullable: false,
               scalar: true,
               directives: {
                 ref: {
@@ -201,9 +210,10 @@ const fixRelation = (types: Types) => {
         };
 
         refTypeFields[refNonListFieldName] = {
+          name: refNonListFieldName,
           type: typeName,
           list: false,
-          null: true,
+          nullable: true,
           scalar: false,
           directives: {
             key: {
@@ -213,9 +223,10 @@ const fixRelation = (types: Types) => {
         };
 
         refTypeFields[keyFieldName] = {
+          name: keyFieldName,
           type: primaryKeyTypeName,
           list: false,
-          null: true,
+          nullable: true,
           scalar: true,
           directives: {
             ref: {
@@ -229,7 +240,7 @@ const fixRelation = (types: Types) => {
 
       // 1:1
       if (!fieldIsList && !refFieldIsList) {
-        if (field.null) {
+        if (field.nullable) {
           const refNonListFieldName = getNonListFieldName(typeName);
           const keyFieldName = getKeyFieldName(typeName);
 
@@ -239,9 +250,10 @@ const fixRelation = (types: Types) => {
           };
 
           refTypeFields[refNonListFieldName] = {
+            name: refNonListFieldName,
             type: typeName,
             list: false,
-            null: true,
+            nullable: true,
             scalar: false,
             directives: {
               key: { name: keyFieldName },
@@ -249,9 +261,10 @@ const fixRelation = (types: Types) => {
           };
 
           refTypeFields[keyFieldName] = {
+            name: keyFieldName,
             type: primaryKeyTypeName,
             list: false,
-            null: true,
+            nullable: true,
             scalar: true,
             directives: {
               ref: {
@@ -265,9 +278,10 @@ const fixRelation = (types: Types) => {
           const keyFieldName = getKeyFieldName(refTypeName);
 
           refTypeFields[refNonListFieldName] = {
+            name: refNonListFieldName,
             type: typeName,
             list: false,
-            null: true,
+            nullable: true,
             scalar: false,
             directives: {
               field: { name: fieldName, key: keyFieldName },
@@ -279,9 +293,10 @@ const fixRelation = (types: Types) => {
           };
 
           type.fields[keyFieldName] = {
+            name: keyFieldName,
             type: primaryKeyTypeName,
             list: false,
-            null: false,
+            nullable: false,
             scalar: true,
             directives: {
               ref: {
@@ -331,9 +346,9 @@ const printSchema = (types: Types) => {
   query += `type Query {`;
 
   mutation += `type Mutation {
-    create(data: CreateData!): Boolean
-    update(data: UpdateData!): Boolean
-    delete(data: DeleteData!): Boolean
+    create(data: CreateData!): Query!
+    update(data: UpdateData!): Query!
+    delete(data: DeleteData!): Query!
   `;
 
   createData += `input CreateData {`;
@@ -432,15 +447,16 @@ const printSchema = (types: Types) => {
             break;
           case "createdAt":
           case "updatedAt":
+          case "isDeleted":
             break;
           default:
             createInput += `${fieldName}: ${fieldType}\n`;
-            updateInput += `${fieldName}: ${printFieldType({ ...field, null: true })}\n`;
+            updateInput += `${fieldName}: ${printFieldType({ ...field, nullable: true })}\n`;
             break;
         }
       }
 
-      whereInput += `${fieldName}: ${printFieldType({ type: `Where${fieldTypeName}`, list: false, null: true })}\n`;
+      whereInput += `${fieldName}: ${printFieldType({ type: `Where${fieldTypeName}`, list: false, nullable: true })}\n`;
 
       const FIELD_NAME = getOrderName(fieldName);
 
@@ -449,7 +465,7 @@ const printSchema = (types: Types) => {
         ${FIELD_NAME}_DESC
       `;
 
-      if (field.null) {
+      if (field.nullable) {
         orderInput += `
           ${FIELD_NAME}_ASC_NULLS_FIRST
           ${FIELD_NAME}_ASC_NULLS_LAST
@@ -518,7 +534,8 @@ export const schema = (source: string) => {
   let types = getTypes(source);
   types = fixRelation(types);
   types = insertBaseFields(types);
-  let schema = printSchema(types);
+  types = sortTypes(types);
+  const schema = printSchema(types);
   buildSchema(schema);
   return schema;
 };

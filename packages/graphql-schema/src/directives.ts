@@ -1,5 +1,11 @@
-import { buildSchema, DirectiveNode, getDirectiveValues } from "graphql";
-import { createObject } from "./utils";
+import {
+  buildSchema,
+  DirectiveNode,
+  getDirectiveValues,
+  GraphQLField,
+  GraphQLObjectType,
+  GraphQLSchema,
+} from "graphql";
 
 export const modelDirectives = `
 directive @field(name: String!) on FIELD_DEFINITION
@@ -18,15 +24,15 @@ directive @type(name: String! keys: [String!]!) on FIELD_DEFINITION
 const directiveSchema = buildSchema(schemaDirectives);
 
 export const getDirectives = (directives: readonly DirectiveNode[] | undefined = []): { [directive: string]: any } => {
-  const _directives = createObject();
+  const directiveValues = Object.create(null);
 
   for (const directiveNode of directives) {
     const directiveName = directiveNode.name.value;
 
-    _directives[directiveName] = getDirectiveValues(directiveSchema.getDirective(directiveName)!, {
+    directiveValues[directiveName] = getDirectiveValues(directiveSchema.getDirective(directiveName)!, {
       directives: directives,
     });
   }
 
-  return _directives;
+  return directiveValues;
 };

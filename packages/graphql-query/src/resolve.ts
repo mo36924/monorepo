@@ -1,3 +1,4 @@
+import { createObject } from "@mo36924/graphql-schema";
 import {
   FieldNode,
   getDirectiveValues,
@@ -26,6 +27,7 @@ export type Fields = { [fieldName: string]: Field };
 export type Args = { [key: string]: any };
 export type Directives = { [directive: string]: { [key: string]: any } | undefined };
 export type Field = {
+  parentType: string;
   alias: string;
   name: string;
   args: Args;
@@ -33,7 +35,7 @@ export type Field = {
   nullable: boolean;
   list: boolean;
   type: "scalar" | "object" | "interface" | "union";
-  typeName: string;
+  returnType: string;
   types: Types;
 };
 
@@ -70,7 +72,7 @@ const resolveField = (context: Context, parentType: GraphQLCompositeType, fieldN
   const name = fieldNode.name.value;
   const alias = fieldNode.alias ? fieldNode.alias.value : name;
   const field = (parentType as GraphQLObjectType | GraphQLInterfaceType).getFields()[name];
-  const directives: Directives = Object.assign(Object.create(null), context.directiveValues.get(field));
+  const directives: Directives = createObject(context.types[parentTypeName].fields[name].directives);
 
   for (const directive of fieldNode.directives || []) {
     const name = directive.name.value;
@@ -81,11 +83,12 @@ const resolveField = (context: Context, parentType: GraphQLCompositeType, fieldN
         continue;
     }
 
-    directives[name] = getArgumentValues(context.directives[name], directive, context.variables);
+    directives[name] = getArgumentValues(context.schema.getDirective(name)!, directive, context.variables);
   }
 
   if (name === "__typename") {
     fields[alias] = {
+      parentType: parentTypeName,
       alias,
       name,
       args: {},
@@ -93,7 +96,7 @@ const resolveField = (context: Context, parentType: GraphQLCompositeType, fieldN
       nullable: false,
       list: false,
       type: "scalar",
-      typeName: "String",
+      returnType: "String",
       types: Object.create(null),
     };
 
@@ -107,6 +110,7 @@ const resolveField = (context: Context, parentType: GraphQLCompositeType, fieldN
   const scalar = isScalarType(type);
 
   fields[alias] = {
+    parentType: parentTypeName,
     alias,
     name,
     args: getArgumentValues(field, fieldNode, context.variables),
@@ -114,7 +118,7 @@ const resolveField = (context: Context, parentType: GraphQLCompositeType, fieldN
     nullable: fieldType === nullableType,
     list,
     type: scalar ? "scalar" : isObjectType(type) ? "object" : isInterfaceType(type) ? "interface" : "union",
-    typeName: type.name,
+    returnType: type.name,
     types: scalar ? Object.create(null) : resolve(context, type as any, fieldNode.selectionSet!, Object.create(null)),
   };
 };

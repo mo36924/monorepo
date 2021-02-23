@@ -1,7 +1,7 @@
-import { buildSchema } from "graphql";
 import { baseTypeFields } from "./base-fields";
 import { customScalars } from "./custom-scalars";
 import { modelDirectives } from "./directives";
+import { sortTypes } from "./sort-types";
 import { Field, FieldDirectives, Fields, getTypes, printTypes, Types } from "./types";
 import { copyTypes, createObject, getJoinTypeName, getListFieldName, getNonListFieldName, getTypeName } from "./utils";
 
@@ -69,7 +69,7 @@ function fixDirective(types: Types) {
         fieldDirective!.name = getNonListFieldName(fieldDirectiveName);
 
         if (!field.list) {
-          field.null = true;
+          field.nullable = true;
         }
       }
 
@@ -84,11 +84,12 @@ function fixDirective(types: Types) {
           delete refDirectives.type;
 
           refTypeFields[refFieldName] = {
-            directives: refDirectives,
-            list: true,
-            null: false,
-            scalar: false,
+            name: refFieldName,
             type: typeName,
+            list: true,
+            nullable: false,
+            scalar: false,
+            directives: refDirectives,
           };
 
           continue;
@@ -120,11 +121,11 @@ function fixDirective(types: Types) {
 }
 
 export const model = (source: string) => {
-  buildSchema(`${customScalars}${modelDirectives}${source}`);
-  let types = getTypes(source);
+  let types = getTypes(`${customScalars}${modelDirectives}${source}`);
   types = deleteBaseFields(types);
   types = fixName(types);
   types = fixDirective(types);
-  let model = printTypes(types);
+  types = sortTypes(types);
+  const model = printTypes(types);
   return model;
 };

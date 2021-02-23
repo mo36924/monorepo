@@ -1,10 +1,10 @@
 import { join, resolve } from "path";
 import glob from "fast-glob";
 import dts from "rollup-plugin-dts";
-
 import ts from "typescript";
 
 const sys = ts.sys;
+const cwd = sys.getCurrentDirectory();
 
 const formatDiagnosticsHost = {
   getCurrentDirectory: () => cwd,

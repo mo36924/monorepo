@@ -1,0 +1,36 @@
+{
+  "name": "@mo36924/graphql-postgres-query",
+  "version": "1.0.0",
+  "description": "graphql-postgres-query",
+  "keywords": [],
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/graphql-postgres-query"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "peerDependencies": {
+    "@mo36924/graphql-query": "^1.0.20",
+    "@mo36924/graphql-schema": "^1.0.20",
+    "@mo36924/postgres-escape": "^1.0.18",
+    "change-case": "^4.1.2",
+    "graphql": "^15.5.0",
+    "uuid": "^8.3.2"
+  }
+}

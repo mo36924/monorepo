@@ -30,17 +30,6 @@ it("graphql-model", () => {
   const source = new Source(modelGql);
 
   expect(source).toMatchInlineSnapshot(`
-    type User {
-      name: String!
-      profile: Profile
-      class: Class!
-      clubs: [Club!]!
-    }
-
-    type Profile {
-      age: Int
-    }
-
     type Class {
       name: String!
       users: [User!]!
@@ -49,6 +38,17 @@ it("graphql-model", () => {
     type Club {
       name: String!
       users: [User!]!
+    }
+
+    type Profile {
+      age: Int
+    }
+
+    type User {
+      name: String!
+      profile: Profile
+      class: Class!
+      clubs: [Club!]!
     }
 
   `);

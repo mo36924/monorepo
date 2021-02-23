@@ -1,6 +1,5 @@
 import { createObject, getTypes } from "@mo36924/graphql-schema";
 import { escapeIdentifier } from "@mo36924/postgres-escape";
-import { snakeCase } from "change-case";
 
 const dbTypes = createObject<{ [key: string]: string }>({
   UUID: "uuid",
@@ -20,7 +19,6 @@ export const schema = (schema: string) => {
   const unique: string[] = [];
   const index: string[] = [];
   const key: string[] = [];
-  const trigger: string[] = [];
 
   for (const [typeName, type] of Object.entries(types)) {
     const { fields } = type;
@@ -30,7 +28,7 @@ export const schema = (schema: string) => {
       const {
         type: fieldTypeName,
         list,
-        null: _null,
+        nullable,
         scalar,
         directives: { ref: refDirective, unique: uniqueDirective },
       } = field;
@@ -40,26 +38,10 @@ export const schema = (schema: string) => {
 
         switch (fieldName) {
           case "id":
-            columns.push(`${escapeIdentifier(fieldName)} ${dbType} not null default gen_random_uuid() primary key`);
-            break;
-          case "version":
-            columns.push(`${escapeIdentifier(fieldName)} ${dbType} not null default 1`);
-            break;
-          case "createdAt":
-            columns.push(`${escapeIdentifier(fieldName)} ${dbType} not null default current_timestamp(3)`);
-            break;
-          case "updatedAt":
-            columns.push(`${escapeIdentifier(fieldName)} ${dbType} not null default current_timestamp(3)`);
-
-            trigger.push(
-              `create trigger update_at_${snakeCase(typeName)} before update on ${escapeIdentifier(
-                typeName,
-              )} for each row execute procedure update_at();\n`,
-            );
-
+            columns.push(`${escapeIdentifier(fieldName)} ${dbType} not null primary key`);
             break;
           default:
-            columns.push(`${escapeIdentifier(fieldName)} ${dbType}${_null ? "" : " not null"}`);
+            columns.push(`${escapeIdentifier(fieldName)} ${dbType}${nullable ? "" : " not null"}`);
             break;
         }
       }
@@ -84,11 +66,5 @@ export const schema = (schema: string) => {
     );
   }
 
-  if (trigger.length) {
-    trigger.unshift(
-      `create or replace function update_at() returns trigger as $$ begin new."updatedAt" := current_timestamp(3); return new; end; $$ language plpgsql;\n`,
-    );
-  }
-
-  return [extension, create, unique, index, key, trigger].flat().join("");
+  return [extension, create, unique, index, key].flat().join("");
 };
