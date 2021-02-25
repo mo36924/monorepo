@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-postgres-middleware",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "graphql-postgres-middleware",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
