@@ -1,13 +1,16 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { parse as querystring } from "querystring";
+import { promisify } from "util";
+import { gzip as gzipCompress, brotliCompress, constants } from "zlib";
 import accepts from "accepts";
 import type { GraphiQLData, GraphiQLOptions } from "express-graphql/renderGraphiQL";
 import {
   DocumentNode,
+  ExecutionResult as GraphQLExecutionResult,
   formatError,
+  FormattedExecutionResult as GraphQLFormattedExecutionResult,
   getOperationAST,
   GraphQLError,
-  GraphQLFormattedError,
   GraphQLSchema,
   NoSchemaIntrospectionCustomRule,
   parse,
@@ -18,8 +21,12 @@ import {
 } from "graphql";
 import httpError, { HttpError } from "http-errors";
 
-type ExecutionResult = { data?: string; errors?: readonly GraphQLError[] };
-type FormattedExecutionResult = { data?: string; errors?: readonly GraphQLFormattedError[] };
+type ExecutionResult = GraphQLExecutionResult & {
+  raw?: string | null;
+};
+type FormattedExecutionResult = GraphQLFormattedExecutionResult & {
+  raw?: string | null;
+};
 
 export type Execute<T = {}> = (
   req: IncomingMessage,
@@ -36,7 +43,7 @@ export type Send<T = {}> = (
   context: T,
   result: FormattedExecutionResult,
 ) => Promise<any>;
-export type Options<T = {}> = { schema: GraphQLSchema; context: T; execute: Execute<T>; send: Send<T> };
+export type Options<T = {}> = { schema: GraphQLSchema; context: T; execute: Execute<T>; send?: Send<T> };
 interface GraphQLParams {
   query: string;
   variables: { [name: string]: any } | null;
@@ -51,7 +58,7 @@ export default async <T>(options: Options<T>) => {
   const schema = options.schema;
   const schemaValidationErrors = getSchemaValidationErrors(schema);
   const execute = options.execute;
-  const send = options.send;
+  const send = options.send ?? defaultSend;
   const context = options.context;
 
   return async (req: IncomingMessage, res: ServerResponse): Promise<boolean> => {
@@ -176,7 +183,7 @@ export default async <T>(options: Options<T>) => {
       }
     }
 
-    if (res.statusCode === 200 && result.data == null) {
+    if (res.statusCode === 200 && result.data == null && result.raw == null) {
       res.statusCode = 500;
     }
 
@@ -192,6 +199,38 @@ export default async <T>(options: Options<T>) => {
     await send(req, res, context, formattedResult);
     return true;
   };
+};
+
+const brotli = promisify(brotliCompress);
+const gzip = promisify(gzipCompress);
+
+const defaultSend: Send = async (req, res, _context, result) => {
+  const accept = accepts(req);
+  const encoding = accept.encodings(["br", "gzip"]);
+  const json = result.raw ?? JSON.stringify(result);
+  let chunk = Buffer.from(json, "utf8");
+
+  if (encoding === "br") {
+    chunk = await brotli(chunk, {
+      params: {
+        [constants.BROTLI_PARAM_MODE]: constants.BROTLI_MODE_TEXT,
+        [constants.BROTLI_PARAM_QUALITY]: 5,
+        [constants.BROTLI_PARAM_SIZE_HINT]: chunk.length,
+      },
+    });
+
+    res.setHeader("Content-Encoding", "br");
+  } else if (encoding === "gzip") {
+    chunk = await gzip(chunk, {
+      level: 8,
+    });
+
+    res.setHeader("Content-Encoding", "gzip");
+  }
+
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Content-Length", chunk.length.toString());
+  res.end(chunk);
 };
 
 function formatResult(result: ExecutionResult): FormattedExecutionResult {
@@ -354,7 +393,7 @@ async function respondWithGraphiQL(
     query: params?.query,
     variables: params?.variables,
     operationName: params?.operationName,
-    result: result && (result.data ? JSON.parse(result.data) : result),
+    result: result?.raw ? JSON.parse(result.raw) : result,
   };
 
   const { renderGraphiQL } = await import("express-graphql/renderGraphiQL");

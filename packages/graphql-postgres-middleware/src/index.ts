@@ -1,4 +1,4 @@
-import graphqlMiddleware, { Execute, Send } from "@mo36924/graphql-middleware";
+import graphqlMiddleware, { Execute } from "@mo36924/graphql-middleware";
 import postgresQuery from "@mo36924/graphql-postgres-query";
 import type { GraphQLSchema } from "graphql";
 import { Pool, PoolConfig } from "pg";
@@ -56,18 +56,10 @@ const execute: Execute<Context> = async (req, _res, context, schema, document, v
   }
 
   return {
-    data: `{"data":{${Object.entries(data)
+    raw: `{"data":{${Object.entries(data)
       .map((entry) => `"${entry[0]}":${entry[1]}`)
       .join()}}}`,
   };
-};
-
-const send: Send = async (_req, res, _context, result) => {
-  const json = result.data ?? JSON.stringify(result);
-  const chunk = Buffer.from(json, "utf8");
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.setHeader("Content-Length", chunk.length.toString());
-  res.end(chunk);
 };
 
 export default async (options: Options) => {
@@ -75,6 +67,6 @@ export default async (options: Options) => {
   const main = new Pool(options.main);
   const replica = new Pool(options.replica ?? options.main);
   const context = { main, replica };
-  const middleware = await graphqlMiddleware<Context>({ schema, context, execute, send });
+  const middleware = await graphqlMiddleware<Context>({ schema, context, execute });
   return middleware;
 };

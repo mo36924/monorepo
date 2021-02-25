@@ -1,4 +1,4 @@
-import { escapeIdentifier } from "@mo36924/postgres-escape";
+import { escapeId } from "@mo36924/postgres-escape";
 import { camelCase, noCase } from "change-case";
 
 export default (order: string[] | null | undefined, tableId: string) => {
@@ -12,7 +12,7 @@ export default (order: string[] | null | undefined, tableId: string) => {
         /^(.*?)_(ASC|DESC|ASC_NULLS_FIRST|ASC_NULLS_LAST|DESC_NULLS_FIRST|DESC_NULLS_LAST)$/,
       )!;
 
-      return `${tableId}.${escapeIdentifier(camelCase(p1))} ${noCase(p2)}`;
+      return `${tableId}.${escapeId(camelCase(p1))} ${noCase(p2)}`;
     })
     .join();
 };

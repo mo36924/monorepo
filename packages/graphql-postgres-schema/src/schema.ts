@@ -1,5 +1,5 @@
 import { createObject, getTypes } from "@mo36924/graphql-schema";
-import { escapeIdentifier } from "@mo36924/postgres-escape";
+import { escapeId } from "@mo36924/postgres-escape";
 
 const dbTypes = createObject<{ [key: string]: string }>({
   UUID: "uuid",
@@ -38,32 +38,30 @@ export const schema = (schema: string) => {
 
         switch (fieldName) {
           case "id":
-            columns.push(`${escapeIdentifier(fieldName)} ${dbType} not null primary key`);
+            columns.push(`${escapeId(fieldName)} ${dbType} not null primary key`);
             break;
           default:
-            columns.push(`${escapeIdentifier(fieldName)} ${dbType}${nullable ? "" : " not null"}`);
+            columns.push(`${escapeId(fieldName)} ${dbType}${nullable ? "" : " not null"}`);
             break;
         }
       }
 
       if (uniqueDirective) {
-        unique.push(`alter table ${escapeIdentifier(typeName)} add unique (${escapeIdentifier(fieldName)});\n`);
+        unique.push(`alter table ${escapeId(typeName)} add unique (${escapeId(fieldName)});\n`);
       } else if (refDirective) {
-        index.push(`create index on ${escapeIdentifier(typeName)} (${escapeIdentifier(fieldName)});\n`);
+        index.push(`create index on ${escapeId(typeName)} (${escapeId(fieldName)});\n`);
       }
 
       if (refDirective) {
         key.push(
-          `alter table ${escapeIdentifier(typeName)} add foreign key (${escapeIdentifier(
-            fieldName,
-          )}) references ${escapeIdentifier(refDirective.name)} (${escapeIdentifier("id")});\n`,
+          `alter table ${escapeId(typeName)} add foreign key (${escapeId(fieldName)}) references ${escapeId(
+            refDirective.name,
+          )} (${escapeId("id")});\n`,
         );
       }
     }
 
-    create.push(
-      `create table ${escapeIdentifier(typeName)} (\n${columns.map((column) => `  ${column}`).join(",\n")}\n);\n`,
-    );
+    create.push(`create table ${escapeId(typeName)} (\n${columns.map((column) => `  ${column}`).join(",\n")}\n);\n`);
   }
 
   return [extension, create, unique, index, key].flat().join("");

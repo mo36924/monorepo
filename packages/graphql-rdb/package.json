@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/graphql-postgres-schema",
-  "version": "1.0.20",
-  "description": "graphql-postgres-schema",
+  "name": "@mo36924/graphql-rdb",
+  "version": "1.0.0",
+  "description": "graphql-rdb",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/graphql-postgres-schema"
+    "directory": "packages/graphql-rdb"
   },
   "publishConfig": {
     "access": "public"
@@ -26,7 +26,11 @@
     }
   },
   "peerDependencies": {
-    "@mo36924/graphql-schema": "^1.0.20",
-    "@mo36924/postgres-escape": "^1.0.21"
+    "accepts": "^1.3.7",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.5.0"
+  },
+  "optionalDependencies": {
+    "pg": "^8.5.1"
   }
 }

@@ -1,5 +1,5 @@
 import type { Where } from "@mo36924/graphql-schema";
-import { escapeIdentifier, escapeLiteral } from "@mo36924/postgres-escape";
+import { escapeId, escape } from "@mo36924/postgres-escape";
 
 const wherePredicates = (where: Where | null | undefined, tableId: string) => {
   if (!where) {
@@ -14,10 +14,10 @@ const wherePredicates = (where: Where | null | undefined, tableId: string) => {
       if (value === null) {
         switch (op) {
           case "eq":
-            predicates.push(`${tableId}.${escapeIdentifier(field)} is null`);
+            predicates.push(`${tableId}.${escapeId(field)} is null`);
             break;
           case "ne":
-            predicates.push(`${tableId}.${escapeIdentifier(field)} is not null`);
+            predicates.push(`${tableId}.${escapeId(field)} is not null`);
             break;
         }
 
@@ -26,34 +26,34 @@ const wherePredicates = (where: Where | null | undefined, tableId: string) => {
 
       switch (op) {
         case "eq":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} = ${escapeLiteral(value)}`);
+          predicates.push(`${tableId}.${escapeId(field)} = ${escape(value)}`);
           break;
         case "ne":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} <> ${escapeLiteral(value)}`);
+          predicates.push(`${tableId}.${escapeId(field)} <> ${escape(value)}`);
           break;
         case "gt":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} > ${escapeLiteral(value)}`);
+          predicates.push(`${tableId}.${escapeId(field)} > ${escape(value)}`);
           break;
         case "lt":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} < ${escapeLiteral(value)}`);
+          predicates.push(`${tableId}.${escapeId(field)} < ${escape(value)}`);
           break;
         case "ge":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} >= ${escapeLiteral(value)}`);
+          predicates.push(`${tableId}.${escapeId(field)} >= ${escape(value)}`);
           break;
         case "le":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} <= ${escapeLiteral(value)}`);
+          predicates.push(`${tableId}.${escapeId(field)} <= ${escape(value)}`);
           break;
         case "in":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} in (${value.map(escapeLiteral).join()})`);
+          predicates.push(`${tableId}.${escapeId(field)} in (${value.map(escape).join()})`);
           break;
         case "ni":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} not in (${value.map(escapeLiteral).join()})`);
+          predicates.push(`${tableId}.${escapeId(field)} not in (${value.map(escape).join()})`);
           break;
         case "li":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} like ${escapeLiteral(value)}`);
+          predicates.push(`${tableId}.${escapeId(field)} like ${escape(value)}`);
           break;
         case "nl":
-          predicates.push(`${tableId}.${escapeIdentifier(field)} not like ${escapeLiteral(value)}`);
+          predicates.push(`${tableId}.${escapeId(field)} not like ${escape(value)}`);
           break;
       }
 

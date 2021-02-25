@@ -1,5 +1,5 @@
 import { createObject, getTypes, Types } from "@mo36924/graphql-schema";
-import { escapeIdentifier, escapeLiteral } from "@mo36924/postgres-escape";
+import { escapeId, escape } from "@mo36924/postgres-escape";
 
 export const data = (schema: string) => {
   const { Query, Mutation, ...types } = getTypes(schema);
@@ -12,12 +12,12 @@ export const data = (schema: string) => {
 
 const disableForeignKeyCheck = (types: Types) =>
   Object.keys(types)
-    .map((typeName) => `alter table ${escapeIdentifier(typeName)} disable trigger all;\n`)
+    .map((typeName) => `alter table ${escapeId(typeName)} disable trigger all;\n`)
     .join("");
 
 const enableForeignKeyCheck = (types: Types) =>
   Object.keys(types)
-    .map((typeName) => `alter table ${escapeIdentifier(typeName)} enable trigger all;\n`)
+    .map((typeName) => `alter table ${escapeId(typeName)} enable trigger all;\n`)
     .join("");
 
 const uuid = (value: number, tableIndex: number) =>
@@ -61,7 +61,7 @@ const getInsertQueries = (types: Types, baseRecordCount = 3) => {
   const getInsertQuery = (typeName: string) => {
     const recordCount = getRecordCount(typeName);
     const fieldEntries = Object.entries(types[typeName].fields).filter(([, field]) => field.scalar);
-    const fieldNames = fieldEntries.map(([fieldName]) => escapeIdentifier(fieldName));
+    const fieldNames = fieldEntries.map(([fieldName]) => escapeId(fieldName));
     const valuesList: string[] = [];
 
     for (let i = 0; i < recordCount; i++) {
@@ -90,13 +90,13 @@ const getInsertQueries = (types: Types, baseRecordCount = 3) => {
           value = defaultValue;
         }
 
-        values.push(escapeLiteral(value));
+        values.push(escape(value));
       }
 
       valuesList.push(`(${values.join()})`);
     }
 
-    return `insert into ${escapeIdentifier(typeName)} (${fieldNames.join()}) values \n${valuesList.join(",\n")};\n`;
+    return `insert into ${escapeId(typeName)} (${fieldNames.join()}) values \n${valuesList.join(",\n")};\n`;
   };
 
   return Object.keys(types).map(getInsertQuery).join("");

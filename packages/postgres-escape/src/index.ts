@@ -1,28 +1,30 @@
-export const escapeIdentifier = (str: string) => `"${str.replace(/"/g, '""')}"`;
+export const escapeId = (value: string) => `"${value.replace(/"/g, '""')}"`;
 
-export const escapeLiteral = (val: string | number | boolean | Date | null | undefined) => {
-  if (val === null || val === undefined) {
+export const escape = (value: string | number | boolean | Date | null | undefined) => {
+  if (value === null || value === undefined) {
     return "NULL";
   }
 
-  switch (typeof val) {
+  switch (typeof value) {
     case "boolean":
-      return val ? "TRUE" : "FALSE";
+      return value ? "TRUE" : "FALSE";
     case "number":
-      return val.toString();
+      return value.toString();
 
     case "object":
-      if (val instanceof Date) {
-        const iso = val.toISOString();
+      if (value instanceof Date) {
+        const iso = value.toISOString();
         return `'${iso.slice(0, 10)} ${iso.slice(11, 23)}'`;
       }
+
+      return String(value);
   }
 
   let hasBackslash = false;
   let escaped = "'";
 
-  for (let i = 0, len = val.length; i < len; i++) {
-    const c = val[i];
+  for (let i = 0, len = value.length; i < len; i++) {
+    const c = value[i];
 
     if (c === "'") {
       escaped += c + c;

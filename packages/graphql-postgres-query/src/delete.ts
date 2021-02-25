@@ -1,6 +1,6 @@
 import type { Field } from "@mo36924/graphql-query";
 import { buildSchemaTypes, Type, Types } from "@mo36924/graphql-schema";
-import { escapeIdentifier, escapeLiteral } from "@mo36924/postgres-escape";
+import { escapeId, escape } from "@mo36924/postgres-escape";
 import type { GraphQLSchema } from "graphql";
 import type { Context } from "./context";
 import sort, { Queries } from "./sort";
@@ -36,9 +36,7 @@ const query = (
   queries: Queries,
   date: Date,
 ) => {
-  const wherePredicates = new Set<string>([
-    `"id"=${escapeLiteral(data.id)} and "version"=${escapeLiteral(data.version)}`,
-  ]);
+  const wherePredicates = new Set<string>([`"id"=${escape(data.id)} and "version"=${escape(data.version)}`]);
 
   if (context.ids[type.name]) {
     context.ids[type.name].push(data.id);
@@ -56,7 +54,7 @@ const query = (
 
     if (directives.ref) {
       if (value) {
-        wherePredicates.add(`${escapeIdentifier(key)}=${escapeLiteral(value)}`);
+        wherePredicates.add(`${escapeId(key)}=${escape(value)}`);
       }
 
       continue;
@@ -73,11 +71,9 @@ const query = (
         queries.push([
           directives.type.name,
           data.id < _data.id ? data.id : _data.id,
-          `update ${escapeIdentifier(directives.type.name)} set "updatedAt"=${escapeLiteral(
-            date,
-          )},"isDeleted"=TRUE where ${escapeIdentifier(directives.type.keys[0])}=${escapeLiteral(
-            data.id,
-          )} and ${escapeIdentifier(directives.type.keys[1])}=${escapeLiteral(_data.id)}`,
+          `update ${escapeId(directives.type.name)} set "updatedAt"=${escape(date)},"isDeleted"=TRUE where ${escapeId(
+            directives.type.keys[0],
+          )}=${escape(data.id)} and ${escapeId(directives.type.keys[1])}=${escape(_data.id)}`,
         ]);
 
         query(context, types, returnType, _data, queries, date);
@@ -87,7 +83,7 @@ const query = (
     }
 
     if (directives.key) {
-      wherePredicates.add(`${escapeIdentifier(directives.key.name)}=${escapeLiteral(value.id)}`);
+      wherePredicates.add(`${escapeId(directives.key.name)}=${escape(value.id)}`);
       query(context, types, returnType, value, queries, date);
       continue;
     }
@@ -108,7 +104,7 @@ const query = (
   queries.push([
     type.name,
     data.id,
-    `update ${escapeIdentifier(type.name)} set "version"=${escapeLiteral(data.version + 1)},"updatedAt"=${escapeLiteral(
+    `update ${escapeId(type.name)} set "version"=${escape(data.version + 1)},"updatedAt"=${escape(
       date,
     )},"isDeleted"=TRUE where ${[...wherePredicates].join(" and ")}`,
   ]);

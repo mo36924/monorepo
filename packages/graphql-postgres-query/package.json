@@ -28,7 +28,7 @@
   "peerDependencies": {
     "@mo36924/graphql-query": "^1.0.20",
     "@mo36924/graphql-schema": "^1.0.20",
-    "@mo36924/postgres-escape": "^1.0.18",
+    "@mo36924/postgres-escape": "^1.0.21",
     "change-case": "^4.1.2",
     "graphql": "^15.5.0",
     "uuid": "^8.3.2"

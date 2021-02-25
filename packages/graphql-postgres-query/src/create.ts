@@ -1,6 +1,6 @@
 import type { Field } from "@mo36924/graphql-query";
 import { buildSchemaTypes, Type, Types } from "@mo36924/graphql-schema";
-import { escapeIdentifier, escapeLiteral } from "@mo36924/postgres-escape";
+import { escapeId, escape } from "@mo36924/postgres-escape";
 import type { GraphQLSchema } from "graphql";
 import { v4 as uuid } from "uuid";
 import type { Context } from "./context";
@@ -36,7 +36,7 @@ const query = (
   date: Date,
 ) => {
   const columns: string[] = ['"id"', '"version"', '"createdAt"', '"updatedAt"', '"isDeleted"'];
-  const values: string[] = [escapeLiteral(data.id), "1", escapeLiteral(date), escapeLiteral(date), "FALSE"];
+  const values: string[] = [escape(data.id), "1", escape(date), escape(date), "FALSE"];
   const _queries: string[] = [];
 
   if (context.ids[type.name]) {
@@ -58,8 +58,8 @@ const query = (
     const field = type.fields[key];
 
     if (field.scalar) {
-      columns.push(escapeIdentifier(key));
-      values.push(escapeLiteral(value));
+      columns.push(escapeId(key));
+      values.push(escape(value));
       continue;
     }
 
@@ -77,11 +77,11 @@ const query = (
         query(context, types, returnType, { ..._data, id }, _queries, date);
 
         _queries.push(
-          `insert into ${escapeIdentifier(directives.type.name)} ("id",${escapeIdentifier(
-            directives.type.keys[0],
-          )},${escapeIdentifier(directives.type.keys[1])},"createdAt","updatedAt","isDeleted") values (${escapeLiteral(
-            uuid(),
-          )},${escapeLiteral(data.id)},${escapeLiteral(id)},${escapeLiteral(date)},${escapeLiteral(date)},FALSE)`,
+          `insert into ${escapeId(directives.type.name)} ("id",${escapeId(directives.type.keys[0])},${escapeId(
+            directives.type.keys[1],
+          )},"createdAt","updatedAt","isDeleted") values (${escape(uuid())},${escape(data.id)},${escape(id)},${escape(
+            date,
+          )},${escape(date)},FALSE)`,
         );
       }
 
@@ -90,8 +90,8 @@ const query = (
 
     if (directives.key) {
       const id = uuid();
-      columns.push(escapeIdentifier(directives.key.name));
-      values.push(escapeLiteral(id));
+      columns.push(escapeId(directives.key.name));
+      values.push(escape(id));
       query(context, types, returnType, { ...value, id }, queries, date);
       continue;
     }
@@ -109,5 +109,5 @@ const query = (
     }
   }
 
-  queries.push(`insert into ${escapeIdentifier(type.name)} (${columns.join()}) values (${values.join()})`, ..._queries);
+  queries.push(`insert into ${escapeId(type.name)} (${columns.join()}) values (${values.join()})`, ..._queries);
 };
