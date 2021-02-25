@@ -1,5 +1,7 @@
 import { camelCase, constantCase, pascalCase } from "change-case";
-import { plural, singular } from "pluralize";
+import pluralize from "pluralize";
+
+const { plural, singular } = pluralize;
 
 export const createObject = <T extends {} = any>(obj?: T): T => Object.assign(Object.create(null), obj);
 export const getTypeName = (typeName: string) =>
