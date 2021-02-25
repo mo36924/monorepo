@@ -1,7 +1,7 @@
 import graphqlMiddleware, { Execute } from "@mo36924/graphql-middleware";
 import postgresQuery from "@mo36924/graphql-postgres-query";
 import type { GraphQLSchema } from "graphql";
-import { Pool, PoolConfig } from "pg";
+import pg, { Pool, PoolConfig } from "pg";
 
 type Options = { schema: GraphQLSchema; main: PoolConfig; replica?: PoolConfig };
 type Context = { main: Pool; replica: Pool };
@@ -64,8 +64,8 @@ const execute: Execute<Context> = async (req, _res, context, schema, document, v
 
 export default async (options: Options) => {
   const schema = options.schema;
-  const main = new Pool(options.main);
-  const replica = new Pool(options.replica ?? options.main);
+  const main = new pg.Pool(options.main);
+  const replica = new pg.Pool(options.replica ?? options.main);
   const context = { main, replica };
   const middleware = await graphqlMiddleware<Context>({ schema, context, execute });
   return middleware;

@@ -20,7 +20,13 @@ export default async (options: Options) => {
   let middleware: ReturnType<typeof graphqlHTTP>;
 
   if (db.name === "postgres") {
-    const [{ Pool }, { escape, escapeId }] = await Promise.all([import("pg"), import("@mo36924/postgres-escape")]);
+    const [
+      {
+        default: { Pool },
+      },
+      { escape, escapeId },
+    ] = await Promise.all([import("pg"), import("@mo36924/postgres-escape")]);
+
     const main = new Pool(db.main);
     const replica = new Pool(db.replica ?? db.main);
 
