@@ -13,8 +13,6 @@ const dbTypes = createObject<{ [key: string]: string }>({
 
 export const schema = (schema: string) => {
   const { Query, Mutation, ...types } = getTypes(schema);
-
-  const extension: string[] = [`create extension if not exists pgcrypto;\n`];
   const create: string[] = [];
   const unique: string[] = [];
   const index: string[] = [];
@@ -64,5 +62,5 @@ export const schema = (schema: string) => {
     create.push(`create table ${escapeId(typeName)} (\n${columns.map((column) => `  ${column}`).join(",\n")}\n);\n`);
   }
 
-  return [extension, create, unique, index, key].flat().join("");
+  return [create, unique, index, key].flat().join("");
 };

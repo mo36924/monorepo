@@ -27,7 +27,6 @@ it("postgres-schema", () => {
   const sql = postgresSchema(schema(gql));
 
   expect(raw(sql)).toMatchInlineSnapshot(`
-    create extension if not exists pgcrypto;
     create table "Class" (
       "id" uuid not null primary key,
       "version" integer not null,
