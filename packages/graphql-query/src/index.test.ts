@@ -2,7 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import { buildSchema, parse } from "graphql";
 import resolve from "./index";
 
-describe("graphql-resolve-query", () => {
+describe("graphql-query", () => {
   it("object", () => {
     const schema = buildSchema(`
       type Query {
@@ -28,44 +28,46 @@ describe("graphql-resolve-query", () => {
 
     expect(result).toMatchInlineSnapshot(`
       Object {
-        "Query": Object {
-          "users": Object {
-            "alias": "users",
-            "args": Object {
-              "limit": 1,
-            },
-            "directives": Object {},
-            "list": true,
-            "name": "users",
-            "nullable": false,
-            "parentType": "Query",
-            "returnType": "User",
-            "type": "object",
-            "types": Object {
-              "User": Object {
-                "id": Object {
-                  "alias": "id",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "id",
-                  "nullable": false,
-                  "parentType": "User",
-                  "returnType": "ID",
-                  "type": "scalar",
-                  "types": Object {},
-                },
-                "name": Object {
-                  "alias": "name",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "name",
-                  "nullable": false,
-                  "parentType": "User",
-                  "returnType": "String",
-                  "type": "scalar",
-                  "types": Object {},
+        "data": Object {
+          "Query": Object {
+            "users": Object {
+              "alias": "users",
+              "args": Object {
+                "limit": 1,
+              },
+              "directives": Object {},
+              "list": true,
+              "name": "users",
+              "nullable": false,
+              "parentType": "Query",
+              "returnType": "User",
+              "type": "object",
+              "types": Object {
+                "User": Object {
+                  "id": Object {
+                    "alias": "id",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "id",
+                    "nullable": false,
+                    "parentType": "User",
+                    "returnType": "ID",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
+                  "name": Object {
+                    "alias": "name",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "name",
+                    "nullable": false,
+                    "parentType": "User",
+                    "returnType": "String",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
                 },
               },
             },
@@ -104,46 +106,48 @@ describe("graphql-resolve-query", () => {
 
     expect(result).toMatchInlineSnapshot(`
       Object {
-        "Query": Object {
-          "users": Object {
-            "alias": "users",
-            "args": Object {
-              "data": Object {
-                "id": "id",
-              },
-            },
-            "directives": Object {},
-            "list": true,
-            "name": "users",
-            "nullable": false,
-            "parentType": "Query",
-            "returnType": "User",
-            "type": "object",
-            "types": Object {
-              "User": Object {
-                "id": Object {
-                  "alias": "id",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "id",
-                  "nullable": false,
-                  "parentType": "User",
-                  "returnType": "ID",
-                  "type": "scalar",
-                  "types": Object {},
+        "data": Object {
+          "Query": Object {
+            "users": Object {
+              "alias": "users",
+              "args": Object {
+                "data": Object {
+                  "id": "id",
                 },
-                "name": Object {
-                  "alias": "name",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "name",
-                  "nullable": false,
-                  "parentType": "User",
-                  "returnType": "String",
-                  "type": "scalar",
-                  "types": Object {},
+              },
+              "directives": Object {},
+              "list": true,
+              "name": "users",
+              "nullable": false,
+              "parentType": "Query",
+              "returnType": "User",
+              "type": "object",
+              "types": Object {
+                "User": Object {
+                  "id": Object {
+                    "alias": "id",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "id",
+                    "nullable": false,
+                    "parentType": "User",
+                    "returnType": "ID",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
+                  "name": Object {
+                    "alias": "name",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "name",
+                    "nullable": false,
+                    "parentType": "User",
+                    "returnType": "String",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
                 },
               },
             },
@@ -197,70 +201,72 @@ describe("graphql-resolve-query", () => {
 
     expect(result).toMatchInlineSnapshot(`
       Object {
-        "Query": Object {
-          "character": Object {
-            "alias": "character",
-            "args": Object {},
-            "directives": Object {},
-            "list": false,
-            "name": "character",
-            "nullable": true,
-            "parentType": "Query",
-            "returnType": "Character",
-            "type": "interface",
-            "types": Object {
-              "Character": Object {
-                "id": Object {
-                  "alias": "id",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "id",
-                  "nullable": false,
-                  "parentType": "Character",
-                  "returnType": "ID",
-                  "type": "scalar",
-                  "types": Object {},
+        "data": Object {
+          "Query": Object {
+            "character": Object {
+              "alias": "character",
+              "args": Object {},
+              "directives": Object {},
+              "list": false,
+              "name": "character",
+              "nullable": true,
+              "parentType": "Query",
+              "returnType": "Character",
+              "type": "interface",
+              "types": Object {
+                "Character": Object {
+                  "id": Object {
+                    "alias": "id",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "id",
+                    "nullable": false,
+                    "parentType": "Character",
+                    "returnType": "ID",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
+                  "name": Object {
+                    "alias": "name",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "name",
+                    "nullable": false,
+                    "parentType": "Character",
+                    "returnType": "String",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
                 },
-                "name": Object {
-                  "alias": "name",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "name",
-                  "nullable": false,
-                  "parentType": "Character",
-                  "returnType": "String",
-                  "type": "scalar",
-                  "types": Object {},
+                "Droid": Object {
+                  "primaryFunction": Object {
+                    "alias": "primaryFunction",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "primaryFunction",
+                    "nullable": true,
+                    "parentType": "Droid",
+                    "returnType": "String",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
                 },
-              },
-              "Droid": Object {
-                "primaryFunction": Object {
-                  "alias": "primaryFunction",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "primaryFunction",
-                  "nullable": true,
-                  "parentType": "Droid",
-                  "returnType": "String",
-                  "type": "scalar",
-                  "types": Object {},
-                },
-              },
-              "Human": Object {
-                "totalCredits": Object {
-                  "alias": "totalCredits",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "totalCredits",
-                  "nullable": true,
-                  "parentType": "Human",
-                  "returnType": "Int",
-                  "type": "scalar",
-                  "types": Object {},
+                "Human": Object {
+                  "totalCredits": Object {
+                    "alias": "totalCredits",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "totalCredits",
+                    "nullable": true,
+                    "parentType": "Human",
+                    "returnType": "Int",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
                 },
               },
             },
@@ -298,48 +304,50 @@ describe("graphql-resolve-query", () => {
 
     expect(result).toMatchInlineSnapshot(`
       Object {
-        "Query": Object {
-          "users": Object {
-            "alias": "users",
-            "args": Object {},
-            "directives": Object {},
-            "list": true,
-            "name": "users",
-            "nullable": false,
-            "parentType": "Query",
-            "returnType": "User",
-            "type": "object",
-            "types": Object {
-              "User": Object {
-                "id": Object {
-                  "alias": "id",
-                  "args": Object {},
-                  "directives": Object {
-                    "unique": Object {},
-                  },
-                  "list": false,
-                  "name": "id",
-                  "nullable": false,
-                  "parentType": "User",
-                  "returnType": "ID",
-                  "type": "scalar",
-                  "types": Object {},
-                },
-                "name": Object {
-                  "alias": "name",
-                  "args": Object {},
-                  "directives": Object {
-                    "key": Object {
-                      "name": "id",
+        "data": Object {
+          "Query": Object {
+            "users": Object {
+              "alias": "users",
+              "args": Object {},
+              "directives": Object {},
+              "list": true,
+              "name": "users",
+              "nullable": false,
+              "parentType": "Query",
+              "returnType": "User",
+              "type": "object",
+              "types": Object {
+                "User": Object {
+                  "id": Object {
+                    "alias": "id",
+                    "args": Object {},
+                    "directives": Object {
+                      "unique": Object {},
                     },
+                    "list": false,
+                    "name": "id",
+                    "nullable": false,
+                    "parentType": "User",
+                    "returnType": "ID",
+                    "type": "scalar",
+                    "types": Object {},
                   },
-                  "list": false,
-                  "name": "name",
-                  "nullable": false,
-                  "parentType": "User",
-                  "returnType": "String",
-                  "type": "scalar",
-                  "types": Object {},
+                  "name": Object {
+                    "alias": "name",
+                    "args": Object {},
+                    "directives": Object {
+                      "key": Object {
+                        "name": "id",
+                      },
+                    },
+                    "list": false,
+                    "name": "name",
+                    "nullable": false,
+                    "parentType": "User",
+                    "returnType": "String",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
                 },
               },
             },
@@ -376,46 +384,48 @@ describe("graphql-resolve-query", () => {
 
     expect(result).toMatchInlineSnapshot(`
       Object {
-        "Query": Object {
-          "users": Object {
-            "alias": "users",
-            "args": Object {},
-            "directives": Object {},
-            "list": true,
-            "name": "users",
-            "nullable": false,
-            "parentType": "Query",
-            "returnType": "User",
-            "type": "object",
-            "types": Object {
-              "User": Object {
-                "id": Object {
-                  "alias": "id",
-                  "args": Object {},
-                  "directives": Object {
-                    "default": Object {
-                      "value": "1",
+        "data": Object {
+          "Query": Object {
+            "users": Object {
+              "alias": "users",
+              "args": Object {},
+              "directives": Object {},
+              "list": true,
+              "name": "users",
+              "nullable": false,
+              "parentType": "Query",
+              "returnType": "User",
+              "type": "object",
+              "types": Object {
+                "User": Object {
+                  "id": Object {
+                    "alias": "id",
+                    "args": Object {},
+                    "directives": Object {
+                      "default": Object {
+                        "value": "1",
+                      },
                     },
+                    "list": false,
+                    "name": "id",
+                    "nullable": false,
+                    "parentType": "User",
+                    "returnType": "ID",
+                    "type": "scalar",
+                    "types": Object {},
                   },
-                  "list": false,
-                  "name": "id",
-                  "nullable": false,
-                  "parentType": "User",
-                  "returnType": "ID",
-                  "type": "scalar",
-                  "types": Object {},
-                },
-                "name": Object {
-                  "alias": "name",
-                  "args": Object {},
-                  "directives": Object {},
-                  "list": false,
-                  "name": "name",
-                  "nullable": false,
-                  "parentType": "User",
-                  "returnType": "String",
-                  "type": "scalar",
-                  "types": Object {},
+                  "name": Object {
+                    "alias": "name",
+                    "args": Object {},
+                    "directives": Object {},
+                    "list": false,
+                    "name": "name",
+                    "nullable": false,
+                    "parentType": "User",
+                    "returnType": "String",
+                    "type": "scalar",
+                    "types": Object {},
+                  },
                 },
               },
             },

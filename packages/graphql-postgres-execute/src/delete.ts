@@ -1,3 +1,5 @@
+import { fieldDirectives } from "@mo36924/graphql-utils";
+import { escape, escapeId } from "@mo36924/postgres-escape";
 import {
   getNamedType,
   getNullableType,
@@ -8,7 +10,6 @@ import {
 } from "graphql";
 import type { Arguments } from "./arguments";
 import type { Context } from "./context";
-import { fieldDirectives } from "./directives";
 import sort, { Queries } from "./sort";
 
 export default (_source: any, args: Arguments, context: Context, info: GraphQLResolveInfo) => {
@@ -48,7 +49,6 @@ const query = (
   type: GraphQLObjectType,
   queries: Queries,
 ) => {
-  const { escapeId, escape } = context;
   const ids = context.ids;
   const table = type.name;
   const fields = type.getFields();

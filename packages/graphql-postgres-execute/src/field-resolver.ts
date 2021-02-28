@@ -1,7 +1,8 @@
+import { infoDirectives } from "@mo36924/graphql-utils";
+import { escape, escapeId } from "@mo36924/postgres-escape";
 import { getNamedType, getNullableType, GraphQLResolveInfo, isListType, isScalarType } from "graphql";
 import type { Arguments } from "./arguments";
 import type { Context } from "./context";
-import { infoDirectives } from "./directives";
 import mutation from "./mutation";
 import order from "./order";
 import where from "./where";
@@ -18,7 +19,7 @@ export default async (source: any, args: Arguments, context: Context, info: Grap
     return source[info.fieldName];
   }
 
-  const { escapeId, escape, db } = context;
+  const db = context.db;
   const directives = infoDirectives(info);
   const predicates: string[] = [];
 

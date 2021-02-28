@@ -64,7 +64,7 @@ describe("graphql-postgres-query", () => {
     const query = rawQuery(schema, document);
 
     expect(query).toMatchInlineSnapshot(
-      `select (select json_build_object('id',t1."id",'name',t1."name") from "User" t1 limit 1) "user";`,
+      `select (select jsonb_build_object('id',t1."id",'name',t1."name") from "User" t1 limit 1) "user";`,
     );
   });
 
@@ -81,7 +81,7 @@ describe("graphql-postgres-query", () => {
     const query = rawQuery(schema, document, { limit: 3 });
 
     expect(query).toMatchInlineSnapshot(
-      `select (select coalesce(json_agg(t.v),'[]'::json) from (select json_build_object('id',t1."id",'name',t1."name") v from "User" t1 limit 3) t) "users";`,
+      `select (select coalesce(jsonb_agg(t.v),'[]'::json) from (select jsonb_build_object('id',t1."id",'name',t1."name") v from "User" t1 limit 3) t) "users";`,
     );
   });
 
@@ -101,7 +101,7 @@ describe("graphql-postgres-query", () => {
     const query = rawQuery(schema, document, { name: "name-1" });
 
     expect(query).toMatchInlineSnapshot(
-      `select (select json_build_object('name',t1."name",'users',(select coalesce(json_agg(t.v),'[]'::json) from (select json_build_object('id',t2."id",'name',t2."name") v from "User" t2 where t2."classId" = t1.id) t)) from "Class" t1 where (t1."name" = 'name-1') limit 1) "class";`,
+      `select (select jsonb_build_object('name',t1."name",'users',(select coalesce(jsonb_agg(t.v),'[]'::json) from (select jsonb_build_object('id',t2."id",'name',t2."name") v from "User" t2 where t2."classId" = t1.id) t)) from "Class" t1 where (t1."name" = 'name-1') limit 1) "class";`,
     );
   });
 
@@ -120,7 +120,7 @@ describe("graphql-postgres-query", () => {
 
     expect(query).toMatchInlineSnapshot(`
       insert into "User" ("id","version","createdAt","updatedAt","isDeleted","name") values ('00000000-0000-4000-a000-000000000000',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,'bob');
-      select (select json_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000000') limit 1) "user";
+      select (select jsonb_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000000') limit 1) "user";
     `);
   });
 
@@ -140,7 +140,7 @@ describe("graphql-postgres-query", () => {
     expect(query).toMatchInlineSnapshot(`
       insert into "User" ("id","version","createdAt","updatedAt","isDeleted","name") values ('00000000-0000-4000-a000-000000000000',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,'john');
       insert into "User" ("id","version","createdAt","updatedAt","isDeleted","name") values ('00000000-0000-4000-a000-000000000001',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,'jane');
-      select (select json_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000000','00000000-0000-4000-a000-000000000001') limit 1) "user";
+      select (select jsonb_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000000','00000000-0000-4000-a000-000000000001') limit 1) "user";
     `);
   });
 
@@ -160,7 +160,7 @@ describe("graphql-postgres-query", () => {
     expect(query).toMatchInlineSnapshot(`
       insert into "User" ("id","version","createdAt","updatedAt","isDeleted","name") values ('00000000-0000-4000-a000-000000000000',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,'bob');
       insert into "Profile" ("id","version","createdAt","updatedAt","isDeleted","age","userId") values ('00000000-0000-4000-a000-000000000001',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,20,'00000000-0000-4000-a000-000000000000');
-      select (select json_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000000') limit 1) "user";
+      select (select jsonb_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000000') limit 1) "user";
     `);
   });
 
@@ -183,7 +183,7 @@ describe("graphql-postgres-query", () => {
       insert into "Class" ("id","version","createdAt","updatedAt","isDeleted","name") values ('00000000-0000-4000-a000-000000000000',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,'class-1');
       insert into "User" ("id","version","createdAt","updatedAt","isDeleted","name","classId") values ('00000000-0000-4000-a000-000000000001',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,'john','00000000-0000-4000-a000-000000000000');
       insert into "User" ("id","version","createdAt","updatedAt","isDeleted","name","classId") values ('00000000-0000-4000-a000-000000000002',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,'jane','00000000-0000-4000-a000-000000000000');
-      select (select json_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000001','00000000-0000-4000-a000-000000000002') limit 1) "user";
+      select (select jsonb_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000001','00000000-0000-4000-a000-000000000002') limit 1) "user";
     `);
   });
 
@@ -219,7 +219,7 @@ describe("graphql-postgres-query", () => {
       insert into "Club" ("id","version","createdAt","updatedAt","isDeleted","name") values ('00000000-0000-4000-a000-000000000006',1,'2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE,'club-3');
       insert into "ClubToUser" ("id","userId","clubId","createdAt","updatedAt","isDeleted") values ('00000000-0000-4000-a000-000000000007','00000000-0000-4000-a000-000000000003','00000000-0000-4000-a000-000000000006','2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE);
       insert into "ClubToUser" ("id","clubId","userId","createdAt","updatedAt","isDeleted") values ('00000000-0000-4000-a000-000000000008','00000000-0000-4000-a000-000000000000','00000000-0000-4000-a000-000000000003','2020-01-01 00:00:00.000','2020-01-01 00:00:00.000',FALSE);
-      select (select json_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000001','00000000-0000-4000-a000-000000000003') limit 1) "user";
+      select (select jsonb_build_object('name',t1."name") from "User" t1 where t1.id in ('00000000-0000-4000-a000-000000000001','00000000-0000-4000-a000-000000000003') limit 1) "user";
     `);
   });
 });

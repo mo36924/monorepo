@@ -24,5 +24,9 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
+  },
+  "peerDependencies": {
+    "@mo36924/graphql-utils": "1.0.26",
+    "graphql": "^15.5.0"
   }
 }

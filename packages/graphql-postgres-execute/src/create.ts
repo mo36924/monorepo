@@ -1,3 +1,5 @@
+import { fieldDirectives } from "@mo36924/graphql-utils";
+import { escape, escapeId } from "@mo36924/postgres-escape";
 import {
   getNamedType,
   getNullableType,
@@ -9,7 +11,6 @@ import {
 import { v4 as uuid } from "uuid";
 import type { Arguments } from "./arguments";
 import type { Context } from "./context";
-import { fieldDirectives } from "./directives";
 
 export default (_source: any, args: Arguments, context: Context, info: GraphQLResolveInfo) => {
   const schema = info.schema;
@@ -47,8 +48,6 @@ const query = (
   type: GraphQLObjectType,
   queries: string[],
 ) => {
-  const { escapeId, escape } = context;
-
   const columns: string[] = [
     escapeId("id"),
     escapeId("version"),

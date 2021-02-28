@@ -1,4 +1,5 @@
 import type { Where } from "@mo36924/graphql-schema";
+import { escape, escapeId } from "@mo36924/postgres-escape";
 import type { Context } from "./context";
 
 const wherePredicates = (context: Context, where: Where | null | undefined): string => {
@@ -6,7 +7,6 @@ const wherePredicates = (context: Context, where: Where | null | undefined): str
     return "";
   }
 
-  const { escapeId, escape } = context;
   const { not, and, or, ...args } = where;
   let predicates: string[] = [];
 

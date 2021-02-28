@@ -1,4 +1,4 @@
-import { createObject } from "@mo36924/graphql-schema";
+import { fieldDirectives } from "@mo36924/graphql-utils";
 import {
   FieldNode,
   getDirectiveValues,
@@ -19,8 +19,8 @@ import {
   SelectionSetNode,
   typeFromAST,
 } from "graphql";
+import type { ExecutionContext } from "graphql/execution/execute";
 import { getArgumentValues } from "graphql/execution/values";
-import type { Context } from "./context";
 
 export type Types = { [typeName: string]: Fields };
 export type Fields = { [fieldName: string]: Field };
@@ -40,13 +40,13 @@ export type Field = {
 };
 
 export const resolve = (
-  context: Context,
+  context: ExecutionContext,
   parentType: GraphQLCompositeType,
   selectionSet: SelectionSetNode,
   types: Types,
 ) => {
   for (const selection of selectionSet.selections) {
-    if (!shouldIncludeNode(context.variables, selection)) {
+    if (!shouldIncludeNode(context.variableValues, selection)) {
       continue;
     }
 
@@ -66,13 +66,18 @@ export const resolve = (
   return types;
 };
 
-const resolveField = (context: Context, parentType: GraphQLCompositeType, fieldNode: FieldNode, types: Types) => {
+const resolveField = (
+  context: ExecutionContext,
+  parentType: GraphQLCompositeType,
+  fieldNode: FieldNode,
+  types: Types,
+) => {
   const parentTypeName = parentType.name;
   const fields = (types[parentTypeName] ??= Object.create(null));
   const name = fieldNode.name.value;
   const alias = fieldNode.alias ? fieldNode.alias.value : name;
   const field = (parentType as GraphQLObjectType | GraphQLInterfaceType).getFields()[name];
-  const directives: Directives = createObject(context.types[parentTypeName].fields[name].directives);
+  const directives: { [key: string]: any } = Object.assign(Object.create(null), fieldDirectives(context.schema, field));
 
   for (const directive of fieldNode.directives || []) {
     const name = directive.name.value;
@@ -83,7 +88,7 @@ const resolveField = (context: Context, parentType: GraphQLCompositeType, fieldN
         continue;
     }
 
-    directives[name] = getArgumentValues(context.schema.getDirective(name)!, directive, context.variables);
+    directives[name] = getArgumentValues(context.schema.getDirective(name)!, directive, context.variableValues);
   }
 
   if (name === "__typename") {
@@ -113,7 +118,7 @@ const resolveField = (context: Context, parentType: GraphQLCompositeType, fieldN
     parentType: parentTypeName,
     alias,
     name,
-    args: getArgumentValues(field, fieldNode, context.variables),
+    args: getArgumentValues(field, fieldNode, context.variableValues),
     directives,
     nullable: fieldType === nullableType,
     list,

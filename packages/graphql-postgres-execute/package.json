@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/graphql-postgres-middleware",
-  "version": "1.0.23",
-  "description": "graphql-postgres-middleware",
+  "name": "@mo36924/graphql-postgres-execute",
+  "version": "1.0.0",
+  "description": "graphql-postgres-execute",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/graphql-postgres-middleware"
+    "directory": "packages/graphql-postgres-execute"
   },
   "publishConfig": {
     "access": "public"
@@ -26,8 +26,7 @@
     }
   },
   "peerDependencies": {
-    "@mo36924/graphql-middleware": "^1.0.20",
-    "@mo36924/graphql-postgres-query": "^1.0.26",
-    "pg": "^8.5.1"
+    "@mo36924/graphql-utils": "1.0.26",
+    "@mo36924/postgres-escape": "^1.0.21"
   }
 }

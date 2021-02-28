@@ -1,24 +1,49 @@
-import { DocumentNode, getOperationRootType, GraphQLSchema } from "graphql";
-import { Context, createContext } from "./context";
+import {
+  defaultFieldResolver,
+  defaultTypeResolver,
+  DocumentNode,
+  getOperationRootType,
+  GraphQLError,
+  GraphQLSchema,
+} from "graphql";
+import { buildExecutionContext } from "graphql/execution/execute";
 import { Fields, resolve } from "./resolve";
 
 export type { Args, Directives, Field, Fields, Types } from "./resolve";
 
-export type ResolveQuery = {
-  Query?: Fields;
-  Mutation?: Fields;
-  Subscription?: Fields;
-};
+export type QueryResult =
+  | {
+      data: { Query?: Fields; Mutation?: Fields; Subscription?: Fields };
+      errors?: undefined;
+    }
+  | {
+      data?: undefined;
+      errors: readonly GraphQLError[];
+    };
 
 export default (
   schema: GraphQLSchema,
   document: DocumentNode,
   variables?: { [key: string]: any } | null,
   operationName?: string | null,
-): ResolveQuery => {
-  const context = createContext(schema, document, variables, operationName);
+): QueryResult => {
+  const context = buildExecutionContext(
+    schema,
+    document,
+    {},
+    {},
+    variables,
+    operationName,
+    defaultFieldResolver,
+    defaultTypeResolver,
+  );
+
+  if ((Array.isArray as (value: any) => value is readonly any[])(context)) {
+    return { errors: context };
+  }
+
   const operation = context.operation;
   const rootType = getOperationRootType(schema, operation);
-  const resolveQuery = resolve(context, rootType, operation.selectionSet, Object.create(null));
-  return resolveQuery;
+  const result = resolve(context, rootType, operation.selectionSet, Object.create(null));
+  return { data: result };
 };

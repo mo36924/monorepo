@@ -1,9 +1,17 @@
-import type { Types } from "@mo36924/graphql-schema";
+import type { GraphQLSchema } from "graphql";
 
 export type Queries = [typeName: string, id: string, query: string][];
 
-export default (types: Types, queries: Queries) => {
-  const typeNames = Object.keys(types);
+const cacheTypeNames = new WeakMap<GraphQLSchema, string[]>();
+
+export default (schema: GraphQLSchema, queries: Queries) => {
+  let typeNames = cacheTypeNames.get(schema)!;
+
+  if (!typeNames) {
+    typeNames = Object.keys(schema.getTypeMap());
+    cacheTypeNames.set(schema, typeNames);
+  }
+
   return queries
     .slice()
     .sort((a, b) => {

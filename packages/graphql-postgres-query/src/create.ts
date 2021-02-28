@@ -1,48 +1,45 @@
-import type { Field } from "@mo36924/graphql-query";
-import { buildSchemaTypes, Type, Types } from "@mo36924/graphql-schema";
-import { escapeId, escape } from "@mo36924/postgres-escape";
-import type { GraphQLSchema } from "graphql";
+import { getFieldInfo } from "@mo36924/graphql-utils";
+import { escape, escapeId } from "@mo36924/postgres-escape";
+import type { GraphQLObjectType } from "graphql";
 import { v4 as uuid } from "uuid";
 import type { Context } from "./context";
+import type { Data } from "./data";
 
-export default (context: Required<Context>, schema: GraphQLSchema, field: Field) => {
-  const types = buildSchemaTypes(schema);
+export default (context: Required<Context>, data: Data) => {
   const queries: string[] = [];
-  const date = new Date();
+  const schema = context.schema;
+  const fields = schema.getQueryType()!.getFields();
 
-  for (const [key, value] of Object.entries(field.args.data)) {
+  for (const [key, value] of Object.entries<any>(data)) {
     if (value == null) {
       continue;
     }
 
-    const field = types.Query.fields[key];
-    const returnType = types[field.type];
-    const values = Array.isArray(value) ? value : [value];
+    const { list, type } = getFieldInfo(schema, fields[key]);
 
-    for (const _value of values) {
-      query(context, types, returnType, { ..._value, id: uuid() }, queries, date);
+    if (list) {
+      for (const _value of value) {
+        query(context, type, { ..._value, id: uuid() }, queries);
+      }
+    } else {
+      query(context, type, { ...value, id: uuid() }, queries);
     }
   }
 
   return queries;
 };
 
-const query = (
-  context: Required<Context>,
-  types: Types,
-  type: Type,
-  data: { [key: string]: any },
-  queries: string[],
-  date: Date,
-) => {
+const query = (context: Required<Context>, type: GraphQLObjectType, data: Data, queries: string[]) => {
+  const { schema, ids, date } = context;
+  const fields = type.getFields();
   const columns: string[] = ['"id"', '"version"', '"createdAt"', '"updatedAt"', '"isDeleted"'];
   const values: string[] = [escape(data.id), "1", escape(date), escape(date), "FALSE"];
   const _queries: string[] = [];
 
-  if (context.ids[type.name]) {
-    context.ids[type.name].push(data.id);
+  if (ids[type.name]) {
+    ids[type.name].push(data.id);
   } else {
-    context.ids[type.name] = [data.id];
+    ids[type.name] = [data.id];
   }
 
   for (const [key, value] of Object.entries(data)) {
@@ -55,9 +52,9 @@ const query = (
         continue;
     }
 
-    const field = type.fields[key];
+    const fieldInfo = getFieldInfo(schema, fields[key]);
 
-    if (field.scalar) {
+    if (fieldInfo.scalar) {
       columns.push(escapeId(key));
       values.push(escape(value));
       continue;
@@ -67,14 +64,14 @@ const query = (
       continue;
     }
 
-    const directives = field.directives;
-    const returnType = types[field.type];
+    const directives = fieldInfo.directives;
+    const returnType = fieldInfo.type;
 
     if (directives.type) {
       for (const _data of value) {
         const id = uuid();
 
-        query(context, types, returnType, { ..._data, id }, _queries, date);
+        query(context, returnType, { ..._data, id }, _queries);
 
         _queries.push(
           `insert into ${escapeId(directives.type.name)} ("id",${escapeId(directives.type.keys[0])},${escapeId(
@@ -92,17 +89,17 @@ const query = (
       const id = uuid();
       columns.push(escapeId(directives.key.name));
       values.push(escape(id));
-      query(context, types, returnType, { ...value, id }, queries, date);
+      query(context, returnType, { ...value, id }, queries);
       continue;
     }
 
     if (directives.field) {
-      if (field.list) {
+      if (fieldInfo.list) {
         for (const _value of value) {
-          query(context, types, returnType, { ..._value, id: uuid(), [directives.field.key]: data.id }, _queries, date);
+          query(context, returnType, { ..._value, id: uuid(), [directives.field.key]: data.id }, _queries);
         }
       } else {
-        query(context, types, returnType, { ...value, id: uuid(), [directives.field.key]: data.id }, _queries, date);
+        query(context, returnType, { ...value, id: uuid(), [directives.field.key]: data.id }, _queries);
       }
 
       continue;

@@ -1,6 +1,6 @@
 import type { Field, Fields } from "@mo36924/graphql-query";
 import type { FieldDirectives } from "@mo36924/graphql-schema";
-import { escapeId, escape } from "@mo36924/postgres-escape";
+import { escape, escapeId } from "@mo36924/postgres-escape";
 import type { Context } from "./context";
 import order from "./order";
 import where from "./where";
@@ -12,7 +12,7 @@ const select = (context: Context, fields: Fields) => [
 ];
 
 const selectFields = (context: Context, fields: Fields, parent: string) =>
-  `select json_build_object(${Object.values(fields)
+  `select jsonb_build_object(${Object.values(fields)
     .map((field) => `${escape(field.alias)},${selectField(context, field, parent)}`)
     .join()})`;
 
@@ -21,14 +21,14 @@ const selectField = (context: Context, field: Field, parent: string): string => 
     case "scalar":
       switch (field.returnType) {
         case "Date":
-          return `json_build_array(0,${parent}.${escapeId(field.name)})`;
+          return `jsonb_build_array(0,${parent}.${escapeId(field.name)})`;
         default:
           return `${parent}.${escapeId(field.name)}`;
       }
 
     case "object": {
       const tableId = `t${context.id++}`;
-      const { parentType, args, list, returnType } = field;
+      const { args, list, returnType } = field;
       const clauses: string[] = [`from ${escapeId(returnType)} ${tableId}`];
       const predicates: string[] = [];
       const directives: FieldDirectives = field.directives;
@@ -73,8 +73,8 @@ const selectField = (context: Context, field: Field, parent: string): string => 
         clauses.push(`where ${predicates.join(" and ")}`);
       }
 
-      if (args.orderBy) {
-        const orderPredicates = order(args.orderBy, tableId);
+      if (args.order) {
+        const orderPredicates = order(args.order, tableId);
 
         if (orderPredicates) {
           clauses.push(`order by ${orderPredicates}`);
@@ -94,7 +94,7 @@ const selectField = (context: Context, field: Field, parent: string): string => 
       const selectClause = selectFields(context, field.types[returnType], tableId);
 
       if (list) {
-        return `(select coalesce(json_agg(t.v),'[]'::json) from (${selectClause} v ${clauses.join(" ")}) t)`;
+        return `(select coalesce(jsonb_agg(t.v),'[]'::json) from (${selectClause} v ${clauses.join(" ")}) t)`;
       } else {
         return `(${selectClause} ${clauses.join(" ")})`;
       }
