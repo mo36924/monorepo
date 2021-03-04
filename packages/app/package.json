@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/app",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "description": "app",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -29,7 +29,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-database-schema-generator": "1.0.32",
+    "@mo36924/graphql-database-schema-generator": "^1.0.33",
     "@mo36924/graphql-schema-generator": "1.0.32",
     "@mo36924/route-generator": "^1.0.29",
     "commander": "^7.1.0"
