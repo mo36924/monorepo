@@ -45,8 +45,14 @@ export default async (options?: Options) => {
   } catch {}
 
   if (watchMode) {
-    watch(modelPath, async () => {
+    try {
       await generate();
+    } catch {}
+
+    watch(modelPath, async () => {
+      try {
+        await generate();
+      } catch {}
     });
   } else {
     await generate();
