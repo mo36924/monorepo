@@ -146,8 +146,8 @@ export default async () => {
     options.push({
       input: bin,
       output: {
-        file: resolve(dir, "bin.js"),
-        format: "commonjs",
+        file: resolve(dir, "bin.mjs"),
+        format: "module",
         sourcemap: true,
         sourcemapExcludeSources: true,
         preferConst: true,

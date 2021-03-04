@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/app",
-  "version": "1.0.27",
-  "description": "app",
+  "name": "@mo36924/graphql-schema-generator",
+  "version": "1.0.0",
+  "description": "graphql-schema-generator",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,16 +12,13 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/app"
+    "directory": "packages/graphql-schema-generator"
   },
   "publishConfig": {
     "access": "public"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "bin": {
-    "app": "./dist/bin.mjs"
-  },
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
@@ -29,8 +26,8 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-schema-generator": "1.0.28",
-    "@mo36924/route-generator": "^1.0.8",
-    "commander": "^7.1.0"
+    "@mo36924/graphql-schema": "^1.0.22",
+    "graphql": "^15.5.0",
+    "prettier": "^2.2.1"
   }
 }

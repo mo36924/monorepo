@@ -24,9 +24,9 @@ for (const path of paths) {
       exports.browser = "./dist/index.client.js";
     }
 
-    if (files.includes("bin.js")) {
+    if (files.includes("bin.mjs")) {
       pkg.bin = {
-        [basename(dirname(path))]: "./dist/bin.js",
+        [basename(dirname(path))]: "./dist/bin.mjs",
       };
     }
 

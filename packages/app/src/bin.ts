@@ -1,16 +1,34 @@
-import { resolve } from "path";
+import { readFile } from "fs/promises";
+import { basename, extname, resolve } from "path";
+import { pathToFileURL } from "url";
 import program from "commander";
 import app from "./index";
 
+const pkg = "package.json";
+
 const options = program
-  .option("-p, --project <file>", "Compile the project given the path to its configuration file.", "package.json")
+  .option("-p, --project <file>", "Compile the project given the path to its configuration file.", pkg)
   .parse()
   .opts();
 
-// eslint-disable-next-line import/no-dynamic-require
-const config = require(resolve(options.project));
+(async () => {
+  const project = options.project;
+  const ext = extname(project);
+  let config: any;
 
-app(config.app).catch((err) => {
+  if (basename(project) === "package.json") {
+    const json = await readFile(resolve(project), "utf8");
+    config = JSON.parse(json).app;
+  } else if (ext === ".json") {
+    const json = await readFile(resolve(project), "utf8");
+    config = JSON.parse(json);
+  } else {
+    const mod = await import(pathToFileURL(project).href);
+    config = mod.default;
+  }
+
+  await app(config.app);
+})().catch((err) => {
   process.exitCode = 1;
   console.error(String(err));
 });
