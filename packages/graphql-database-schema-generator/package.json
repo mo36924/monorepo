@@ -24,8 +24,5 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
-  },
-  "optionalDependencies": {
-    "@mo36924/graphql-postgres-schema": "^1.0.29"
   }
 }
