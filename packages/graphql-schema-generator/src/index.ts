@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname } from "path";
 import { schema as buildSchema } from "@mo36924/graphql-schema";
 import { parse, print, stripIgnoredCharacters } from "graphql";
-import { format as prettierFormat, resolveConfig } from "prettier";
+import prettier from "prettier";
 
 export type Options = {
   watch?: boolean;
@@ -18,8 +18,8 @@ const defaultOptions: Required<Options> = {
 };
 
 async function format(code: string, filepath: string) {
-  const prettierConfig = await resolveConfig(filepath);
-  return prettierFormat(print(parse(stripIgnoredCharacters(code))), { ...prettierConfig, filepath });
+  const prettierConfig = await prettier.resolveConfig(filepath);
+  return prettier.format(print(parse(stripIgnoredCharacters(code))), { ...prettierConfig, filepath });
 }
 
 async function writeFileAsync(path: string, data: string) {

@@ -2,7 +2,7 @@ import { once } from "events";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, extname, relative, resolve, sep } from "path";
 import { watch } from "chokidar";
-import { format as prettierFormat, resolveConfig } from "prettier";
+import prettier from "prettier";
 
 export type Options = {
   watch?: boolean;
@@ -336,8 +336,8 @@ export default async (options?: Options) => {
 };
 
 async function format(code: string, filepath: string) {
-  const prettierConfig = await resolveConfig(filepath);
-  return prettierFormat(code, { ...prettierConfig, filepath });
+  const prettierConfig = await prettier.resolveConfig(filepath);
+  return prettier.format(code, { ...prettierConfig, filepath });
 }
 
 async function writeFileAsync(path: string, data: string) {

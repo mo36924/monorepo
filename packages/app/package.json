@@ -29,8 +29,8 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-schema-generator": "1.0.28",
-    "@mo36924/route-generator": "^1.0.8",
+    "@mo36924/graphql-schema-generator": "1.0.29",
+    "@mo36924/route-generator": "^1.0.29",
     "commander": "^7.1.0"
   }
 }
