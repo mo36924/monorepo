@@ -27,7 +27,7 @@ const options = program
     config = mod.default;
   }
 
-  await app(config.app);
+  await app(config);
 })().catch((err) => {
   process.exitCode = 1;
   console.error(String(err));
