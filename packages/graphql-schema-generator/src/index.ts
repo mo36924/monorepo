@@ -38,7 +38,7 @@ export default async (options?: Options) => {
   };
 
   await Promise.all([mkdir(dirname(modelPath), { recursive: true }), mkdir(dirname(schemaPath), { recursive: true })]);
-  const defaultModel = await format(`type User { name }`, modelPath);
+  const defaultModel = await format(`type User { name: String! }`, modelPath);
 
   try {
     await writeFile(modelPath, defaultModel, { flag: "wx" });
