@@ -1,0 +1,34 @@
+{
+  "name": "@mo36924/app",
+  "version": "1.0.0",
+  "description": "app",
+  "keywords": [],
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/app"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "bin": {
+    "app": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@mo36924/route-generator": "^1.0.8"
+  }
+}

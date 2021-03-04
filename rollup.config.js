@@ -152,6 +152,7 @@ export default async () => {
         sourcemapExcludeSources: true,
         preferConst: true,
         inlineDynamicImports: true,
+        banner: "#!/usr/bin/env node",
       },
       external,
       plugins: [cachePlugin],
