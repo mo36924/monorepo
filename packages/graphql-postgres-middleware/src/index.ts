@@ -1,17 +1,19 @@
-import graphqlMiddleware from "@mo36924/graphql-middleware";
+import graphqlMiddleware, { Send } from "@mo36924/graphql-middleware";
 import postgresQuery from "@mo36924/graphql-postgres-query";
 import { getOperationAST, GraphQLSchema } from "graphql";
 import pg, { PoolConfig } from "pg";
 
-type Options = { schema: GraphQLSchema; main: PoolConfig; replica?: PoolConfig };
+export type Options = { schema: GraphQLSchema; send?: Send; main: PoolConfig; replica?: PoolConfig };
 
 export default async (options: Options) => {
   const schema = options.schema;
+  const send = options.send;
   const main = new pg.Pool(options.main);
   const replica = new pg.Pool(options.replica ?? options.main);
 
   const middleware = await graphqlMiddleware({
     schema,
+    send,
     async execute(req, _res, schema, document, variables, operationName) {
       const result = postgresQuery(schema, document, variables, operationName);
 
