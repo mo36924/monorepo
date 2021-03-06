@@ -25,9 +25,9 @@
       "require": "./dist/index.js"
     }
   },
-  "peerDependencies": {
-    "@mo36924/graphql-middleware": "^1.0.20",
-    "@mo36924/graphql-postgres-query": "^1.0.26",
+  "dependencies": {
+    "@mo36924/graphql-middleware": "^1.0.36",
+    "@mo36924/graphql-postgres-query": "^1.0.36",
     "pg": "^8.5.1"
   }
 }
