@@ -1861,6 +1861,11 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@mo36924/graphql-utils@1.0.26":
+  version "1.0.26"
+  resolved "https://registry.yarnpkg.com/@mo36924/graphql-utils/-/graphql-utils-1.0.26.tgz#12da58288f1cdc9f0c88ea5c767f85074fbc1c4f"
+  integrity sha512-Wfn0FST+B6F5+KO8GZzuQeEIFJMQ/cs3LVnm8HrqbEJp1qBbPWbc2w2yF6H0fUnO05KeXiew8xtrj5C0rQ5KHA==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"

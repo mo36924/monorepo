@@ -1,5 +1,6 @@
-import { join, resolve } from "path";
+import { join, resolve, relative, parse } from "path";
 import glob from "fast-glob";
+import MagicString from "magic-string";
 import dts from "rollup-plugin-dts";
 import ts from "typescript";
 
@@ -53,6 +54,7 @@ export default async () => {
   const options = [];
   const external = (id) => /^@?[A-Za-z]/.test(id);
 
+  /** @type {import("rollup").Plugin} */
   const cachePlugin = {
     resolveId(source, importer) {
       if (!importer) {
@@ -74,52 +76,52 @@ export default async () => {
 
       throw new Error(`Could not resolve '${id}'`);
     },
+    renderChunk(code, chunk) {
+      if (!chunk.isEntry || chunk.name !== "bin") {
+        return null;
+      }
+
+      const magicString = new MagicString(code);
+      magicString.prepend("#!/usr/bin/env node\n");
+      return { code: magicString.toString(), map: magicString.generateMap({ hires: true }) };
+    },
   };
 
-  const [paths, clients, bins] = await Promise.all([
-    glob("packages/*/src/index.{ts,tsx}"),
-    glob("packages/*/src/index.client.{ts,tsx}"),
-    glob("packages/*/src/bin.ts"),
-  ]);
+  const [paths, clients, bins] = await Promise.all(
+    ["packages/*/src/index.{ts,tsx}", "packages/*/src/index.client.{ts,tsx}", "packages/*/src/bin.ts"].map((source) =>
+      glob(source, { absolute: true }),
+    ),
+  );
+
+  const binSet = new Set(bins);
+  const dtsInput = [];
 
   for (const path of paths) {
     const dir = resolve(path, "..", "..", "dist");
+    const bin = resolve(path, "..", "bin.ts");
+    const input = [path];
 
-    options.push(
-      {
-        input: path,
-        output: [
-          {
-            file: resolve(dir, "index.js"),
-            format: "commonjs",
-            sourcemap: true,
-            sourcemapExcludeSources: true,
-            preferConst: true,
-            exports: "auto",
-            inlineDynamicImports: true,
-          },
-          {
-            file: resolve(dir, "index.mjs"),
-            format: "module",
-            sourcemap: true,
-            sourcemapExcludeSources: true,
-            preferConst: true,
-            inlineDynamicImports: true,
-          },
-        ],
-        external,
-        plugins: [cachePlugin],
-      },
-      {
-        input: path,
-        output: {
-          file: resolve(dir, "index.d.ts"),
+    if (binSet.has(bin)) {
+      input.push(bin);
+      binSet.delete(bin);
+    }
+
+    dtsInput.push(...input);
+
+    options.push({
+      input,
+      output: [
+        {
+          dir,
           format: "module",
+          sourcemap: true,
+          sourcemapExcludeSources: true,
+          preferConst: true,
         },
-        external,
-        plugins: [dts()],
-      },
-    );
+      ],
+      external,
+      plugins: [cachePlugin],
+    });
   }
 
   for (const client of clients) {
@@ -140,24 +142,34 @@ export default async () => {
     });
   }
 
-  for (const bin of bins) {
+  for (const bin of [...binSet]) {
     const dir = resolve(bin, "..", "..", "dist");
 
     options.push({
       input: bin,
       output: {
-        file: resolve(dir, "bin.mjs"),
+        dir,
         format: "module",
         sourcemap: true,
         sourcemapExcludeSources: true,
         preferConst: true,
-        inlineDynamicImports: true,
-        banner: "#!/usr/bin/env node",
       },
       external,
       plugins: [cachePlugin],
     });
   }
+
+  options.push({
+    input: Object.fromEntries(
+      dtsInput.map((input) => [relative(cwd, resolve(input, "..", "..", "dist", parse(input).name)), input]),
+    ),
+    output: {
+      dir: cwd,
+      format: "module",
+    },
+    external,
+    plugins: [dts()],
+  });
 
   return options;
 };

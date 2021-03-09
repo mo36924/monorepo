@@ -7,16 +7,14 @@ const paths = await glob("packages/*/package.json");
 
 for (const path of paths) {
   try {
-    const pkg = {};
+    const pkg = { type: "module", exports: undefined };
     const exports = {};
     const files = await readdir(join(path, "..", "dist"));
 
     if (files.includes("index.js")) {
       pkg.main = "./dist/index.js";
-    }
-
-    if (files.includes("index.mjs")) {
-      pkg.module = "./dist/index.mjs";
+      pkg.module = "./dist/index.js";
+      exports.import = "./dist/index.js";
     }
 
     if (files.includes("index.client.js")) {
@@ -24,18 +22,20 @@ for (const path of paths) {
       exports.browser = "./dist/index.client.js";
     }
 
-    if (files.includes("bin.mjs")) {
+    if (files.includes("bin.js")) {
       pkg.bin = {
-        [basename(dirname(path))]: "./dist/bin.mjs",
+        [basename(dirname(path))]: "./dist/bin.js",
       };
     }
 
-    if (pkg.module) {
-      exports.import = "./dist/index.mjs";
-    }
-
-    if (pkg.main) {
-      exports.require = "./dist/index.js";
+    if (Object.keys(exports).length) {
+      pkg.exports = {
+        ".": {
+          browser: undefined,
+          import: undefined,
+          ...exports,
+        },
+      };
     }
 
     const formattedCode = prettier.format(
@@ -50,6 +50,7 @@ for (const path of paths) {
         bugs: undefined,
         repository: undefined,
         publishConfig: undefined,
+        type: undefined,
         main: undefined,
         module: undefined,
         browser: undefined,
@@ -57,9 +58,6 @@ for (const path of paths) {
         exports: undefined,
         ...JSON.parse(await readFile(path, "utf8")),
         ...pkg,
-        exports: {
-          ".": exports,
-        },
       }),
       {
         ...(await prettier.resolveConfig(path)),
