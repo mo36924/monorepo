@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import { isMainThread, parentPort, Worker } from "worker_threads";
 import { transformAsync } from "@babel/core";
 import babelPresetApp, { Options as babelPresetAppOptions } from "@mo36924/babel-preset-app";
+import reserved from "reserved-words";
 import ts from "typescript";
 
 type Cache = { [path: string]: string };
@@ -162,10 +163,11 @@ if (isMainThread) {
                   data = `throw new SyntaxError(${JSON.stringify(
                     ts.formatDiagnosticsWithColorAndContext(diagnostics, formatDiagnosticsHost),
                   )});`;
-                } else if (Array.isArray(obj)) {
-                  data = `export default JSON.parse(${JSON.stringify(JSON.stringify(obj))});`;
-                } else if (obj && typeof obj === "object") {
-                  data = `export default ${JSON.stringify(data)};`;
+                } else if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+                  data = `${Object.entries<any>(obj)
+                    .filter(([key]) => /^[A-Za-z_$][A-Za-z_$0-9]*$/.test(key) && !reserved.check(key, 6, true))
+                    .map(([key, value]) => `export const ${key} = ${JSON.stringify(value)};\n`)
+                    .join("")}export default ${JSON.stringify(obj)};`;
                 } else {
                   data = `export default ${JSON.stringify(obj)};`;
                 }
