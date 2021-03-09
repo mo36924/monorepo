@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-database-schema-generator",
-  "version": "1.0.34",
+  "version": "1.1.0",
   "description": "graphql-database-schema-generator",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -26,6 +26,6 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-postgres-schema": "^1.0.33"
+    "@mo36924/graphql-postgres-schema": "^1.1.0"
   }
 }
