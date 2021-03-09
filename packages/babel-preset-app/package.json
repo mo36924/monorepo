@@ -26,7 +26,6 @@
     }
   },
   "dependencies": {
-    "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
     "@mo36924/babel-plugin-commonjs": "^1.1.0",
@@ -36,5 +35,8 @@
     "@mo36924/babel-plugin-jsx-development": "^1.1.0",
     "@mo36924/babel-plugin-replace": "^1.1.0",
     "@mo36924/babel-plugin-resolve": "^1.1.0"
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.12.10"
   }
 }

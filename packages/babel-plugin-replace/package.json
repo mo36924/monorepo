@@ -24,5 +24,8 @@
     ".": {
       "import": "./dist/index.js"
     }
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.12.10"
   }
 }
