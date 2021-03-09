@@ -26,7 +26,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-utils": "1.0.26",
+    "@mo36924/graphql-utils": "^1.1.0",
     "graphql": "^15.5.0"
   }
 }

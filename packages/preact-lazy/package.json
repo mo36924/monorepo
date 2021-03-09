@@ -27,8 +27,8 @@
       "import": "./dist/index.js"
     }
   },
-  "peerDependencies": {
-    "@mo36924/preact-hooks": "^1.0.7",
+  "dependencies": {
+    "@mo36924/preact-hooks": "^1.1.0",
     "preact": "^10.5.12"
   }
 }

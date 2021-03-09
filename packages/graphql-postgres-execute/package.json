@@ -25,8 +25,8 @@
       "import": "./dist/index.js"
     }
   },
-  "peerDependencies": {
-    "@mo36924/graphql-utils": "1.0.26",
-    "@mo36924/postgres-escape": "^1.0.21"
+  "dependencies": {
+    "@mo36924/graphql-utils": "^1.1.0",
+    "@mo36924/postgres-escape": "^1.1.0"
   }
 }
