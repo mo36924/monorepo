@@ -1,8 +1,9 @@
 import { createServer, IncomingMessage, ServerResponse } from "http";
+import { types } from "util";
 import httpError from "http-errors";
 
 type PromiseOrValue<T> = Promise<T> | T;
-type Middleware = (req: IncomingMessage, res: ServerResponse) => Promise<any>;
+type Middleware = (req: IncomingMessage, res: ServerResponse) => PromiseOrValue<any>;
 
 export type Options = { port?: number; middlewares: PromiseOrValue<Middleware>[] };
 
@@ -13,7 +14,11 @@ export default async (options: Options) => {
   const server = createServer(async (req, res) => {
     try {
       for (const middleware of middlewares) {
-        const result = await middleware(req, res);
+        let result = middleware(req, res);
+
+        if (types.isPromise(result)) {
+          result = await result;
+        }
 
         if (result) {
           return;
