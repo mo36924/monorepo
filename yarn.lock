@@ -3356,6 +3356,13 @@ cosmiconfig@^5.1.0:
     js-yaml "^3.13.1"
     parse-json "^4.0.0"
 
+"create-package@npm:@mo36924/create-package@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@mo36924/create-package/-/create-package-1.1.2.tgz#6d8ca07e1e8ade156c8773bb733089ee1b72d41b"
+  integrity sha512-NfIyNFfD8XJtA+KvOZZKTUZ4cSUB19ylSywwMFLDydLHDTxL/e47BLuJFKgm4C2wvGmd3yJJ5McNCwmY2q/Fng==
+  dependencies:
+    prettier "^2.2.1"
+
 cross-spawn@^6.0.0, cross-spawn@^6.0.5:
   version "6.0.5"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
@@ -8906,6 +8913,14 @@ upath@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/upath/-/upath-1.2.0.tgz#8f66dbcd55a883acdae4408af8b035a5044c1894"
   integrity sha512-aZwGpamFO61g3OlfT7OQCHqhGnW43ieH9WZeP7QxN/G/jS4jfqUkZxoryvJgVPEcrl5NL/ggHsSmLMHuH64Lhg==
+
+"update-package-field@npm:@mo36924/update-package-field@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@mo36924/update-package-field/-/update-package-field-1.1.2.tgz#9eb4f2e98ae76427ba82debccdf0a020b70693de"
+  integrity sha512-hGGp7CwNi8h4vBXLORt2T58qtkBy9j8/hR50lFafaTJmyjU9WzRa88UDCdGoJEvK595jLYbhQlng6KdUAXJf9A==
+  dependencies:
+    fast-glob "^3.2.5"
+    prettier "^2.2.1"
 
 upper-case-first@^2.0.2:
   version "2.0.2"
