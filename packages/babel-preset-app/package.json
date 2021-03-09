@@ -26,6 +26,7 @@
     }
   },
   "dependencies": {
+    "@babel/plugin-transform-react-constant-elements": "^7.12.1",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
     "@mo36924/babel-plugin-commonjs": "^1.1.0",
