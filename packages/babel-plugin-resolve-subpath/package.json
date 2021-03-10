@@ -24,5 +24,11 @@
     ".": {
       "import": "./dist/index.js"
     }
+  },
+  "dependencies": {
+    "enhanced-resolve": "^5.7.0"
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.12.10"
   }
 }

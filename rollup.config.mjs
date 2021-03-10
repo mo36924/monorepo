@@ -1,4 +1,8 @@
-import { join, resolve, relative, parse } from "path";
+import { join, parse, relative, resolve } from "path";
+import presetEnv from "@babel/preset-env";
+import presetReact from "@babel/preset-react";
+import { babel } from "@rollup/plugin-babel";
+import resolveSubpath from "babel-plugin-resolve-subpath";
 import glob from "fast-glob";
 import MagicString from "magic-string";
 import dts from "rollup-plugin-dts";
@@ -32,10 +36,10 @@ const host = ts.createWatchCompilerHost(
   },
   ts.createEmitAndSemanticDiagnosticsBuilderProgram,
   (diagnostic) => {
-    sys.write(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatDiagnosticsHost) + sys.newLine);
+    sys.write(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatDiagnosticsHost));
   },
-  (diagnostic, newLine, _options, errorCount) => {
-    sys.write(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatDiagnosticsHost) + newLine);
+  (diagnostic, _newLine, _options, errorCount) => {
+    sys.write(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatDiagnosticsHost));
 
     if (errorCount) {
       process.exitCode = 1;
@@ -58,16 +62,27 @@ export default async () => {
   const cachePlugin = {
     resolveId(source, importer) {
       if (!importer) {
-        return resolve(source.replace(/\.ts(x)?$/, ".js$1"));
+        const _source = resolve(source.replace(/\.ts(x)?$/, ".js$1"));
+
+        if (_source in cache) {
+          return _source;
+        }
+
+        throw new Error(`Can't resolve ${source}`);
       }
 
-      source = join(importer, "..", source + ".js");
+      const js = join(importer, "..", source + ".js");
+      const jsx = js + "x";
 
-      if (!(source in cache)) {
-        source += "x";
+      if (js in cache) {
+        return js;
       }
 
-      return source;
+      if (jsx in cache) {
+        return jsx;
+      }
+
+      throw new Error(`Can't resolve ${source}`);
     },
     load(id) {
       if (id in cache) {
@@ -86,6 +101,39 @@ export default async () => {
       return { code: magicString.toString(), map: magicString.generateMap({ hires: true }) };
     },
   };
+
+  const babelPlugin = babel({
+    configFile: false,
+    babelrc: false,
+    babelHelpers: "bundled",
+    presets: [
+      [
+        presetEnv,
+        {
+          bugfixes: true,
+          modules: false,
+          loose: false,
+          ignoreBrowserslistConfig: true,
+          targets: {
+            node: true,
+          },
+          useBuiltIns: false,
+        },
+      ],
+      [
+        presetReact,
+        {
+          runtime: "automatic",
+          development: false,
+          importSource: "preact",
+        },
+      ],
+    ],
+    plugins: [[resolveSubpath]],
+  });
+
+  /** @type {import("rollup").Plugin[]} */
+  const plugins = [cachePlugin, babelPlugin];
 
   const [paths, clients, bins] = await Promise.all(
     ["packages/*/src/index.{ts,tsx}", "packages/*/src/index.client.{ts,tsx}", "packages/*/src/bin.ts"].map((source) =>
@@ -120,7 +168,7 @@ export default async () => {
         },
       ],
       external,
-      plugins: [cachePlugin],
+      plugins,
     });
   }
 
@@ -138,7 +186,7 @@ export default async () => {
         inlineDynamicImports: true,
       },
       external,
-      plugins: [cachePlugin],
+      plugins,
     });
   }
 
@@ -155,7 +203,7 @@ export default async () => {
         preferConst: true,
       },
       external,
-      plugins: [cachePlugin],
+      plugins,
     });
   }
 
@@ -168,7 +216,7 @@ export default async () => {
       format: "module",
     },
     external,
-    plugins: [dts()],
+    plugins: [dts.default()],
   });
 
   return options;
