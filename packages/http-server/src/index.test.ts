@@ -4,8 +4,10 @@ import createServer from "./index";
 
 describe("http-server", () => {
   it("listen", async () => {
+    const port = 18080;
+
     const server = await createServer({
-      port: 8080,
+      port,
       middlewares: [
         async (req, res) => {
           res.end("test");
@@ -13,7 +15,7 @@ describe("http-server", () => {
       ],
     });
 
-    const res = await fetch("http://localhost:8080/");
+    const res = await fetch(`http://localhost:${port}/`);
     const text = await res.text();
     expect(text).toEqual("test");
     server.close();

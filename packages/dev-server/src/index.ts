@@ -251,7 +251,9 @@ if (isMainThread) {
 
   const getFileSource = (url: string) =>
     new Promise<string>((resolve) => {
-      messages[new URL(`?${i++}`, url).href] = resolve;
+      url = new URL(`?${i++}`, url).href;
+      messages[url] = resolve;
+      parentPort!.postMessage(url);
     });
 
   resolve = async (specifier, context, defaultResolve) => {
