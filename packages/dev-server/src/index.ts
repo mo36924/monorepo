@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import { createServer } from "http";
 import { extname } from "path";
 import process from "process";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { isMainThread, parentPort, Worker } from "worker_threads";
 import { transformAsync } from "@babel/core";
 import babelPresetApp, { Options as babelPresetAppOptions } from "@mo36924/babel-preset-app";
@@ -192,7 +192,8 @@ if (isMainThread) {
 
     if (main && ts.sys.fileExists(main)) {
       const getServerData = getDataFactory("server");
-      const worker = new Worker(ts.sys.resolvePath(main), { execArgv: ["--experimental-loader", import.meta.url] });
+      const url = new URL(`data:text/javascript,import ${JSON.stringify(pathToFileURL(main))};`);
+      const worker = new Worker(url, { execArgv: ["--experimental-loader", import.meta.url] });
 
       worker.on("message", async (url: string) => {
         const data = await getServerData(url);
