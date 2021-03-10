@@ -207,6 +207,7 @@ if (isMainThread) {
       try {
         const url = new URL(req.url ?? "/", "file://");
         const data = await getClientData(url);
+        res.setHeader("access-control-allow-origin", "*");
         res.setHeader("content-type", "application/javascript; charset=utf-8");
         res.end(data);
       } catch {
