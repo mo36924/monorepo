@@ -3,7 +3,7 @@ import postgresQuery from "@mo36924/graphql-postgres-query";
 import { getOperationAST } from "graphql";
 import pg, { PoolConfig } from "pg";
 
-export type Options = graphqlMiddlewareOptions & { main: PoolConfig; replica?: PoolConfig };
+export type Options = Omit<graphqlMiddlewareOptions, "execute"> & { main: PoolConfig; replica?: PoolConfig };
 
 export default async (options: Options) => {
   const main = new pg.Pool(options.main);
