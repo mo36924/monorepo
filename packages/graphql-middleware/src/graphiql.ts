@@ -2,7 +2,16 @@ import type { IncomingMessage, ServerResponse } from "http";
 import { parse as querystring } from "querystring";
 import accepts from "accepts";
 import type { GraphiQLOptions } from "express-graphql/renderGraphiQL";
-import { DocumentNode, getOperationAST, GraphQLError, parse, Source, specifiedRules, validate } from "graphql";
+import {
+  DocumentNode,
+  executeSync,
+  getOperationAST,
+  GraphQLError,
+  parse,
+  Source,
+  specifiedRules,
+  validate,
+} from "graphql";
 import httpError, { HttpError } from "http-errors";
 import { formatResult } from "./format-result";
 import { respondWithGraphiQL } from "./respond-with-graphiql";
@@ -14,7 +23,7 @@ export default async (options: Options) => {
   const schema = options.schema;
   const execute = options.execute;
   const send = options.send ?? defaultSend;
-  const graphiql = options.graphiql ?? false;
+  const graphiql = options.graphiql ?? true;
   const schemaValidationErrors = validateSchema(schema);
   const validationRules = specifiedRules;
 
@@ -117,7 +126,16 @@ export default async (options: Options) => {
         }
       }
 
-      result = await execute(req, res, schema, document, params.variables, params.operationName);
+      if (params.operationName === "IntrospectionQuery") {
+        result = executeSync({
+          schema,
+          document,
+          variableValues: params.variables,
+          operationName: params.operationName,
+        });
+      } else {
+        result = await execute(req, res, schema, document, params.variables, params.operationName);
+      }
     } catch (rawError) {
       const error: HttpError = httpError(500, rawError instanceof Error ? rawError : String(rawError));
       res.statusCode = error.status;
