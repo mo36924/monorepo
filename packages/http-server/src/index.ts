@@ -3,8 +3,8 @@ import { types } from "util";
 import httpError from "http-errors";
 
 type PromiseOrValue<T> = Promise<T> | T;
-type Middleware = (req: IncomingMessage, res: ServerResponse) => PromiseOrValue<any>;
 
+export type Middleware = (req: IncomingMessage, res: ServerResponse) => PromiseOrValue<any>;
 export type Options = { port?: number; middlewares: PromiseOrValue<Middleware>[] };
 
 export default async (options: Options) => {
