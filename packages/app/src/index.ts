@@ -1,17 +1,21 @@
 import databaseSchemaGenerator, { Options as databaseSchemaOptions } from "@mo36924/graphql-database-schema-generator";
-import graphqlSchemaGenerator, { Options as graphqlSchemaOptions } from "@mo36924/graphql-schema-generator";
+import graphqlSchemaGenerator from "@mo36924/graphql-schema-generator";
 import routeGenerator, { Options as routeGeneratorOptions } from "@mo36924/route-generator";
 
 type Options = {
-  routes?: routeGeneratorOptions;
+  watch?: boolean;
+  routes?: Omit<routeGeneratorOptions, "watch">;
   graphql?: {
-    schema?: graphqlSchemaOptions;
-    database?: databaseSchemaOptions;
+    model?: string;
+    schema?: string;
   };
+  database?: Omit<databaseSchemaOptions, "watch" | "graphql">;
 };
 
 export default async (options: Options = {}) => {
-  await routeGenerator(options.routes);
-  await graphqlSchemaGenerator(options.graphql?.schema);
-  await databaseSchemaGenerator(options.graphql?.database);
+  const watch = !!options.watch || process.env.NODE_ENV === "development";
+  const schema = options.graphql?.schema || "graphql/schema.gql";
+  await routeGenerator({ ...options.routes, watch });
+  await graphqlSchemaGenerator({ ...options.graphql, watch, schema });
+  await databaseSchemaGenerator({ ...options.database, watch, graphql: schema });
 };

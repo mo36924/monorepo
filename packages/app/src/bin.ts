@@ -16,7 +16,7 @@ const options = program
   const ext = extname(project);
   let config: any;
 
-  if (basename(project) === "package.json") {
+  if (basename(project) === pkg) {
     const json = await readFile(resolve(project), "utf8");
     config = JSON.parse(json).app;
   } else if (ext === ".json") {

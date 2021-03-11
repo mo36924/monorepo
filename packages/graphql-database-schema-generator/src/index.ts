@@ -28,7 +28,7 @@ async function writeFileAsync(path: string, data: string) {
 }
 
 export default async (options?: Options) => {
-  const { watch: watchMode, name: dbName, graphql, schema: schemaPath } = {
+  const { watch: watchMode, name: dbName, graphql, schema: schemaPath, data: dataPath } = {
     ...defaultOptions,
     ...options,
   };
@@ -59,6 +59,6 @@ export default async (options?: Options) => {
     const gql = await readFile(graphql, "utf8");
     const schema = mod.schema(gql);
     const data = mod.data(gql);
-    await Promise.all([writeFileAsync(schemaPath, schema), writeFileAsync(schemaPath, data)]);
+    await Promise.all([writeFileAsync(schemaPath, schema), writeFileAsync(dataPath, data)]);
   }
 };
