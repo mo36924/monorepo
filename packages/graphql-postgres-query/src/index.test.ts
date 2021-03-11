@@ -81,7 +81,7 @@ describe("graphql-postgres-query", () => {
     const query = rawQuery(schema, document, { limit: 3 });
 
     expect(query).toMatchInlineSnapshot(
-      `select (select coalesce(jsonb_agg(t.v),'[]'::json) from (select jsonb_build_object('id',t1."id",'name',t1."name") v from "User" t1 limit 3) t) "users";`,
+      `select (select coalesce(jsonb_agg(t.v),'[]'::jsonb) from (select jsonb_build_object('id',t1."id",'name',t1."name") v from "User" t1 limit 3) t) "users";`,
     );
   });
 
@@ -101,7 +101,7 @@ describe("graphql-postgres-query", () => {
     const query = rawQuery(schema, document, { name: "name-1" });
 
     expect(query).toMatchInlineSnapshot(
-      `select (select jsonb_build_object('name',t1."name",'users',(select coalesce(jsonb_agg(t.v),'[]'::json) from (select jsonb_build_object('id',t2."id",'name',t2."name") v from "User" t2 where t2."classId" = t1.id) t)) from "Class" t1 where (t1."name" = 'name-1') limit 1) "class";`,
+      `select (select jsonb_build_object('name',t1."name",'users',(select coalesce(jsonb_agg(t.v),'[]'::jsonb) from (select jsonb_build_object('id',t2."id",'name',t2."name") v from "User" t2 where t2."classId" = t1.id) t)) from "Class" t1 where (t1."name" = 'name-1') limit 1) "class";`,
     );
   });
 

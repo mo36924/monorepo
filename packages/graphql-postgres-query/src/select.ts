@@ -38,9 +38,9 @@ const selectField = (context: Context, field: Field, parent: string): string => 
           predicates.push(`${tableId}.id in (${context.ids[returnType].map(escape).join()})`);
         } else {
           if (list) {
-            return `(select '[]'::json)`;
+            return `(select '[]'::jsonb)`;
           } else {
-            return `(select to_json(null))`;
+            return `(select to_jsonb(null))`;
           }
         }
       }
@@ -94,7 +94,7 @@ const selectField = (context: Context, field: Field, parent: string): string => 
       const selectClause = selectFields(context, field.types[returnType], tableId);
 
       if (list) {
-        return `(select coalesce(jsonb_agg(t.v),'[]'::json) from (${selectClause} v ${clauses.join(" ")}) t)`;
+        return `(select coalesce(jsonb_agg(t.v),'[]'::jsonb) from (${selectClause} v ${clauses.join(" ")}) t)`;
       } else {
         return `(${selectClause} ${clauses.join(" ")})`;
       }
