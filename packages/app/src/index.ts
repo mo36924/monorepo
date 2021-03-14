@@ -11,6 +11,9 @@ type Options = {
     schema?: string;
   };
   database?: Omit<databaseSchemaOptions, "watch" | "graphql">;
+  server?: {
+    input?: string;
+  };
 };
 
 export default async (options: Options = {}) => {
@@ -19,5 +22,5 @@ export default async (options: Options = {}) => {
   await routeGenerator({ ...options.routes, watch });
   await graphqlSchemaGenerator({ ...options.graphql, watch, schema });
   await databaseSchemaGenerator({ ...options.database, watch, graphql: schema });
-  watch && devServer();
+  watch && devServer(options);
 };

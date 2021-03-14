@@ -1,3 +1,3 @@
 import devServer from "./index";
 
-devServer();
+devServer({ server: { input: process.argv[2] } });

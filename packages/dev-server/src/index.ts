@@ -17,8 +17,12 @@ type Resolve = (
 ) => Promise<{ url: string }>;
 type GetFormat = (url: string, context: { format: string }, defaultGetSource: GetFormat) => Promise<{ format: string }>;
 type GetSource = (url: string, context: { format: string }, defaultGetSource: GetSource) => Promise<{ source: string }>;
-
-let _default: () => void;
+type Options = {
+  server?: {
+    input?: string;
+  };
+};
+let _default: (options?: Options) => void;
 let resolve: Resolve;
 let getFormat: GetFormat;
 let getSource: GetSource;
@@ -28,7 +32,8 @@ resolve = getFormat = getSource = _default = () => {
 };
 
 if (isMainThread) {
-  _default = () => {
+  _default = (options = {}) => {
+    const serverInput = options.server?.input;
     let tsBuildInfo: string | undefined;
     const tsCache: Cache = Object.create(null);
     const serverCache: Cache = Object.create(null);
@@ -188,11 +193,9 @@ if (isMainThread) {
       };
     };
 
-    const main = process.argv[2];
-
-    if (main && ts.sys.fileExists(main)) {
+    if (serverInput && ts.sys.fileExists(serverInput)) {
       const getServerData = getDataFactory("server");
-      const url = new URL(`data:text/javascript,import ${JSON.stringify(pathToFileURL(main))};`);
+      const url = new URL(`data:text/javascript,import ${JSON.stringify(pathToFileURL(serverInput))};`);
       const worker = new Worker(url, { execArgv: ["--experimental-loader", import.meta.url] });
 
       worker.on("message", async (url: string) => {

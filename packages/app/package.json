@@ -29,7 +29,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/dev-server": "^1.1.10",
+    "@mo36924/dev-server": "^1.1.17",
     "@mo36924/graphql-database-schema-generator": "^1.1.13",
     "@mo36924/graphql-schema-generator": "^1.1.0",
     "@mo36924/route-generator": "^1.1.0",
