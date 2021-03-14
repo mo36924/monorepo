@@ -1,3 +1,4 @@
+import devServer from "@mo36924/dev-server";
 import databaseSchemaGenerator, { Options as databaseSchemaOptions } from "@mo36924/graphql-database-schema-generator";
 import graphqlSchemaGenerator from "@mo36924/graphql-schema-generator";
 import routeGenerator, { Options as routeGeneratorOptions } from "@mo36924/route-generator";
@@ -18,4 +19,5 @@ export default async (options: Options = {}) => {
   await routeGenerator({ ...options.routes, watch });
   await graphqlSchemaGenerator({ ...options.graphql, watch, schema });
   await databaseSchemaGenerator({ ...options.database, watch, graphql: schema });
+  watch && devServer();
 };
