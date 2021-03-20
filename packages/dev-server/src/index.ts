@@ -21,6 +21,9 @@ type Options = {
   server?: {
     input?: string;
   };
+  client?: {
+    input?: string;
+  };
 };
 let _default: (options?: Options) => void;
 let resolve: Resolve;
@@ -33,7 +36,13 @@ resolve = getFormat = getSource = _default = () => {
 
 if (isMainThread) {
   _default = (options = {}) => {
-    const serverInput = options.server?.input;
+    const serverInput =
+      options.server?.input ?? (ts.sys.fileExists("server/index.ts") ? "server/index.ts" : "server/index.tsx");
+
+    const clientInput =
+      options.client?.input ?? (ts.sys.fileExists("client/index.ts") ? "client/index.ts" : "client/index.tsx");
+
+    const port = parseInt(process.env.DEV_SERVER_PORT!) || 30000;
     let tsBuildInfo: string | undefined;
     const tsCache: Cache = Object.create(null);
     const serverCache: Cache = Object.create(null);
@@ -45,6 +54,10 @@ if (isMainThread) {
     const graphqlPath = ts.sys.resolvePath("node_modules/graphql/index.mjs");
     const babelTransformError = `throw new Error("babel transform error");`;
     const notFoundError = 'throw new Error("Not found");';
+
+    const redirectHeader = {
+      location: new URL(pathToFileURL(clientInput).pathname, `http://localhost:${port}/`).href,
+    };
 
     try {
       const cache = JSON.parse(ts.sys.readFile(cachePath)!);
@@ -208,6 +221,11 @@ if (isMainThread) {
 
     const server = createServer(async (req, res) => {
       try {
+        if (req.url && req.url === "/index.js") {
+          res.writeHead(302, redirectHeader).end();
+          return;
+        }
+
         const url = new URL(req.url ?? "/", "file://");
         const data = await getClientData(url);
         res.setHeader("access-control-allow-origin", "*");
@@ -224,7 +242,7 @@ if (isMainThread) {
       }
     });
 
-    server.listen(parseInt(process.env.DEV_SERVER_PORT!) || 30000);
+    server.listen(port);
 
     process.on("exit", () => {
       try {

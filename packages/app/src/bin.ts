@@ -18,7 +18,7 @@ const options = program
 
   if (basename(project) === pkg) {
     const json = await readFile(resolve(project), "utf8");
-    config = JSON.parse(json).app;
+    config = JSON.parse(json);
   } else if (ext === ".json") {
     const json = await readFile(resolve(project), "utf8");
     config = JSON.parse(json);
