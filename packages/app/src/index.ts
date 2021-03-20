@@ -24,7 +24,7 @@ type Options = {
 
 const getOptions = (options: Options = {}) => {
   options = {
-    watch: process.env.NODE_ENV === "production",
+    watch: process.env.NODE_ENV !== "production",
     main: "dist/server/index.js",
     browser: "dist/client/index.js",
     ...options,
