@@ -1,5 +1,6 @@
-import type { IncomingMessage, ServerResponse } from "http";
+import type { IncomingMessage } from "http";
 import { parse as querystring } from "querystring";
+import type { Middleware } from "@mo36924/http-server";
 import {
   DocumentNode,
   getOperationAST,
@@ -16,46 +17,46 @@ import { send as defaultSend } from "./send";
 import type { ExecutionResult, GraphQLParams, Options } from "./type";
 import { validateSchema } from "./validate-schema";
 
-export default async (options: Options) => {
+export default async (options: Options): Promise<Middleware> => {
   const schema = options.schema;
   const execute = options.execute;
   const send = options.send ?? defaultSend;
   const schemaValidationErrors = validateSchema(schema);
   const validationRules = [...specifiedRules, NoSchemaIntrospectionCustomRule];
 
-  return async (req: IncomingMessage, res: ServerResponse): Promise<boolean> => {
-    const url = req.url;
+  return async (request, response) => {
+    const url = request.url;
 
     if (url === undefined) {
-      return false;
+      return;
     }
 
     let params: GraphQLParams | undefined;
     let result: ExecutionResult | undefined;
 
     try {
-      const method = req.method;
+      const method = request.method;
 
       switch (method) {
         case "GET":
           if (url === "/graphql") {
             throw httpError(400, "Must provide query string.");
           } else if (url.startsWith("/graphql?")) {
-            params = getParams(req as IncomingMessage & { url: string });
+            params = getParams(request as IncomingMessage & { url: string });
           } else {
-            return false;
+            return;
           }
 
           break;
         case "POST":
           if (url === "/graphql") {
-            params = await postParams(req);
+            params = await postParams(request);
           } else if (url.startsWith("/graphql?")) {
             throw httpError(405, `Requests that use query strings can only be made from GET requests.`, {
               headers: { Allow: "GET" },
             });
           } else {
-            return false;
+            return;
           }
 
           break;
@@ -66,7 +67,7 @@ export default async (options: Options) => {
               headers: { Allow: "GET, POST" },
             });
           } else {
-            return false;
+            return;
           }
       }
 
@@ -104,15 +105,15 @@ export default async (options: Options) => {
         }
       }
 
-      result = await execute(req, res, schema, document, params.variables, params.operationName);
+      result = await execute(request, response, schema, document, params.variables, params.operationName);
     } catch (rawError) {
       const error: HttpError = httpError(500, rawError instanceof Error ? rawError : String(rawError));
-      res.statusCode = error.status;
+      response.statusCode = error.status;
       const headers = error.headers;
 
       if (headers != null) {
         for (const [key, value] of Object.entries(headers)) {
-          res.setHeader(key, String(value));
+          response.setHeader(key, String(value));
         }
       }
 
@@ -124,12 +125,12 @@ export default async (options: Options) => {
       }
     }
 
-    if (res.statusCode === 200 && result.data == null && result.raw === undefined) {
-      res.statusCode = 500;
+    if (response.statusCode === 200 && result.data == null && result.raw === undefined) {
+      response.statusCode = 500;
     }
 
     const formattedResult = formatResult(result);
-    await send(req, res, formattedResult);
+    await send(request, response, formattedResult);
     return true;
   };
 };

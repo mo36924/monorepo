@@ -1,6 +1,6 @@
-import { createServer } from "http";
 import { stringify } from "querystring";
 import { describe, expect, it } from "@jest/globals";
+import { createServer } from "@mo36924/http-server";
 import { buildSchema, execute } from "graphql";
 import fetch from "node-fetch";
 import index from "./index";
@@ -13,20 +13,18 @@ describe("http-server", () => {
       }
     `);
 
-    const middleware = await index({
-      schema,
-      async execute(req, res, schema, document, variables, operationName) {
-        return await execute(schema, document, { count: 1 }, {}, variables, operationName);
-      },
-    });
+    const server = createServer();
 
-    const server = createServer(async (req, res) => {
-      try {
-        await middleware(req, res);
-      } catch {}
-    });
+    server.use(
+      index({
+        schema,
+        async execute(req, res, schema, document, variables, operationName) {
+          return await execute(schema, document, { count: 1 }, {}, variables, operationName);
+        },
+      }),
+    );
 
-    server.listen(10000);
+    await server.listen(10000);
 
     const res = await fetch(`http://localhost:10000/graphql?${stringify({ query: "{ count }" })}`);
     const json = await res.json();
@@ -39,6 +37,6 @@ describe("http-server", () => {
       }
     `);
 
-    server.close();
+    await server.close();
   });
 });

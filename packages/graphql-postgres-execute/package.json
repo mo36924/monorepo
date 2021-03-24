@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@mo36924/graphql-utils": "^1.1.1",
-    "@mo36924/postgres-escape": "^1.1.0"
+    "@mo36924/postgres-escape": "^1.1.0",
+    "http-server": "^1.1.20"
   }
 }

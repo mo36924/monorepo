@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import { createServer } from "http";
 import { extname } from "path";
 import process from "process";
-import { fileURLToPath, pathToFileURL } from "url";
+import { fileURLToPath, pathToFileURL, parse } from "url";
 import { isMainThread, parentPort, Worker } from "worker_threads";
 import { transformAsync } from "@babel/core";
 import babelPresetApp, { Options as babelPresetAppOptions } from "@mo36924/babel-preset-app";
@@ -54,10 +54,6 @@ if (isMainThread) {
     const graphqlPath = ts.sys.resolvePath("node_modules/graphql/index.mjs");
     const babelTransformError = `throw new Error("babel transform error");`;
     const notFoundError = 'throw new Error("Not found");';
-
-    const redirectHeader = {
-      location: new URL(pathToFileURL(clientInput).pathname, `http://localhost:${port}/`).href,
-    };
 
     try {
       const cache = JSON.parse(ts.sys.readFile(cachePath)!);
@@ -221,12 +217,8 @@ if (isMainThread) {
 
     const server = createServer(async (req, res) => {
       try {
-        if (req.url && req.url === "/index.js") {
-          res.writeHead(302, redirectHeader).end();
-          return;
-        }
-
-        const url = new URL(req.url ?? "/", "file://");
+        const pathname = (req.url && parse(req.url).pathname) || "/";
+        const url = pathToFileURL(pathname);
         const data = await getClientData(url);
         res.setHeader("access-control-allow-origin", "*");
         res.setHeader("content-type", "application/javascript; charset=utf-8");

@@ -28,6 +28,7 @@
   "dependencies": {
     "@mo36924/graphql-middleware": "^1.1.12",
     "@mo36924/graphql-postgres-query": "^1.1.15",
+    "http-server": "^1.1.20",
     "pg": "^8.5.1"
   }
 }

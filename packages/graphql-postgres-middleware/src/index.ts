@@ -1,11 +1,12 @@
 import graphqlMiddleware, { Options as graphqlMiddlewareOptions } from "@mo36924/graphql-middleware";
 import postgresQuery from "@mo36924/graphql-postgres-query";
+import type { MiddlewareFactory } from "@mo36924/http-server";
 import { getOperationAST } from "graphql";
 import pg, { PoolConfig } from "pg";
 
 export type Options = Omit<graphqlMiddlewareOptions, "execute"> & { main: PoolConfig; replica?: PoolConfig };
 
-export default async (options: Options) => {
+export default (options: Options): MiddlewareFactory => async (server) => {
   const main = new pg.Pool(options.main);
   const replica = new pg.Pool(options.replica ?? options.main);
 
@@ -63,7 +64,7 @@ export default async (options: Options) => {
 
       return { raw: JSON.stringify({ data }) };
     },
-  });
+  })(server);
 
   return middleware;
 };

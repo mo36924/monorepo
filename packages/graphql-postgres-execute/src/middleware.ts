@@ -1,12 +1,12 @@
-import type { IncomingMessage, ServerResponse } from "http";
 import graphqlMiddleware from "@mo36924/graphql-middleware";
+import type { MiddlewareFactory } from "@mo36924/http-server";
 import { execute, ExecutionArgs, getOperationAST, GraphQLSchema } from "graphql";
 import pg, { PoolConfig } from "pg";
 import fieldResolver from "./field-resolver";
 
 type Options = { schema: GraphQLSchema; main: PoolConfig; replica?: PoolConfig };
 
-export default async (options: Options) => {
+export default (options: Options): MiddlewareFactory => async (server) => {
   const schema = options.schema;
   const main = new pg.Pool(options.main);
   const replica = new pg.Pool(options.replica ?? options.main);
@@ -55,16 +55,9 @@ export default async (options: Options) => {
         client.release();
       }
     },
-  });
+  })(server);
 
-  return async (req: IncomingMessage, res: ServerResponse) => {
-    if (req.url && (req.url === "/graphql" || req.url === "/graphql?")) {
-      await middleware(req, res);
-      return true;
-    }
-
-    return false;
-  };
+  return middleware;
 };
 
 function getOperation(args: ExecutionArgs) {
