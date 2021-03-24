@@ -33,8 +33,8 @@ export class Server {
   server!: HttpServer;
   middlewareFactories: MiddlewareFactory[] = [];
   middlewares: Middleware[] = [];
-  use = (middlewareFactory: MiddlewareFactory) => {
-    this.middlewareFactories.push(middlewareFactory);
+  use = (...middlewareFactories: MiddlewareFactory[]) => {
+    this.middlewareFactories.push(...middlewareFactories);
   };
   listen = async (port = parseInt(process.env.PORT as any, 10) || 8080) => {
     const server = createHttpServer(this.serverOptions, async (request, response) => {
