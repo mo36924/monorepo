@@ -2,10 +2,11 @@ import { readFile } from "fs/promises";
 import { createServer } from "http";
 import { extname } from "path";
 import process from "process";
-import { fileURLToPath, pathToFileURL, parse } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { isMainThread, parentPort, Worker } from "worker_threads";
 import { transformAsync } from "@babel/core";
 import babelPresetApp, { Options as babelPresetAppOptions } from "@mo36924/babel-preset-app";
+import httpProxy from "http-proxy";
 import reserved from "reserved-words";
 import ts from "typescript";
 
@@ -34,6 +35,26 @@ resolve = getFormat = getSource = _default = () => {
   throw new Error(`Not support ${isMainThread ? "main" : "worker"} thread`);
 };
 
+const isAsset = (url: string | URL) => {
+  if (typeof url === "string") {
+    url = new URL(url);
+  }
+
+  const extname = url.pathname.match(/\.\w+$/)?.[0];
+
+  switch (extname) {
+    case ".html":
+    case ".gql":
+    case ".graphql":
+    case ".ts":
+    case ".tsx":
+    case ".json":
+      return true;
+  }
+
+  return false;
+};
+
 if (isMainThread) {
   _default = (options = {}) => {
     const serverInput =
@@ -42,7 +63,10 @@ if (isMainThread) {
     const clientInput =
       options.client?.input ?? (ts.sys.fileExists("client/index.ts") ? "client/index.ts" : "client/index.tsx");
 
-    const port = parseInt(process.env.DEV_SERVER_PORT!) || 30000;
+    const redirectHeaders = { location: pathToFileURL(clientInput).pathname };
+
+    const port = parseInt(process.env.PORT!, 10) || 3000;
+    const workerPort = port + 1;
     let tsBuildInfo: string | undefined;
     const tsCache: Cache = Object.create(null);
     const serverCache: Cache = Object.create(null);
@@ -205,7 +229,11 @@ if (isMainThread) {
     if (serverInput && ts.sys.fileExists(serverInput)) {
       const getServerData = getDataFactory("server");
       const url = new URL(`data:text/javascript,import ${JSON.stringify(pathToFileURL(serverInput))};`);
-      const worker = new Worker(url, { execArgv: ["--experimental-loader", import.meta.url] });
+
+      const worker = new Worker(url, {
+        execArgv: ["--experimental-loader", import.meta.url],
+        env: { NODE_ENV: "development", PORT: workerPort.toFixed() },
+      });
 
       worker.on("message", async (url: string) => {
         const data = await getServerData(url);
@@ -214,11 +242,33 @@ if (isMainThread) {
     }
 
     const getClientData = getDataFactory("client");
+    const proxy = httpProxy.createProxyServer();
 
     const server = createServer(async (req, res) => {
       try {
-        const pathname = (req.url && parse(req.url).pathname) || "/";
-        const url = pathToFileURL(pathname);
+        const url = new URL(req.url || "/", "file:///");
+
+        if (!isAsset(url)) {
+          await new Promise<void>((resolve, reject) => {
+            proxy.web(req, res, { target: `http://localhost:${workerPort}` }, (err) => {
+              if (err) {
+                reject();
+              } else {
+                resolve();
+              }
+            });
+          });
+
+          return;
+        }
+
+        const pathname = url.pathname;
+
+        if (pathname === "/client/index.js") {
+          res.writeHead(302, redirectHeaders).end();
+          return;
+        }
+
         const data = await getClientData(url);
         res.setHeader("access-control-allow-origin", "*");
         res.setHeader("content-type", "application/javascript; charset=utf-8");
@@ -288,23 +338,11 @@ if (isMainThread) {
 
   getFormat = async (url, context, defaultGetFormat) => {
     if (url.startsWith("http://") || url.startsWith("https://")) {
-      return {
-        format: "module",
-      };
+      return { format: "module" };
     }
 
-    if (url.startsWith("file:///")) {
-      switch (extname(fileURLToPath(url))) {
-        case ".html":
-        case ".gql":
-        case ".graphql":
-        case ".ts":
-        case ".tsx":
-        case ".json":
-          return {
-            format: "module",
-          };
-      }
+    if (url.startsWith("file:///") && isAsset(url)) {
+      return { format: "module" };
     }
 
     return defaultGetFormat(url, context, defaultGetFormat);
@@ -317,18 +355,8 @@ if (isMainThread) {
       return { source: text };
     }
 
-    if (url.startsWith("file:///")) {
-      switch (extname(fileURLToPath(url))) {
-        case ".html":
-        case ".gql":
-        case ".graphql":
-        case ".ts":
-        case ".tsx":
-        case ".json":
-          return {
-            source: await getFileSource(url),
-          };
-      }
+    if (url.startsWith("file:///") && isAsset(url)) {
+      return { source: await getFileSource(url) };
     }
 
     return defaultGetSource(url, context, defaultGetSource);
