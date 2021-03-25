@@ -10,7 +10,7 @@ import httpProxy from "http-proxy";
 import reserved from "reserved-words";
 import ts from "typescript";
 
-type Cache = { [path: string]: string };
+type Cache = { [path: string]: string | null };
 type Resolve = (
   specifier: string,
   context: { parentURL?: string; conditions: string[] },
@@ -35,26 +35,6 @@ resolve = getFormat = getSource = _default = () => {
   throw new Error(`Not support ${isMainThread ? "main" : "worker"} thread`);
 };
 
-const isAsset = (url: string | URL) => {
-  if (typeof url === "string") {
-    url = new URL(url);
-  }
-
-  const extname = url.pathname.match(/\.\w+$/)?.[0];
-
-  switch (extname) {
-    case ".html":
-    case ".gql":
-    case ".graphql":
-    case ".ts":
-    case ".tsx":
-    case ".json":
-      return true;
-  }
-
-  return false;
-};
-
 if (isMainThread) {
   _default = (options = {}) => {
     const serverInput =
@@ -64,11 +44,10 @@ if (isMainThread) {
       options.client?.input ?? (ts.sys.fileExists("client/index.ts") ? "client/index.ts" : "client/index.tsx");
 
     const redirectHeaders = { location: pathToFileURL(clientInput).pathname };
-
     const port = parseInt(process.env.PORT!, 10) || 3000;
     const workerPort = port + 1;
     let tsBuildInfo: string | undefined;
-    const tsCache: Cache = Object.create(null);
+    const tsCache: { [path: string]: string } = Object.create(null);
     const serverCache: Cache = Object.create(null);
     const clientCache: Cache = Object.create(null);
     const assetCache: Cache = Object.create(null);
@@ -76,8 +55,6 @@ if (isMainThread) {
     const cachePath = ts.sys.resolvePath("node_modules/.cache/dev-server.json");
     const tsconfigPath = ts.sys.resolvePath("tsconfig.json");
     const graphqlPath = ts.sys.resolvePath("node_modules/graphql/index.mjs");
-    const babelTransformError = `throw new Error("babel transform error");`;
-    const notFoundError = 'throw new Error("Not found");';
 
     try {
       const cache = JSON.parse(ts.sys.readFile(cachePath)!);
@@ -98,8 +75,8 @@ if (isMainThread) {
       moduleResolution: ts.ModuleResolutionKind.NodeJs,
       resolveJsonModule: true,
       allowJs: false,
-      jsx: ts.JsxEmit.Preserve,
-      jsxImportSource: "preact",
+      jsx: ts.JsxEmit.ReactJSXDev,
+      jsxImportSource: "react",
       importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Error,
       noEmit: false,
       noEmitOnError: true,
@@ -159,12 +136,13 @@ if (isMainThread) {
     const getDataFactory = (target: "server" | "client") => {
       const cache = target === "server" ? serverCache : clientCache;
 
-      return async (url: string | URL) => {
+      return async (url: string | URL): Promise<string | null> => {
         const path = fileURLToPath(url);
-        let data: string;
 
         if (path in cache) {
-          data = cache[path];
+          return cache[path];
+        } else if (path in assetCache) {
+          return assetCache[path];
         } else if (path in tsCache) {
           try {
             const result = await transformAsync(tsCache[path], {
@@ -175,54 +153,68 @@ if (isMainThread) {
               presets: [[babelPresetApp, { target, env: "development" } as babelPresetAppOptions]],
             });
 
-            data = cache[path] = result!.code!;
+            return (cache[path] = result?.code ?? null);
           } catch {
-            data = babelTransformError;
+            return (cache[path] = null);
           }
-        } else if (path in assetCache) {
-          data = assetCache[path];
-        } else {
-          try {
-            data = await readFile(path, "utf8");
-
-            switch (extname(path)) {
-              case ".gql":
-              case ".graphql":
-                data = `import { parse } from ${JSON.stringify(graphqlPath)};\nexport default parse(${JSON.stringify(
-                  data,
-                )});`;
-
-                break;
-              case ".json":
-                const diagnostics: ts.Diagnostic[] = [];
-                const obj = ts.convertToObject(ts.parseJsonText(path, data), diagnostics);
-
-                if (diagnostics.length) {
-                  data = `throw new SyntaxError(${JSON.stringify(
-                    ts.formatDiagnosticsWithColorAndContext(diagnostics, formatDiagnosticsHost),
-                  )});`;
-                } else if (obj && typeof obj === "object" && !Array.isArray(obj)) {
-                  data = `${Object.entries<any>(obj)
-                    .filter(([key]) => /^[A-Za-z_$][A-Za-z_$0-9]*$/.test(key) && !reserved.check(key, 6, true))
-                    .map(([key, value]) => `export const ${key} = ${JSON.stringify(value)};\n`)
-                    .join("")}export default ${JSON.stringify(obj)};`;
-                } else {
-                  data = `export default ${JSON.stringify(obj)};`;
-                }
-
-                break;
-              default:
-                data = `export default ${JSON.stringify(data)};`;
-                break;
-            }
-          } catch {
-            data = notFoundError;
-          }
-
-          assetCache[path] = data;
         }
 
-        return data;
+        const ext = extname(path);
+
+        if (ext === ".js" || ext === ".jsx" || ext === ".mjs") {
+          try {
+            const data = await readFile(path, "utf8");
+
+            const result = await transformAsync(data, {
+              filename: path,
+              configFile: false,
+              babelrc: false,
+              sourceMaps: "inline",
+              presets: [[babelPresetApp, { target, env: "development" } as babelPresetAppOptions]],
+            });
+
+            return (cache[path] = result?.code ?? null);
+          } catch {
+            return (cache[path] = null);
+          }
+        } else if (ext === ".gql" || ext === ".graphql") {
+          try {
+            let data = await readFile(path, "utf8");
+
+            data = `import { parse } from ${JSON.stringify(graphqlPath)};\nexport default parse(${JSON.stringify(
+              data,
+            )});`;
+
+            return (assetCache[path] = data);
+          } catch {
+            return (assetCache[path] = null);
+          }
+        } else if (ext === ".json") {
+          try {
+            let data = await readFile(path, "utf8");
+            const diagnostics: ts.Diagnostic[] = [];
+            const obj = ts.convertToObject(ts.parseJsonText(path, data), diagnostics);
+
+            if (diagnostics.length) {
+              data = `throw new SyntaxError(${JSON.stringify(
+                ts.formatDiagnosticsWithColorAndContext(diagnostics, formatDiagnosticsHost),
+              )});`;
+            } else if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+              data = `${Object.entries<any>(obj)
+                .filter(([key]) => /^[A-Za-z_$][A-Za-z_$0-9]*$/.test(key) && !reserved.check(key, 6, true))
+                .map(([key, value]) => `export const ${key} = ${JSON.stringify(value)};\n`)
+                .join("")}export default ${JSON.stringify(obj)};`;
+            } else {
+              data = `export default ${JSON.stringify(obj)};`;
+            }
+
+            return (assetCache[path] = data);
+          } catch {
+            return (assetCache[path] = null);
+          }
+        } else {
+          return null;
+        }
       };
     };
 
@@ -242,26 +234,11 @@ if (isMainThread) {
     }
 
     const getClientData = getDataFactory("client");
-    const proxy = httpProxy.createProxyServer();
+    const proxy = httpProxy.createProxyServer({ target: `http://localhost:${workerPort}` });
 
     const server = createServer(async (req, res) => {
       try {
         const url = new URL(req.url || "/", "file:///");
-
-        if (!isAsset(url)) {
-          await new Promise<void>((resolve, reject) => {
-            proxy.web(req, res, { target: `http://localhost:${workerPort}` }, (err) => {
-              if (err) {
-                reject();
-              } else {
-                resolve();
-              }
-            });
-          });
-
-          return;
-        }
-
         const pathname = url.pathname;
 
         if (pathname === "/client/index.js") {
@@ -270,9 +247,22 @@ if (isMainThread) {
         }
 
         const data = await getClientData(url);
-        res.setHeader("access-control-allow-origin", "*");
-        res.setHeader("content-type", "application/javascript; charset=utf-8");
-        res.end(data);
+
+        if (data !== null) {
+          res.setHeader("content-type", "application/javascript; charset=utf-8");
+          res.end(data);
+          return;
+        }
+
+        await new Promise<void>((resolve, reject) => {
+          proxy.web(req, res, undefined, (err) => {
+            if (err) {
+              reject();
+            } else {
+              resolve();
+            }
+          });
+        });
       } catch {
         if (!res.headersSent) {
           res.writeHead(500);
@@ -302,6 +292,8 @@ if (isMainThread) {
           process.exit(0);
         }
       });
+
+      setTimeout(() => server.emit("close"));
     });
   };
 } else {
@@ -341,7 +333,7 @@ if (isMainThread) {
       return { format: "module" };
     }
 
-    if (url.startsWith("file:///") && isAsset(url)) {
+    if (url.startsWith("file:///") && !url.includes("/node_modules/")) {
       return { format: "module" };
     }
 
@@ -355,7 +347,7 @@ if (isMainThread) {
       return { source: text };
     }
 
-    if (url.startsWith("file:///") && isAsset(url)) {
+    if (url.startsWith("file:///") && !url.includes("/node_modules/")) {
       return { source: await getFileSource(url) };
     }
 
