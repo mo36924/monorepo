@@ -216,7 +216,7 @@ export default async () => {
       format: "module",
     },
     external,
-    plugins: [dts.default()],
+    plugins: [dts()],
   });
 
   return options;
