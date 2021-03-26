@@ -125,7 +125,7 @@ export default async () => {
         {
           runtime: "automatic",
           development: false,
-          importSource: "preact",
+          importSource: "react",
         },
       ],
     ],

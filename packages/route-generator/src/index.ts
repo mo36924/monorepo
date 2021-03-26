@@ -23,9 +23,6 @@ const defaultOptions: Required<Options> = {
 };
 
 const defaultTemplate = `
-import matchFactory from "@mo36924/match-factory";
-import routerFactory from "@mo36924/router-factory";
-
 export const match = matchFactory(
   {
     /*__staticRoutes__*/
@@ -34,7 +31,6 @@ export const match = matchFactory(
     /*__dynamicRoutes__*/
   ],
 );
-
 export default routerFactory(match);
 `;
 

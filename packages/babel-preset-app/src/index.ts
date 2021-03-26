@@ -185,6 +185,8 @@ export default (_api: Api, options: Options): TransformOptions => {
         {
           ..._inject,
           changestate: ["@mo36924/changestate", "default"],
+          matchFactory: ["@mo36924/match-factory", "default"],
+          routerFactory: ["@mo36924/router-factory", "default"],
           Children: ["react", "Children"],
           Component: ["react", "Component"],
           Fragment: ["react", "Fragment"],
