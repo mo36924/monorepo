@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/babel-plugin-dead-code-elimination",
-  "version": "1.1.4",
+  "version": "1.1.27",
   "description": "babel-plugin-dead-code-elimination",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
