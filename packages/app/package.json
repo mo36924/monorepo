@@ -34,6 +34,6 @@
     "@mo36924/graphql-schema-generator": "^1.1.0",
     "@mo36924/inject-generator": "^1.1.25",
     "@mo36924/route-generator": "^1.1.25",
-    "commander": "^7.1.0"
+    "commander": "^7.2.0"
   }
 }

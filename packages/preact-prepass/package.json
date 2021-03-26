@@ -26,6 +26,6 @@
     }
   },
   "peerDependencies": {
-    "preact": "^10.5.12"
+    "preact": "^10.5.13"
   }
 }

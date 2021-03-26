@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "@mo36924/preact-hooks": "^1.1.0",
-    "preact": "^10.5.12"
+    "preact": "^10.5.13"
   }
 }
