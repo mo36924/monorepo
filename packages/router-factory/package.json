@@ -28,6 +28,6 @@
   "dependencies": {
     "@mo36924/changestate": "^1.1.0",
     "@mo36924/match-factory": "^1.1.32",
-    "react": "^0.0.0-experimental-a77dd13ed"
+    "react": "^17.0.2"
   }
 }
