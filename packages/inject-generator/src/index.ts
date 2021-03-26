@@ -7,12 +7,17 @@ type Options = {
 };
 
 const inject = `
+import type _changestate from "@mo36924/changestate";
+import type _matchFactory from "@mo36924/match-factory";
+import type _routerFactory from "@mo36924/router-factory";
 import type React from "react";
 import type ReactDom from "react-dom";
 import type ReactDomServer from "react-dom/server";
 
 declare global {
-  const changestate: "changestate";
+  const changestate: typeof _changestate;
+  const matchFactory: typeof _matchFactory;
+  const routerFactory: typeof _routerFactory;
   const Children: typeof React.Children;
   const Component: typeof React.Component;
   const Fragment: typeof React.Fragment;

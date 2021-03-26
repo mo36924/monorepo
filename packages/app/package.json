@@ -29,11 +29,20 @@
     }
   },
   "dependencies": {
+    "@mo36924/changestate": "^1.1.0",
     "@mo36924/dev-server": "^1.1.28",
     "@mo36924/graphql-database-schema-generator": "^1.1.13",
     "@mo36924/graphql-schema-generator": "^1.1.0",
+    "@mo36924/http-server": "^1.1.29",
     "@mo36924/inject-generator": "^1.1.27",
+    "@mo36924/match-factory": "^1.1.29",
     "@mo36924/route-generator": "^1.1.28",
-    "commander": "^7.2.0"
+    "@mo36924/router-factory": "^1.1.29",
+    "@mo36924/ssr-middleware": "^1.1.29",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "commander": "^7.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   }
 }

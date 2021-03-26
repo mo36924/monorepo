@@ -1,7 +1,5 @@
 import { IncomingMessage } from "http";
 import { ParsedPath, posix } from "path";
-import { parse as parseQuery, ParsedUrlQuery as Params } from "querystring";
-import { parse as parseUrl, UrlWithStringQuery as Url } from "url";
 import accepts, { Accepts } from "accepts";
 import base64url from "base64url";
 import { parse as parseCookie } from "cookie";
@@ -29,10 +27,9 @@ export class Request extends IncomingMessage {
   response!: Response;
   port!: string;
   _host!: string | null;
+  _origin!: string | null;
   _href!: string | null;
-  $$url!: URL | null;
-  __url!: Url | null;
-  _params!: Params | null;
+  __url!: URL | null;
   __path!: ParsedPath | null;
   _accepts!: Accepts | null;
   _type!: { [type: string]: string | false } | null;
@@ -54,34 +51,28 @@ export class Request extends IncomingMessage {
     return this.headers.host ?? "localhost";
   }
   get host() {
-    return (this._host ??= this.port === "" ? this.hostname : `${this.hostname}:${this.port}`);
+    return (this._host ||= this.port === "" ? this.hostname : `${this.hostname}:${this.port}`);
+  }
+  get origin() {
+    return (this._origin ||= `${this.protocol}//${this.host}`);
   }
   get path() {
     return this.url || "/";
   }
   get href() {
-    return (this._href ||= `${this.protocol}//${this.host}${this.path}`);
-  }
-  get $url() {
-    return (this.$$url ||= new URL(this.href));
-  }
-  get searchParams() {
-    return this.$url.searchParams;
+    return (this._href ||= `${this.origin}${this.path}`);
   }
   get _url() {
-    return (this.__url ||= parseUrl(this.path));
+    return (this.__url ||= new URL(this.href));
   }
   get pathname() {
-    return this._url.pathname || "/";
-  }
-  get query() {
-    return this._url.query || "";
+    return this._url.pathname;
   }
   get search() {
-    return this._url.search || "";
+    return this._url.search;
   }
-  get params() {
-    return (this._params ||= parseQuery(this.query));
+  get searchParams() {
+    return this._url.searchParams;
   }
   get _path() {
     return (this.__path ||= parsePath(this.pathname));
@@ -179,10 +170,9 @@ Object.assign(Request.prototype, {
   response: null as any,
   port: "",
   _host: null,
+  _origin: null,
   _href: null,
-  $$url: null,
   __url: null,
-  _params: null,
   __path: null,
   _accepts: null,
   _type: null,

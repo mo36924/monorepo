@@ -23,68 +23,19 @@ const defaultOptions: Required<Options> = {
 };
 
 const defaultTemplate = `
-type Props = { [key: string]: string };
-type StaticRoutes = { [path: string]: ComponentType<any> | undefined };
-type DynamicRoutes = [RegExp, string[], ComponentType<any>][];
+import matchFactory from "@mo36924/match-factory";
+import routerFactory from "@mo36924/router-factory";
 
-export const staticRoutes: StaticRoutes = Object.assign(Object.create(null), {
-  /*__staticRoutes__*/
-});
+export const match = matchFactory(
+  {
+    /*__staticRoutes__*/
+  },
+  [
+    /*__dynamicRoutes__*/
+  ],
+);
 
-export const dynamicRoutes: DynamicRoutes = [
-  /*__dynamicRoutes__*/
-];
-
-export type RouteContextValue = { url: URL; component: ComponentType<any>; props: Props };
-export const RouteContext = createContext((null as any) as RouteContextValue);
-export const { Provider, Consumer } = RouteContext;
-
-export const match = (url: string | URL): RouteContextValue => {
-  if (typeof url === "string") {
-    url = new URL(url);
-  }
-
-  const pathname = url.pathname;
-  const props: Props = {};
-  const component = staticRoutes[pathname]!;
-
-  if (!component) {
-    for (const [regexp, names, component] of dynamicRoutes) {
-      const matches = pathname.match(regexp);
-
-      if (matches) {
-        names.forEach((name, i) => (props[name] = matches[i + 1]));
-        return { url, component, props };
-      }
-    }
-  }
-
-  return { url, component, props };
-};
-
-export default (props: { url: string | URL }) => {
-  const [context, setContext] = useState(match(props.url));
-
-  useEffect(() => {
-    const handleChangestate = () => {
-      setContext(match(location.href));
-    };
-
-    addEventListener(changestate, handleChangestate);
-
-    return () => {
-      removeEventListener(changestate, handleChangestate);
-    };
-  }, []);
-
-  return (
-    <Provider value={context}>
-      <Suspense fallback={null}>
-        <context.component {...context.props} />
-      </Suspense>
-    </Provider>
-  );
-};
+export default routerFactory(match);
 `;
 
 export default async (options?: Options) => {

@@ -26,7 +26,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/http-server": "^1.1.24",
+    "@mo36924/http-server": "^1.1.29",
     "accepts": "^1.3.7",
     "express-graphql": "^0.12.0",
     "graphql": "^15.5.0",
