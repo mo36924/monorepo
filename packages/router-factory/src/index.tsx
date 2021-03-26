@@ -3,11 +3,12 @@ import type { Match } from "@mo36924/match-factory";
 import { useEffect, useState } from "react";
 
 export default (match: Match) => (props: { url: URL }) => {
-  const [element, setElement] = useState(match(props.url));
+  const [context, setContext] = useState(match(props.url));
 
   useEffect(() => {
     const handleChangestate = () => {
-      setElement(match(new URL(location.href)));
+      const context = match(new URL(location.href));
+      context && context.route.load().then(() => setContext(context));
     };
 
     addEventListener(changestate, handleChangestate);
@@ -17,5 +18,5 @@ export default (match: Match) => (props: { url: URL }) => {
     };
   }, []);
 
-  return element;
+  return context && <context.route {...context.props} />;
 };

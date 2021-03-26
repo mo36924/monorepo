@@ -4,17 +4,18 @@ import { renderToString } from "react-dom/server";
 
 export type Options = { match: Match };
 
-export default ({ match }: Options): MiddlewareFactory => () => (request, response) => {
+export default ({ match }: Options): MiddlewareFactory => () => async (request, response) => {
   if (request.method !== "GET") {
     return;
   }
 
-  const element = match(request._url);
+  const context = match(request._url);
 
-  if (!element) {
+  if (!context) {
     return;
   }
 
-  response.send("<!DOCTYPE html>" + renderToString(element));
+  await context.route.load();
+  await response.send("<!DOCTYPE html>" + renderToString(<context.route {...context.props} />));
   return true;
 };

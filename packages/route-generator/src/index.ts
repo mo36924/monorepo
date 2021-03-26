@@ -165,12 +165,10 @@ export default async (options?: Options) => {
         const params = paramNames.map((name) => `${name}: string`).join();
 
         dynamicRoutes.push(
-          `[${routePath}, ${JSON.stringify(
-            paramNames,
-          )}, lazy<ComponentType<{${params}}>>(() => import('${importPath}'))]`,
+          `[${routePath}, ${JSON.stringify(paramNames)}, lazy<{${params}}>(() => import('${importPath}'))]`,
         );
       } else {
-        staticRoutes.push(`'${routePath}': lazy<ComponentType<any>>(() => import('${importPath}'))`);
+        staticRoutes.push(`'${routePath}': lazy<any>(() => import('${importPath}'))`);
       }
     }
 

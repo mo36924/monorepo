@@ -202,7 +202,7 @@ export default (_api: Api, options: Options): TransformOptions => {
           createRef: ["react", "createRef"],
           forwardRef: ["react", "forwardRef"],
           isValidElement: ["react", "isValidElement"],
-          lazy: ["react", "lazy"],
+          lazy: ["@mo36924/react-lazy", "default"],
           memo: ["react", "memo"],
           useCallback: ["react", "useCallback"],
           useContext: ["react", "useContext"],

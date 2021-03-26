@@ -10,6 +10,7 @@ const inject = `
 import type _changestate from "@mo36924/changestate";
 import type _matchFactory from "@mo36924/match-factory";
 import type _routerFactory from "@mo36924/router-factory";
+import type _lazy from "@mo36924/react-lazy";
 import type React from "react";
 import type ReactDom from "react-dom";
 import type ReactDomServer from "react-dom/server";
@@ -31,7 +32,7 @@ declare global {
   const createRef: typeof React.createRef;
   const forwardRef: typeof React.forwardRef;
   const isValidElement: typeof React.isValidElement;
-  const lazy: typeof React.lazy;
+  const lazy: typeof _lazy;
   const memo: typeof React.memo;
   const useCallback: typeof React.useCallback;
   const useContext: typeof React.useContext;

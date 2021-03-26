@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/match-factory",
-  "version": "1.1.33",
-  "description": "match-factory",
+  "name": "@mo36924/react-hooks",
+  "version": "1.0.0",
+  "description": "react-hooks",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/match-factory"
+    "directory": "packages/react-hooks"
   },
   "publishConfig": {
     "access": "public"
@@ -26,8 +26,6 @@
     }
   },
   "dependencies": {
-    "@types/react": "^17.0.3",
-    "react": "^17.0.2",
-    "@mo36924/react-lazy": "^1.1.34"
+    "react": "^17.0.2"
   }
 }
