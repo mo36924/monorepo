@@ -93,7 +93,6 @@ export default (_api: Api, options: Options): TransformOptions => {
                 esmodules: true,
               },
           useBuiltIns: false,
-          debug: __DEV__,
         } as envOptions,
       ],
       [typescript],
