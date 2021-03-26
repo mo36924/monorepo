@@ -1,3 +1,0 @@
-# preact-prepass
-
-preact-prepass
