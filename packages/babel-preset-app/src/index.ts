@@ -16,6 +16,7 @@ import inject, { Options as injectOptions } from "@mo36924/babel-plugin-inject";
 import jsxDev from "@mo36924/babel-plugin-jsx-development";
 import replace from "@mo36924/babel-plugin-replace";
 import resolve, { Options as resolveOptions } from "@mo36924/babel-plugin-resolve";
+import subpath from "@mo36924/babel-plugin-resolve-subpath";
 
 const _require = createRequire(join(process.cwd(), "index.js"));
 
@@ -179,6 +180,7 @@ export default (_api: Api, options: Options): TransformOptions => {
               : {},
         } as resolveOptions,
       ],
+      [subpath, __SERVER__ ? {} : false],
       [commonjs, __SERVER__ ? false : exports],
       [
         inject,

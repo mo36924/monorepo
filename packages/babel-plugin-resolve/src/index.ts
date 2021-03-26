@@ -139,12 +139,7 @@ export default (
       return;
     }
 
-    const arg = path.parentPath.get("arguments.0");
-
-    if (Array.isArray(arg)) {
-      return;
-    }
-
+    const arg = path.parentPath.get("arguments")[0];
     let modulePath: string | undefined;
 
     if (arg.isTemplateLiteral() && arg.node.expressions.length === 0) {

@@ -29,7 +29,7 @@ export default ({ types: t }: typeof babel): PluginObj<State> => {
           body = t.blockStatement([t.returnStatement(body)]);
         }
 
-        path.replaceWithMultiple([
+        const [nodePath] = path.replaceWithMultiple([
           t.variableDeclaration("const", [
             t.variableDeclarator(t.identifier(uid), t.functionExpression(null, params, body, generator, async)),
           ]),
@@ -49,6 +49,8 @@ export default ({ types: t }: typeof babel): PluginObj<State> => {
           ),
           t.exportDefaultDeclaration(t.identifier(uid)),
         ]);
+
+        scope.registerDeclaration(nodePath);
       },
     },
   };

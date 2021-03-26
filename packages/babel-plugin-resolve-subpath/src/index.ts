@@ -105,12 +105,7 @@ export default ({ types: t }: typeof babel, { ignore = [], cache = false, ...res
       return;
     }
 
-    const arg = path.parentPath.get("arguments.0");
-
-    if (Array.isArray(arg)) {
-      return;
-    }
-
+    const arg = path.parentPath.get("arguments")[0];
     let modulePath: string | undefined;
 
     if (arg.isTemplateLiteral() && arg.node.expressions.length === 0) {
