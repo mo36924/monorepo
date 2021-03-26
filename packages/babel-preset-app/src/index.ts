@@ -7,6 +7,8 @@ import constant from "@babel/plugin-transform-react-constant-elements";
 import env, { Options as envOptions } from "@babel/preset-env";
 // @ts-ignore
 import react from "@babel/preset-react";
+// @ts-ignore
+import typescript from "@babel/preset-typescript";
 import commonjs, { Options as commonjsOptions } from "@mo36924/babel-plugin-commonjs";
 import deadCodeElimination from "@mo36924/babel-plugin-dead-code-elimination";
 import iifeUnwrap from "@mo36924/babel-plugin-iife-unwrap";
@@ -94,6 +96,7 @@ export default (_api: Api, options: Options): TransformOptions => {
           debug: __DEV__,
         } as envOptions,
       ],
+      [typescript],
       [
         react,
         {
