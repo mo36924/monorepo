@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/babel-preset-app",
-  "version": "1.1.5",
+  "version": "1.1.25",
   "description": "babel-preset-app",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -35,7 +35,7 @@
     "@mo36924/babel-plugin-inject": "^1.1.4",
     "@mo36924/babel-plugin-jsx-development": "^1.1.4",
     "@mo36924/babel-plugin-replace": "^1.1.4",
-    "@mo36924/babel-plugin-resolve": "^1.1.4"
+    "@mo36924/babel-plugin-resolve": "^1.1.25"
   },
   "peerDependencies": {
     "@babel/core": "^7.12.10"
