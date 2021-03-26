@@ -5,6 +5,7 @@ import process from "process";
 import { fileURLToPath, pathToFileURL } from "url";
 import { isMainThread, parentPort, Worker } from "worker_threads";
 import { transformAsync } from "@babel/core";
+import type { Options as InjectOptions } from "@mo36924/babel-plugin-inject";
 import babelPresetApp, { Options as babelPresetAppOptions } from "@mo36924/babel-preset-app";
 import httpProxy from "http-proxy";
 import reserved from "reserved-words";
@@ -18,31 +19,24 @@ type Resolve = (
 ) => Promise<{ url: string }>;
 type GetFormat = (url: string, context: { format: string }, defaultGetSource: GetFormat) => Promise<{ format: string }>;
 type GetSource = (url: string, context: { format: string }, defaultGetSource: GetSource) => Promise<{ source: string }>;
-type Options = {
-  server?: {
-    input?: string;
-  };
-  client?: {
-    input?: string;
-  };
+
+export type Options = {
+  inject?: InjectOptions;
 };
-let _default: (options?: Options) => void;
+
+let _default: (options?: Options) => Promise<void>;
 let resolve: Resolve;
 let getFormat: GetFormat;
 let getSource: GetSource;
 
-resolve = getFormat = getSource = _default = () => {
+resolve = getFormat = getSource = _default = async () => {
   throw new Error(`Not support ${isMainThread ? "main" : "worker"} thread`);
 };
 
 if (isMainThread) {
-  _default = (options = {}) => {
-    const serverInput =
-      options.server?.input ?? (ts.sys.fileExists("server/index.ts") ? "server/index.ts" : "server/index.tsx");
-
-    const clientInput =
-      options.client?.input ?? (ts.sys.fileExists("client/index.ts") ? "client/index.ts" : "client/index.tsx");
-
+  _default = async (options: Options = {}) => {
+    const serverInput = ts.sys.fileExists("server/index.ts") ? "server/index.ts" : "server/index.tsx";
+    const clientInput = ts.sys.fileExists("client/index.ts") ? "client/index.ts" : "client/index.tsx";
     const redirectHeaders = { location: pathToFileURL(clientInput).pathname };
     const port = parseInt(process.env.PORT!, 10) || 3000;
     const workerPort = port + 1;
@@ -75,7 +69,7 @@ if (isMainThread) {
       moduleResolution: ts.ModuleResolutionKind.NodeJs,
       resolveJsonModule: true,
       allowJs: false,
-      jsx: ts.JsxEmit.ReactJSXDev,
+      jsx: ts.JsxEmit.Preserve,
       jsxImportSource: "react",
       importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Error,
       noEmit: false,
@@ -150,7 +144,9 @@ if (isMainThread) {
               configFile: false,
               babelrc: false,
               sourceMaps: "inline",
-              presets: [[babelPresetApp, { target, env: "development" } as babelPresetAppOptions]],
+              presets: [
+                [babelPresetApp, { target, env: "development", inject: options.inject } as babelPresetAppOptions],
+              ],
             });
 
             return (cache[path] = result?.code ?? null);
@@ -170,7 +166,9 @@ if (isMainThread) {
               configFile: false,
               babelrc: false,
               sourceMaps: "inline",
-              presets: [[babelPresetApp, { target, env: "development" } as babelPresetAppOptions]],
+              presets: [
+                [babelPresetApp, { target, env: "development", inject: options.inject } as babelPresetAppOptions],
+              ],
             });
 
             return (cache[path] = result?.code ?? null);

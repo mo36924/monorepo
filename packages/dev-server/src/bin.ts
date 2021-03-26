@@ -1,3 +1,3 @@
 import devServer from "./index";
 
-devServer({ server: { input: process.argv[2] } });
+devServer().catch(console.error);

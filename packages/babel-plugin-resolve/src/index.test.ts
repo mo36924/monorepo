@@ -46,4 +46,15 @@ describe("babel-plugin-resolve", () => {
       `export { createElement } from "./packages/babel-plugin-resolve/src/index.ts";`,
     );
   });
+
+  test("alias", () => {
+    const result = transform(`import babel from "babel";import lib from "www/lib";`, {
+      alias: { babel: "@babel/core", www: "@babel/core" },
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      import babel from "./node_modules/@babel/core/lib/index.js";
+      import lib from "./node_modules/@babel/core/lib/index.js";
+    `);
+  });
 });

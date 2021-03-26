@@ -14,7 +14,7 @@ export type Options = {
 };
 
 const defaultOptions: Required<Options> = {
-  watch: process.env.NODE_ENV === "development",
+  watch: process.env.NODE_ENV !== "production",
   dir: "pages",
   component: "components/Router.tsx",
   template: "components/Router.template.tsx",
@@ -23,19 +23,9 @@ const defaultOptions: Required<Options> = {
 };
 
 const defaultTemplate = `
-import changestate from "@mo36924/changestate"
-import lazy from "@mo36924/preact-lazy";
-import { ComponentType, createContext } from "preact";
-import { useState, useEffect } from "preact/hooks";
-/**__imports__**/
-
 type Props = { [key: string]: string };
-type Route<T = any> = ComponentType<T> & { load: () => Promise<void> };
-type DynamicImport<T = {}> = Promise<{ default: ComponentType<T> }>;
-type StaticRoutes = { [path: string]: Route | undefined };
-type DynamicRoutes = [RegExp, string[], Route][];
-
-/*__dynamicImports__*/
+type StaticRoutes = { [path: string]: ComponentType<any> | undefined };
+type DynamicRoutes = [RegExp, string[], ComponentType<any>][];
 
 export const staticRoutes: StaticRoutes = Object.assign(Object.create(null), {
   /*__staticRoutes__*/
@@ -45,7 +35,7 @@ export const dynamicRoutes: DynamicRoutes = [
   /*__dynamicRoutes__*/
 ];
 
-export type RouteContextValue = { url: URL; route: Route; props: Props };
+export type RouteContextValue = { url: URL; component: ComponentType<any>; props: Props };
 export const RouteContext = createContext((null as any) as RouteContextValue);
 export const { Provider, Consumer } = RouteContext;
 
@@ -54,31 +44,30 @@ export const match = (url: string | URL): RouteContextValue => {
     url = new URL(url);
   }
 
-  const path = url.pathname;
-  const route = staticRoutes[path]!;
+  const pathname = url.pathname;
   const props: Props = {};
+  const component = staticRoutes[pathname]!;
 
-  if (!route) {
-    for (const [regexp, names, route] of dynamicRoutes) {
-      const matches = path.match(regexp);
+  if (!component) {
+    for (const [regexp, names, component] of dynamicRoutes) {
+      const matches = pathname.match(regexp);
 
       if (matches) {
         names.forEach((name, i) => (props[name] = matches[i + 1]));
-        return { url, route, props };
+        return { url, component, props };
       }
     }
   }
 
-  return { url, route, props };
+  return { url, component, props };
 };
 
 export default (props: { url: string | URL }) => {
-  const [state, setState] = useState(match(props.url));
+  const [context, setContext] = useState(match(props.url));
 
   useEffect(() => {
     const handleChangestate = () => {
-      const context = match(location.href);
-      context.route.load().then(() => setState(context));
+      setContext(match(location.href));
     };
 
     addEventListener(changestate, handleChangestate);
@@ -89,8 +78,10 @@ export default (props: { url: string | URL }) => {
   }, []);
 
   return (
-    <Provider value={state}>
-      <state.route {...state.props} />
+    <Provider value={context}>
+      <Suspense fallback={null}>
+        <context.component {...context.props} />
+      </Suspense>
     </Provider>
   );
 };
@@ -127,8 +118,6 @@ export default async (options?: Options) => {
     const absolutePath = resolve(path);
     const nonExtAbsolutePath = absolutePath.slice(0, -extname(absolutePath).length || undefined);
     const nonExtPath = relative(dir, nonExtAbsolutePath).split(sep).join("/");
-
-    const componentName = nonExtPath.replace(/[\/\-]/g, "$");
 
     let routePath =
       "/" +
@@ -173,7 +162,6 @@ export default async (options?: Options) => {
 
     return {
       importPath,
-      componentName,
       isDynamic,
       routePath,
       paramNames,
@@ -222,27 +210,18 @@ export default async (options?: Options) => {
       .flatMap(([_dir, names]) => names.map((name) => pathToRoute(resolve(dir, _dir, name))))
       .sort((a, b) => (b.rank as any) - (a.rank as any));
 
-    const imports = [];
-    const dynamicImports = [];
-    const names = [];
     const staticRoutes = [];
     const dynamicRoutes = [];
 
-    for (const { importPath, componentName, routePath, isDynamic, paramNames } of pagePaths) {
-      imports.push(`import ${componentName} from '${importPath}';`);
-      names.push(componentName);
-
+    for (const { importPath, routePath, isDynamic, paramNames } of pagePaths) {
       if (isDynamic) {
         const params = paramNames.map((name) => `${name}: string`).join();
 
-        dynamicImports.push(
-          `const ${componentName} = lazy((): DynamicImport<{${params}}> => import('${importPath}'));`,
+        dynamicRoutes.push(
+          `[${routePath}, ${JSON.stringify(paramNames)}, lazy<{${params}}>(() => import('${importPath}'))]`,
         );
-
-        dynamicRoutes.push(`[${routePath}, ${JSON.stringify(paramNames)}, ${componentName} as Route<{${params}}>]`);
       } else {
-        staticRoutes.push(`'${routePath}': ${componentName} as Route`);
-        dynamicImports.push(`const ${componentName} = lazy((): DynamicImport => import('${importPath}'));`);
+        staticRoutes.push(`'${routePath}': lazy<any>(() => import('${importPath}'))`);
       }
     }
 
@@ -256,8 +235,6 @@ export default async (options?: Options) => {
     }
 
     code = code
-      .replace("/*__imports__*/", imports.join(""))
-      .replace("/*__dynamicImports__*/", dynamicImports.join(""))
       .replace("/*__staticRoutes__*/", staticRoutes.join())
       .replace("/*__dynamicRoutes__*/", dynamicRoutes.join());
 

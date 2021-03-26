@@ -23,7 +23,7 @@ export type Options = {
   env?: "production" | "development" | "test";
   target?: "client" | "server";
   nomodule?: boolean;
-  jsx?: string;
+  jsx?: "react" | "preact";
   inject?: injectOptions;
   exports?: commonjsOptions;
 };
@@ -35,7 +35,7 @@ export default (_api: Api, options: Options): TransformOptions => {
     env: __ENV__ = NODE_ENV ?? "production",
     target: __TARGET__ = NODE_TARGET ?? "server",
     nomodule = NODE_NOMODULE !== "false" && !!NODE_NOMODULE,
-    jsx = "preact",
+    jsx = "react",
     inject: _inject = {},
     exports = {},
   } = options;
@@ -168,10 +168,55 @@ export default (_api: Api, options: Options): TransformOptions => {
                 ".json",
                 ".node",
               ],
+          alias:
+            jsx === "preact"
+              ? {
+                  react: "preact/compat",
+                  "react-dom": "preact/compat",
+                }
+              : {},
         } as resolveOptions,
       ],
       [commonjs, __SERVER__ ? false : exports],
-      [inject, _inject],
+      [
+        inject,
+        {
+          ..._inject,
+          changestate: ["@mo36924/changestate", "default"],
+          Children: ["react", "Children"],
+          Component: ["react", "Component"],
+          Fragment: ["react", "Fragment"],
+          PureComponent: ["react", "PureComponent"],
+          StrictMode: ["react", "StrictMode"],
+          Suspense: ["react", "Suspense"],
+          cloneElement: ["react", "cloneElement"],
+          createContext: ["react", "createContext"],
+          createElement: ["react", "createElement"],
+          createFactory: ["react", "createFactory"],
+          createRef: ["react", "createRef"],
+          forwardRef: ["react", "forwardRef"],
+          isValidElement: ["react", "isValidElement"],
+          lazy: ["react", "lazy"],
+          memo: ["react", "memo"],
+          useCallback: ["react", "useCallback"],
+          useContext: ["react", "useContext"],
+          useDebugValue: ["react", "useDebugValue"],
+          useEffect: ["react", "useEffect"],
+          useImperativeHandle: ["react", "useImperativeHandle"],
+          useLayoutEffect: ["react", "useLayoutEffect"],
+          useMemo: ["react", "useMemo"],
+          useReducer: ["react", "useReducer"],
+          useRef: ["react", "useRef"],
+          useState: ["react", "useState"],
+          createPortal: ["react-dom", "createPortal"],
+          findDOMNode: ["react-dom", "findDOMNode"],
+          hydrate: ["react-dom", "hydrate"],
+          render: ["react-dom", "render"],
+          unmountComponentAtNode: ["react-dom", "unmountComponentAtNode"],
+          renderToStaticMarkup: ["react-dom/server", "renderToStaticMarkup"],
+          renderToString: ["react-dom/server", "renderToString"],
+        } as injectOptions,
+      ],
       [jsxDev, __PROD__ ? false : {}],
       [constant, __PROD__ ? {} : false],
     ],
