@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/router-factory",
-  "version": "1.1.30",
+  "version": "1.1.32",
   "description": "router-factory",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@mo36924/changestate": "^1.1.0",
-    "@mo36924/match-factory": "^1.1.30",
+    "@mo36924/match-factory": "^1.1.32",
     "react": "^0.0.0-experimental-a77dd13ed"
   }
 }
