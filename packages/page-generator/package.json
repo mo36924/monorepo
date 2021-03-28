@@ -24,5 +24,9 @@
     ".": {
       "import": "./dist/index.js"
     }
+  },
+  "dependencies": {
+    "chokidar": "^3.5.1",
+    "prettier": "^2.2.1"
   }
 }
