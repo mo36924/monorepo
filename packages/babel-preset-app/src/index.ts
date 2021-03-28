@@ -136,6 +136,15 @@ export default (_api: Api, options: Options): TransformOptions => {
           aliasFields: __SERVER__ ? [] : ["browser"],
           mainFields: __SERVER__ ? ["module", "main"] : ["browser", "module", "main"],
           conditionNames: __SERVER__ ? ["import", "require"] : ["browser", "import", "require"],
+          baseUrl: ".",
+          paths: { "~/": "./" },
+          alias:
+            jsx === "preact"
+              ? {
+                  react: "preact/compat",
+                  "react-dom": "preact/compat",
+                }
+              : {},
           extensions: __SERVER__
             ? [
                 ".server.tsx",
@@ -171,13 +180,6 @@ export default (_api: Api, options: Options): TransformOptions => {
                 ".json",
                 ".node",
               ],
-          alias:
-            jsx === "preact"
-              ? {
-                  react: "preact/compat",
-                  "react-dom": "preact/compat",
-                }
-              : {},
         } as resolveOptions,
       ],
       [subpath, __SERVER__ ? {} : false],

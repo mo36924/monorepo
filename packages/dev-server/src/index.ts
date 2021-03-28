@@ -50,6 +50,38 @@ if (isMainThread) {
     const tsconfigPath = ts.sys.resolvePath("tsconfig.json");
     const graphqlPath = ts.sys.resolvePath("node_modules/graphql/index.mjs");
 
+    const tsconfig =
+      JSON.stringify(
+        {
+          compilerOptions: {
+            target: "ES2020",
+            module: "ES2020",
+            moduleResolution: "Node",
+            resolveJsonModule: true,
+            jsx: "preserve",
+            jsxImportSource: "react",
+            importsNotUsedAsValues: "error",
+            baseUrl: ".",
+            paths: {
+              "~/*": ["./*"],
+            },
+            strict: true,
+            esModuleInterop: true,
+            noEmitOnError: true,
+            importHelpers: true,
+            inlineSourceMap: true,
+            inlineSources: true,
+            skipLibCheck: true,
+            forceConsistentCasingInFileNames: true,
+          },
+          exclude: ["dist"],
+        },
+        null,
+        2,
+      ) + "\n";
+
+    ts.sys.writeFile(tsconfigPath, tsconfig);
+
     try {
       const cache = JSON.parse(ts.sys.readFile(cachePath)!);
       tsBuildInfo = cache.tsBuildInfo;
@@ -64,27 +96,15 @@ if (isMainThread) {
     const compilerOptions: ts.CompilerOptions = {
       incremental: true,
       tsBuildInfoFile: tsBuildInfoPath,
-      target: ts.ScriptTarget.ES2020,
-      module: ts.ModuleKind.ESNext,
-      moduleResolution: ts.ModuleResolutionKind.NodeJs,
-      resolveJsonModule: true,
-      allowJs: false,
-      jsx: ts.JsxEmit.Preserve,
-      jsxImportSource: "react",
-      importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Error,
-      noEmit: false,
-      noEmitOnError: true,
-      declaration: false,
-      importHelpers: true,
-      outDir: undefined,
-      sourceMap: false,
-      inlineSourceMap: true,
-      inlineSources: true,
     };
 
     const system: ts.System = {
       ...ts.sys,
       readFile(path, encoding) {
+        if (path === tsconfigPath) {
+          return tsconfig;
+        }
+
         if (path === tsBuildInfoPath) {
           return tsBuildInfo;
         }
