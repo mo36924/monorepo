@@ -66,14 +66,14 @@ export default async (options?: Options) => {
     const nonExtAbsolutePath = absolutePath.slice(0, -extname(absolutePath).length || undefined);
     const nonExtPath = relative(dir, nonExtAbsolutePath).split(sep).join("/");
 
-    let routePath =
+    let pagePath =
       "/" +
       nonExtPath
         .replace(/^index$/, "")
         .replace(/\/index$/, "/")
         .replace(/__|_/g, (m) => (m === "_" ? ":" : "_"));
 
-    const rank = routePath
+    const rank = pagePath
       .split("/")
       .map((segment) => {
         if (!segment.includes(":")) {
@@ -88,13 +88,13 @@ export default async (options?: Options) => {
       })
       .join("");
 
-    const isDynamic = routePath.includes(":");
+    const isDynamic = pagePath.includes(":");
     const paramNames: string[] = [];
 
     if (isDynamic) {
-      routePath =
+      pagePath =
         "/^" +
-        routePath.replace(/\//g, "\\/").replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
+        pagePath.replace(/\//g, "\\/").replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
           paramNames.push(p1);
           return "([^\\/]+?)";
         }) +
@@ -110,7 +110,7 @@ export default async (options?: Options) => {
     return {
       importPath,
       isDynamic,
-      routePath,
+      pagePath,
       paramNames,
       rank,
     };
@@ -160,15 +160,15 @@ export default async (options?: Options) => {
     const staticPages = [];
     const dynamicPages = [];
 
-    for (const { importPath, routePath, isDynamic, paramNames } of pagePaths) {
+    for (const { importPath, pagePath, isDynamic, paramNames } of pagePaths) {
       if (isDynamic) {
         const params = paramNames.map((name) => `${name}: string`).join();
 
         dynamicPages.push(
-          `[${routePath}, ${JSON.stringify(paramNames)}, (): ImportPage<{${params}}> => import('${importPath}')]`,
+          `[${pagePath}, ${JSON.stringify(paramNames)}, (): PromisePageModule<{${params}}> => import('${importPath}')]`,
         );
       } else {
-        staticPages.push(`'${routePath}': (): ImportPage<any> => import('${importPath}')`);
+        staticPages.push(`'${pagePath}': (): PromisePageModule<any> => import('${importPath}')`);
       }
     }
 

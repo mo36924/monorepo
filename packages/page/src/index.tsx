@@ -1,8 +1,9 @@
 import type { ComponentType } from "react";
 
-export type ImportPage<T> = () => Promise<PageModule<T>>;
 export type PageComponent<T> = ComponentType<T> & { load: () => Promise<void> };
 export type PageModule<T> = { default: ComponentType<T> };
+export type PromisePageModule<T> = Promise<PageModule<T>>;
+export type ImportPage<T> = () => PromisePageModule<T>;
 
 export default <T,>(importPage: ImportPage<T>): PageComponent<T> => {
   let promise: any;
