@@ -50,35 +50,31 @@ if (isMainThread) {
     const tsconfigPath = ts.sys.resolvePath("tsconfig.json");
     const graphqlPath = ts.sys.resolvePath("node_modules/graphql/index.mjs");
 
-    const tsconfig =
-      JSON.stringify(
-        {
-          compilerOptions: {
-            target: "ES2020",
-            module: "ES2020",
-            moduleResolution: "Node",
-            resolveJsonModule: true,
-            jsx: "preserve",
-            jsxImportSource: "react",
-            importsNotUsedAsValues: "error",
-            baseUrl: ".",
-            paths: {
-              "~/*": ["./*"],
-            },
-            strict: true,
-            esModuleInterop: true,
-            noEmitOnError: true,
-            importHelpers: true,
-            inlineSourceMap: true,
-            inlineSources: true,
-            skipLibCheck: true,
-            forceConsistentCasingInFileNames: true,
-          },
-          exclude: ["dist"],
-        },
-        null,
-        2,
-      ) + "\n";
+    const tsconfig = `{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "jsx": "preserve",
+    "jsxImportSource": "react",
+    "importsNotUsedAsValues": "error",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"]
+    },
+    "strict": true,
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "importHelpers": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "exclude": ["dist"]
+}
+`;
 
     ts.sys.writeFile(tsconfigPath, tsconfig);
 
