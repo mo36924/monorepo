@@ -148,13 +148,12 @@ export default async () => {
     const dir = resolve(path, "..", "..", "dist");
     const bin = resolve(path, "..", "bin.ts");
     const input = [path];
+    dtsInput.push(path);
 
     if (binSet.has(bin)) {
       input.push(bin);
       binSet.delete(bin);
     }
-
-    dtsInput.push(...input);
 
     options.push({
       input,

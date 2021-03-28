@@ -7,7 +7,6 @@ type Options = {
 };
 
 const inject = `
-import type _changestate from "@mo36924/changestate";
 import type { PromisePageModule as _PromisePageModule } from "@mo36924/page";
 import type _pageMatch from "@mo36924/page-match";
 import type _pages from "@mo36924/pages";
@@ -16,7 +15,6 @@ import type ReactDom from "react-dom";
 import type ReactDomServer from "react-dom/server";
 
 declare global {
-  const changestate: typeof _changestate;
   const pageMatch: typeof _pageMatch;
   const pages: typeof _pages;
   const Children: typeof React.Children;

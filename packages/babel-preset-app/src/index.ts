@@ -187,7 +187,6 @@ export default (_api: Api, options: Options): TransformOptions => {
         {
           declarations: {
             ..._inject.declarations,
-            changestate: ["@mo36924/changestate", "default"],
             pageMatch: ["@mo36924/page-match", "default"],
             pages: ["@mo36924/pages", "default"],
             Children: ["react", "Children"],
@@ -203,7 +202,7 @@ export default (_api: Api, options: Options): TransformOptions => {
             createRef: ["react", "createRef"],
             forwardRef: ["react", "forwardRef"],
             isValidElement: ["react", "isValidElement"],
-            lazy: ["@mo36924/react-lazy", "default"],
+            lazy: ["react", "lazy"],
             memo: ["react", "memo"],
             useCallback: ["react", "useCallback"],
             useContext: ["react", "useContext"],
