@@ -8,17 +8,16 @@ type Options = {
 
 const inject = `
 import type _changestate from "@mo36924/changestate";
-import type _matchFactory from "@mo36924/match-factory";
-import type _routerFactory from "@mo36924/router-factory";
-import type _lazy from "@mo36924/react-lazy";
+import type _pageMatch from "@mo36924/page-match";
+import type _pages, { ImportPage as _ImportPage } from "@mo36924/pages";
 import type React from "react";
 import type ReactDom from "react-dom";
 import type ReactDomServer from "react-dom/server";
 
 declare global {
   const changestate: typeof _changestate;
-  const matchFactory: typeof _matchFactory;
-  const routerFactory: typeof _routerFactory;
+  const pageMatch: typeof _pageMatch;
+  const pages: typeof _pages;
   const Children: typeof React.Children;
   const Component: typeof React.Component;
   const Fragment: typeof React.Fragment;
@@ -51,6 +50,7 @@ declare global {
   const unmountComponentAtNode: typeof ReactDom.unmountComponentAtNode;
   const renderToStaticMarkup: typeof ReactDomServer.renderToStaticMarkup;
   const renderToString: typeof ReactDomServer.renderToString;
+  type ImportPage<T>: _ImportPage<T>;
   type ComponentType<T = {}> = React.ComponentType<T>;
 }
 `;

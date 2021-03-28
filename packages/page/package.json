@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/route-generator",
-  "version": "1.1.34",
-  "description": "route-generator",
+  "name": "@mo36924/page",
+  "version": "1.0.0",
+  "description": "page",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/route-generator"
+    "directory": "packages/page"
   },
   "publishConfig": {
     "access": "public"
@@ -20,13 +20,11 @@
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
+  "browser": "./dist/index.client.js",
   "exports": {
     ".": {
+      "browser": "./dist/index.client.js",
       "import": "./dist/index.js"
     }
-  },
-  "dependencies": {
-    "chokidar": "^3.5.1",
-    "prettier": "^2.2.1"
   }
 }

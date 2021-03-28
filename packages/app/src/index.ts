@@ -3,16 +3,15 @@ import devServer from "@mo36924/dev-server";
 import databaseSchemaGenerator, { Options as databaseSchemaOptions } from "@mo36924/graphql-database-schema-generator";
 import graphqlSchemaGenerator from "@mo36924/graphql-schema-generator";
 import injectGenerator from "@mo36924/inject-generator";
-import routeGenerator, { Options as routeGeneratorOptions } from "@mo36924/route-generator";
+import pageGenerator, { Options as pageGeneratorOptions } from "@mo36924/page-generator";
 
 type Options = {
   watch?: boolean;
   jsx?: "react" | "preact";
-  inject?: {
+  inject?: injectOptions & {
     path?: string;
-    declarations?: injectOptions;
   };
-  routes?: Omit<routeGeneratorOptions, "watch">;
+  page?: Omit<pageGeneratorOptions, "watch">;
   graphql?: {
     model?: string;
     schema?: string;
@@ -24,8 +23,8 @@ export default async (options: Options = {}) => {
   const watch = !!(options.watch ?? process.env.NODE_ENV !== "production");
   const schema = options.graphql?.schema ?? "graphql/schema.gql";
   await injectGenerator({ path: options.inject?.path });
-  await routeGenerator({ ...options.routes, watch });
+  await pageGenerator({ ...options.page, watch });
   await graphqlSchemaGenerator({ ...options.graphql, watch, schema });
   await databaseSchemaGenerator({ ...options.database, watch, graphql: schema });
-  watch && devServer({ inject: options.inject?.declarations });
+  watch && devServer({ inject: options.inject });
 };

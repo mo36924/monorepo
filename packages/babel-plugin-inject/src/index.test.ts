@@ -1,6 +1,6 @@
-import { transformSync, TransformOptions } from "@babel/core";
-import { describe, test, expect } from "@jest/globals";
-import plugin from "./index";
+import { TransformOptions, transformSync } from "@babel/core";
+import { describe, expect, test } from "@jest/globals";
+import plugin, { Options } from "./index";
 
 const options: TransformOptions = {
   babelrc: false,
@@ -9,10 +9,12 @@ const options: TransformOptions = {
     [
       plugin,
       {
-        Promise: ["promise-polyfill"],
-        fetch: ["whatwg-fetch", "fetch"],
-        _Headers: ["whatwg-fetch", "Headers"],
-      },
+        declarations: {
+          Promise: ["promise-polyfill"],
+          fetch: ["whatwg-fetch", "fetch"],
+          _Headers: ["whatwg-fetch", "Headers"],
+        },
+      } as Options,
     ],
   ],
 };

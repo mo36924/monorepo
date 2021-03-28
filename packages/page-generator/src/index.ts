@@ -16,22 +16,22 @@ export type Options = {
 const defaultOptions: Required<Options> = {
   watch: process.env.NODE_ENV !== "production",
   dir: "pages",
-  component: "components/Router.tsx",
-  template: "components/Router.template.tsx",
+  component: "components/Pages.tsx",
+  template: "components/Pages.template.tsx",
   include: ["**/*.tsx"],
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
 
 const defaultTemplate = `
-export const match = matchFactory(
+export const match = pageMatch(
   {
-    /*__staticRoutes__*/
+    /*__staticPages__*/
   },
   [
-    /*__dynamicRoutes__*/
+    /*__dynamicPages__*/
   ],
 );
-export default routerFactory(match);
+export default pages(match);
 `;
 
 export default async (options?: Options) => {
@@ -157,18 +157,18 @@ export default async (options?: Options) => {
       .flatMap(([_dir, names]) => names.map((name) => pathToRoute(resolve(dir, _dir, name))))
       .sort((a, b) => (b.rank as any) - (a.rank as any));
 
-    const staticRoutes = [];
-    const dynamicRoutes = [];
+    const staticPages = [];
+    const dynamicPages = [];
 
     for (const { importPath, routePath, isDynamic, paramNames } of pagePaths) {
       if (isDynamic) {
         const params = paramNames.map((name) => `${name}: string`).join();
 
-        dynamicRoutes.push(
-          `[${routePath}, ${JSON.stringify(paramNames)}, lazy<{${params}}>(() => import('${importPath}'))]`,
+        dynamicPages.push(
+          `[${routePath}, ${JSON.stringify(paramNames)}, (): ImportPage<{${params}}> => import('${importPath}')]`,
         );
       } else {
-        staticRoutes.push(`'${routePath}': lazy<any>(() => import('${importPath}'))`);
+        staticPages.push(`'${routePath}': (): ImportPage<any> => import('${importPath}')`);
       }
     }
 
@@ -181,9 +181,7 @@ export default async (options?: Options) => {
       await writeFileAsync(template, code);
     }
 
-    code = code
-      .replace("/*__staticRoutes__*/", staticRoutes.join())
-      .replace("/*__dynamicRoutes__*/", dynamicRoutes.join());
+    code = code.replace("/*__staticPages__*/", staticPages.join()).replace("/*__dynamicPages__*/", dynamicPages.join());
 
     code = await format(code, component);
     await writeFileAsync(component, code);

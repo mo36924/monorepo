@@ -1,14 +1,14 @@
 import changestate from "@mo36924/changestate";
-import type { Match } from "@mo36924/match-factory";
+import type { Match } from "@mo36924/page-match";
 import { useEffect, useState } from "react";
 
 export default (match: Match) => (props: { url: URL }) => {
-  const [context, setContext] = useState(match(props.url));
+  const [element, setElement] = useState(match(props.url));
 
   useEffect(() => {
     const handleChangestate = () => {
-      const context = match(new URL(location.href));
-      context && context.route.load().then(() => setContext(context));
+      const element = match(new URL(location.href));
+      element && element.type.load().then(() => setElement(element));
     };
 
     addEventListener(changestate, handleChangestate);
@@ -18,5 +18,5 @@ export default (match: Match) => (props: { url: URL }) => {
     };
   }, []);
 
-  return context && <context.route {...context.props} />;
+  return element;
 };

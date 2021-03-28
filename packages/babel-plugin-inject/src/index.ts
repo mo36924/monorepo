@@ -2,11 +2,13 @@ import { resolve } from "path";
 import type { default as babel, PluginObj } from "@babel/core";
 
 export type Options = {
-  [name: string]: [source: string] | [source: string, name?: string];
+  declarations?: {
+    [name: string]: [source: string] | [source: string, name?: string];
+  };
 };
 
 export default ({ types: t, template }: typeof babel, options: Options): PluginObj => {
-  const injectOptions = Object.entries(options).map(([identifier, imports]) => {
+  const injectOptions = Object.entries(options.declarations ?? {}).map(([identifier, imports]) => {
     if (imports[0][0] === ".") {
       imports = [resolve(imports[0]), imports[1]];
     }
