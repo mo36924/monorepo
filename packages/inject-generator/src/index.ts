@@ -8,8 +8,9 @@ type Options = {
 
 const inject = `
 import type _changestate from "@mo36924/changestate";
+import type { ImportPage as _ImportPage } from "@mo36924/page";
 import type _pageMatch from "@mo36924/page-match";
-import type _pages, { ImportPage as _ImportPage } from "@mo36924/pages";
+import type _pages from "@mo36924/pages";
 import type React from "react";
 import type ReactDom from "react-dom";
 import type ReactDomServer from "react-dom/server";
@@ -50,7 +51,7 @@ declare global {
   const unmountComponentAtNode: typeof ReactDom.unmountComponentAtNode;
   const renderToStaticMarkup: typeof ReactDomServer.renderToStaticMarkup;
   const renderToString: typeof ReactDomServer.renderToString;
-  type ImportPage<T>: _ImportPage<T>;
+  type ImportPage<T> = _ImportPage<T>;
   type ComponentType<T = {}> = React.ComponentType<T>;
 }
 `;
