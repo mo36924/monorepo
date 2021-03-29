@@ -1,18 +1,21 @@
-import graphqlMiddleware from "@mo36924/graphql-middleware";
+import graphqlMiddleware, { Options as GraphqlMiddlewareOptions } from "@mo36924/graphql-middleware";
 import type { MiddlewareFactory } from "@mo36924/http-server";
 import { execute, ExecutionArgs, getOperationAST, GraphQLSchema } from "graphql";
 import pg, { PoolConfig } from "pg";
 import fieldResolver from "./field-resolver";
 
-type Options = { schema: GraphQLSchema; main: PoolConfig; replica?: PoolConfig };
+type Options = Omit<GraphqlMiddlewareOptions, "execute"> & {
+  schema: GraphQLSchema;
+  main: PoolConfig;
+  replica?: PoolConfig;
+};
 
 export default (options: Options): MiddlewareFactory => async (server) => {
-  const schema = options.schema;
   const main = new pg.Pool(options.main);
   const replica = new pg.Pool(options.replica ?? options.main);
 
   const middleware = await graphqlMiddleware({
-    schema: schema,
+    ...options,
     execute: async (_req, _res, schema, document, variables, operationName) => {
       const executionArgs: ExecutionArgs = {
         schema,

@@ -1,13 +1,13 @@
 import { stringify } from "querystring";
 import { describe, expect, it } from "@jest/globals";
 import { createServer } from "@mo36924/http-server";
-import { buildSchema, execute } from "graphql";
+import { execute, parse } from "graphql";
 import fetch from "node-fetch";
 import index from "./index";
 
 describe("http-server", () => {
   it("listen", async () => {
-    const schema = buildSchema(`
+    const ast = parse(`
       type Query {
         count: Int
       }
@@ -17,7 +17,7 @@ describe("http-server", () => {
 
     server.use(
       index({
-        schema,
+        ast,
         async execute(req, res, schema, document, variables, operationName) {
           return await execute(schema, document, { count: 1 }, {}, variables, operationName);
         },

@@ -29,7 +29,7 @@ export type Execute = (
 ) => Promise<ExecutionResult>;
 export type Send = (req: IncomingMessage, res: ServerResponse, result: FormattedExecutionResult) => Promise<any>;
 export type Options = {
-  schema: GraphQLSchema;
+  ast: DocumentNode;
   execute: Execute;
   send?: Send;
   graphiql?: GraphiQLOptions | boolean;

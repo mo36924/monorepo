@@ -4,6 +4,7 @@ import type { Middleware } from "@mo36924/http-server";
 import accepts from "accepts";
 import type { GraphiQLOptions } from "express-graphql/renderGraphiQL";
 import {
+  buildASTSchema,
   DocumentNode,
   executeSync,
   getOperationAST,
@@ -21,7 +22,7 @@ import type { ExecutionResult, GraphQLParams, Options } from "./type";
 import { validateSchema } from "./validate-schema";
 
 export default async (options: Options): Promise<Middleware> => {
-  const schema = options.schema;
+  const schema = buildASTSchema(options.ast);
   const execute = options.execute;
   const send = options.send ?? defaultSend;
   const graphiql = options.graphiql ?? true;

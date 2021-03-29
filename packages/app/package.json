@@ -33,6 +33,7 @@
     "@mo36924/graphql-database-schema-generator": "^1.1.13",
     "@mo36924/graphql-schema-generator": "^1.1.0",
     "@mo36924/http-server": "^1.1.44",
+    "@mo36924/hydrate": "^1.1.44",
     "@mo36924/inject-type": "^1.1.42",
     "@mo36924/page": "^1.1.38",
     "@mo36924/page-generator": "^1.1.38",

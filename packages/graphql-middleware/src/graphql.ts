@@ -2,6 +2,7 @@ import type { IncomingMessage } from "http";
 import { parse as querystring } from "querystring";
 import type { Middleware } from "@mo36924/http-server";
 import {
+  buildASTSchema,
   DocumentNode,
   getOperationAST,
   GraphQLError,
@@ -18,7 +19,7 @@ import type { ExecutionResult, GraphQLParams, Options } from "./type";
 import { validateSchema } from "./validate-schema";
 
 export default async (options: Options): Promise<Middleware> => {
-  const schema = options.schema;
+  const schema = buildASTSchema(options.ast);
   const execute = options.execute;
   const send = options.send ?? defaultSend;
   const schemaValidationErrors = validateSchema(schema);
