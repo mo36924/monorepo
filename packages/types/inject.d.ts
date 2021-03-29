@@ -1,4 +1,5 @@
 import type * as components from "@mo36924/components";
+import type _hydrate from "@mo36924/hydrate";
 import type { PromisePageModule as _PromisePageModule } from "@mo36924/page";
 import type _pageMatch from "@mo36924/page-match";
 import type _pages from "@mo36924/pages";
@@ -8,6 +9,7 @@ import type ReactDomServer from "react-dom/server";
 
 declare global {
   const { Body, Head, Html, Title } = components;
+  const hydrate: typeof _hydrate;
   const pageMatch: typeof _pageMatch;
   const pages: typeof _pages;
   const Children: typeof React.Children;
@@ -37,7 +39,6 @@ declare global {
   const useState: typeof React.useState;
   const createPortal: typeof ReactDom.createPortal;
   const findDOMNode: typeof ReactDom.findDOMNode;
-  const hydrate: typeof ReactDom.hydrate;
   const render: typeof ReactDom.render;
   const unmountComponentAtNode: typeof ReactDom.unmountComponentAtNode;
   const renderToStaticMarkup: typeof ReactDomServer.renderToStaticMarkup;
