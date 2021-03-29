@@ -17,6 +17,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
   "dependencies": {
     "@mo36924/page-match": "^1.1.38",
     "@mo36924/pages": "^1.1.38",
