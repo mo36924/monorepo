@@ -26,7 +26,7 @@ jest.mock("uuid", () => {
 
 jest.useFakeTimers("modern").setSystemTime(new Date("2020-01-01").getTime());
 
-describe("graphql-postgres-query", () => {
+describe("graphql-postgres-json-query", () => {
   beforeEach(() => {
     i = 0;
   });

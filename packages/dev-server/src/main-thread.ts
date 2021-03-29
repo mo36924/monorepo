@@ -1,4 +1,4 @@
-import { access, readFile, unlink, writeFile } from "fs/promises";
+import { readFile, unlink, writeFile } from "fs/promises";
 import { createServer } from "http";
 import { extname, resolve } from "path";
 import { env } from "process";
@@ -27,6 +27,7 @@ const tsconfig = `{
     "jsx": "preserve",
     "jsxImportSource": "react",
     "importsNotUsedAsValues": "error",
+    "types": ["@mo36924/types"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
@@ -51,17 +52,9 @@ const port = parseInt(env.PORT!, 10) || 3000;
 const workerPort = (port + 1).toFixed();
 
 export default async (options: Options = {}) => {
-  const [serverTs, serverTsx, clientTs, clientTsx, cache] = await Promise.allSettled([
-    access("server/index.ts"),
-    access("server/index.tsx"),
-    access("client/index.ts"),
-    access("client/index.tsx"),
-    readFile(cachePath, "utf8"),
-    writeFile(tsconfigPath, tsconfig),
-  ]);
-
-  const serverInput = serverTs.status === "fulfilled" ? "server/index.ts" : "server/index.tsx";
-  const clientInput = clientTs.status === "fulfilled" ? "client/index.ts" : "client/index.tsx";
+  const [cache] = await Promise.allSettled([readFile(cachePath, "utf8"), writeFile(tsconfigPath, tsconfig)]);
+  const serverInput = "lib/index.ts";
+  const clientInput = "lib/index.client.ts";
 
   let tsBuildInfo: string | undefined;
   const tsCache: { [path: string]: string } = Object.create(null);
