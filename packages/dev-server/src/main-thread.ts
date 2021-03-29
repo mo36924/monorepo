@@ -189,7 +189,13 @@ export default async (options: Options = {}) => {
         try {
           const data = await readFile(path, "utf8");
           const documentNode = parse(data, { noLocation: true });
-          const code = `export default JSON.stringify(${JSON.stringify(JSON.stringify(documentNode))});`;
+          const documentNodeJson = JSON.stringify(documentNode);
+
+          const documentNodeString = documentNodeJson.includes("'")
+            ? JSON.stringify(documentNodeJson)
+            : `'${documentNodeJson}'`;
+
+          const code = `export default JSON.parse(${documentNodeString});`;
           assetCache[path] = code;
           return code;
         } catch {

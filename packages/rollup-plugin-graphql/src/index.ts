@@ -15,7 +15,13 @@ export default (options: Options = {}): Plugin => {
 
       try {
         const documentNode = parse(code, { noLocation: true });
-        return `export default JSON.parse(${JSON.stringify(JSON.stringify(documentNode))});`;
+        const documentNodeJson = JSON.stringify(documentNode);
+
+        const documentNodeString = documentNodeJson.includes("'")
+          ? JSON.stringify(documentNodeJson)
+          : `'${documentNodeJson}'`;
+
+        return `export default JSON.parse(${documentNodeString});`;
       } catch (err) {
         const message = "Could not parse GraphQL file";
         this.warn({ id, message });
