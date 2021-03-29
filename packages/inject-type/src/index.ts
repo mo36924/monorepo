@@ -1,13 +1,4 @@
-import { mkdir, writeFile } from "fs/promises";
-import { dirname } from "path";
-import prettier from "prettier";
-
-type Options = {
-  path?: string;
-};
-
-const inject = `
-import type { PromisePageModule as _PromisePageModule } from "@mo36924/page";
+import type * as _page from "@mo36924/page";
 import type _pageMatch from "@mo36924/page-match";
 import type _pages from "@mo36924/pages";
 import type React from "react";
@@ -30,7 +21,7 @@ declare global {
   const createRef: typeof React.createRef;
   const forwardRef: typeof React.forwardRef;
   const isValidElement: typeof React.isValidElement;
-  const lazy: typeof _lazy;
+  const lazy: typeof React.lazy;
   const memo: typeof React.memo;
   const useCallback: typeof React.useCallback;
   const useContext: typeof React.useContext;
@@ -49,25 +40,6 @@ declare global {
   const unmountComponentAtNode: typeof ReactDom.unmountComponentAtNode;
   const renderToStaticMarkup: typeof ReactDomServer.renderToStaticMarkup;
   const renderToString: typeof ReactDomServer.renderToString;
-  type PromisePageModule<T> = _PromisePageModule<T>;
+  type PromisePageModule<T> = _page.PromisePageModule<T>;
   type ComponentType<T = {}> = React.ComponentType<T>;
 }
-`;
-
-let formatted = "";
-
-export default async (options: Options = {}) => {
-  const path = options.path ?? "inject.d.ts";
-
-  if (!formatted) {
-    const prettierConfig = await prettier.resolveConfig(path);
-    formatted = prettier.format(inject, { ...prettierConfig, filepath: path });
-  }
-
-  try {
-    await writeFile(path, formatted);
-  } catch {
-    await mkdir(dirname(path), { recursive: true });
-    await writeFile(path, formatted);
-  }
-};

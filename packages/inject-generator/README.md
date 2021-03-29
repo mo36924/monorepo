@@ -1,3 +1,0 @@
-# inject-generator
-
-inject-generator
