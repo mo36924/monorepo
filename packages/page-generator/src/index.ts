@@ -7,7 +7,7 @@ import prettier from "prettier";
 export type Options = {
   watch?: boolean;
   dir?: string;
-  component?: string;
+  file?: string;
   template?: string;
   include?: string[];
   exclude?: string[];
@@ -16,33 +16,30 @@ export type Options = {
 const defaultOptions: Required<Options> = {
   watch: process.env.NODE_ENV !== "production",
   dir: "pages",
-  component: "components/Pages.tsx",
-  template: "components/Pages.template.tsx",
+  file: "lib/pages.ts",
+  template: "lib/pages.template.ts",
   include: ["**/*.tsx"],
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
 
 const defaultTemplate = `
-export const match = pageMatch(
-  {
-    /*__staticPages__*/
-  },
-  [
-    /*__dynamicPages__*/
-  ],
-);
-export default pages(match);
+export const staticPages = {
+  /*__staticPages__*/
+};
+export const dynamicPages = [
+  /*__dynamicPages__*/
+];
 `;
 
 export default async (options?: Options) => {
-  const { watch: watchMode, dir, component, template, include, exclude } = {
+  const { watch: watchMode, dir, file, template, include, exclude } = {
     ...defaultOptions,
     ...options,
   };
 
   await Promise.all([
     mkdir(dir, { recursive: true }),
-    mkdir(dirname(component), { recursive: true }),
+    mkdir(dirname(file), { recursive: true }),
     mkdir(dirname(template), { recursive: true }),
   ]);
 
@@ -101,7 +98,7 @@ export default async (options?: Options) => {
         "$/";
     }
 
-    let importPath = relative(dirname(component), nonExtAbsolutePath).split(sep).join("/");
+    let importPath = relative(dirname(file), nonExtAbsolutePath).split(sep).join("/");
 
     if (importPath[0] !== "." && importPath[0] !== "/") {
       importPath = `./${importPath}`;
@@ -177,14 +174,14 @@ export default async (options?: Options) => {
     try {
       code = await readFile(template, "utf8");
     } catch {
-      code = await format(defaultTemplate, component);
+      code = await format(defaultTemplate, file);
       await writeFileAsync(template, code);
     }
 
     code = code.replace("/*__staticPages__*/", staticPages.join()).replace("/*__dynamicPages__*/", dynamicPages.join());
 
-    code = await format(code, component);
-    await writeFileAsync(component, code);
+    code = await format(code, file);
+    await writeFileAsync(file, code);
   }
 };
 
