@@ -37,8 +37,7 @@
     "@mo36924/babel-plugin-jsx-development": "^1.1.31",
     "@mo36924/babel-plugin-replace": "^1.1.27",
     "@mo36924/babel-plugin-resolve": "^1.1.31",
-    "@mo36924/babel-plugin-resolve-subpath": "^1.1.31",
-    "@mo36924/react-lazy": "^1.1.34"
+    "@mo36924/babel-plugin-resolve-subpath": "^1.1.31"
   },
   "peerDependencies": {
     "@babel/core": "^7.13.10"

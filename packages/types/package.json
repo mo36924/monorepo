@@ -26,6 +26,7 @@
     }
   },
   "dependencies": {
+    "@mo36924/components": "^1.1.50",
     "@mo36924/page": "^1.1.38",
     "@mo36924/page-match": "^1.1.38",
     "@mo36924/pages": "^1.1.38",

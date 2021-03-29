@@ -29,6 +29,7 @@
     }
   },
   "dependencies": {
+    "@mo36924/components": "^1.1.50",
     "@mo36924/dev-server": "^1.1.43",
     "@mo36924/graphql-database-schema-generator": "^1.1.13",
     "@mo36924/graphql-schema-generator": "^1.1.0",

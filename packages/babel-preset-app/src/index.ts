@@ -189,6 +189,10 @@ export default (_api: Api, options: Options): TransformOptions => {
         {
           declarations: {
             ..._inject.declarations,
+            Body: ["@mo36924/components", "Body"],
+            Head: ["@mo36924/components", "Head"],
+            Html: ["@mo36924/components", "Html"],
+            Title: ["@mo36924/components", "Title"],
             pageMatch: ["@mo36924/page-match", "default"],
             pages: ["@mo36924/pages", "default"],
             Children: ["react", "Children"],
