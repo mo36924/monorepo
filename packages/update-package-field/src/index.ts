@@ -56,6 +56,7 @@ export default async () => {
           module: undefined,
           browser: undefined,
           bin: undefined,
+          types: undefined,
           exports: undefined,
           ...JSON.parse(await readFile(path, "utf8")),
           ...pkg,
