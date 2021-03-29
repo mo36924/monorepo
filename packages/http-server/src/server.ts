@@ -7,7 +7,7 @@ import { Response } from "./response";
 type PromiseOrValue<T> = Promise<T> | T;
 
 export type MiddlewareFactory = (server: Server) => PromiseOrValue<void | Middleware>;
-export type Middleware = (request: Request, response: Response) => PromiseOrValue<void | true>;
+export type Middleware = (request: Request, response: Response) => PromiseOrValue<void | null | undefined | boolean>;
 export type Options = {
   Request?: typeof Request;
   Response?: typeof Response;

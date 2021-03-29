@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/ssr-middleware",
-  "version": "1.1.38",
-  "description": "ssr-middleware",
+  "name": "@mo36924/hydrate",
+  "version": "1.0.0",
+  "description": "hydrate",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,26 +12,17 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/ssr-middleware"
+    "directory": "packages/hydrate"
   },
   "publishConfig": {
     "access": "public"
   },
-  "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js"
-    }
-  },
   "dependencies": {
-    "@mo36924/http-server": "^1.1.29",
     "@mo36924/page-match": "^1.1.38",
+    "@mo36924/pages": "^1.1.38",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-ssr-prepass": "^1.4.0"
+    "react-dom": "^17.0.2"
   }
 }
