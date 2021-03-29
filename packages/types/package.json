@@ -24,5 +24,12 @@
     ".": {
       "import": "./index.js"
     }
+  },
+  "dependencies": {
+    "@mo36924/page": "^1.1.38",
+    "@mo36924/page-match": "^1.1.38",
+    "@mo36924/pages": "^1.1.38",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3"
   }
 }

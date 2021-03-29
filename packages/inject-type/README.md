@@ -1,3 +1,0 @@
-# inject-type
-
-inject-type

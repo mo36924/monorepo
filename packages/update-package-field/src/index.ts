@@ -1,5 +1,5 @@
-import { readdir, readFile, writeFile, access } from "fs/promises";
-import { join, dirname, basename } from "path";
+import { access, readdir, readFile, writeFile } from "fs/promises";
+import { basename, dirname, join } from "path";
 import glob from "fast-glob";
 import prettier from "prettier";
 

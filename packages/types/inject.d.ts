@@ -1,4 +1,4 @@
-import type * as _page from "@mo36924/page";
+import type { PromisePageModule as _PromisePageModule } from "@mo36924/page";
 import type _pageMatch from "@mo36924/page-match";
 import type _pages from "@mo36924/pages";
 import type React from "react";
@@ -40,6 +40,6 @@ declare global {
   const unmountComponentAtNode: typeof ReactDom.unmountComponentAtNode;
   const renderToStaticMarkup: typeof ReactDomServer.renderToStaticMarkup;
   const renderToString: typeof ReactDomServer.renderToString;
-  type PromisePageModule<T> = _page.PromisePageModule<T>;
+  type PromisePageModule<T> = _PromisePageModule<T>;
   type ComponentType<T = {}> = React.ComponentType<T>;
 }

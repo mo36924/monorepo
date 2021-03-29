@@ -1,1 +1,2 @@
 import "./extension";
+import "./inject";

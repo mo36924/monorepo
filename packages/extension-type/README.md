@@ -1,3 +1,0 @@
-# extension-type
-
-extension-type
