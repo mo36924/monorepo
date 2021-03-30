@@ -1,3 +1,4 @@
+import { context } from "@mo36924/graphql-react";
 import type { MiddlewareFactory } from "@mo36924/http-server";
 import type { Match } from "@mo36924/page-match";
 import { StrictMode } from "react";
@@ -15,7 +16,14 @@ export default (match: Match): MiddlewareFactory => () => async (request, respon
     return;
   }
 
-  const element = <StrictMode>{page}</StrictMode>;
+  const graphql = Object.create(null);
+
+  const element = (
+    <StrictMode>
+      <context.Provider value={graphql}>{page}</context.Provider>
+    </StrictMode>
+  );
+
   await prepass(element);
   await response.send("<!DOCTYPE html>" + renderToString(element));
   return true;

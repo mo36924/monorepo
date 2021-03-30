@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/ssr-middleware",
-  "version": "1.1.51",
-  "description": "ssr-middleware",
+  "name": "@mo36924/node-fetch-polyfill",
+  "version": "1.0.0",
+  "description": "node-fetch-polyfill",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/ssr-middleware"
+    "directory": "packages/node-fetch-polyfill"
   },
   "publishConfig": {
     "access": "public"
@@ -26,13 +26,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/http-server": "^1.1.44",
-    "@mo36924/page-match": "^1.1.51",
-    "@mo36924/graphql-react": "^1.1.54",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.3",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-ssr-prepass": "^1.4.0"
+    "@types/node-fetch": "^2.5.8",
+    "node-fetch": "^2.6.1"
   }
 }

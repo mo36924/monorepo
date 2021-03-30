@@ -27,7 +27,6 @@ const tsconfig = `{
     "jsx": "preserve",
     "jsxImportSource": "react",
     "importsNotUsedAsValues": "error",
-    "types": ["@mo36924/types"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]

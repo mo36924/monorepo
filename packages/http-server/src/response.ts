@@ -86,7 +86,5 @@ export class Response extends ServerResponse {
   }
 }
 
-Object.assign(Response.prototype, {
-  request: null as any,
-  _type: null,
-} as Partial<Response>);
+Response.prototype.request = null as any;
+Response.prototype._type = null;

@@ -1,4 +1,4 @@
-import { expect, it, describe } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import fetch from "node-fetch";
 import { createServer } from "./index";
 

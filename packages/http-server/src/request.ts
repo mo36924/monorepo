@@ -166,25 +166,23 @@ export class Request extends IncomingMessage {
   }
 }
 
-Object.assign(Request.prototype, {
-  response: null as any,
-  port: "",
-  _host: null,
-  _origin: null,
-  _href: null,
-  __url: null,
-  __path: null,
-  _accepts: null,
-  _type: null,
-  _types: null,
-  _encoding: null,
-  _encodings: null,
-  _charset: null,
-  _charsets: null,
-  _language: null,
-  _languages: null,
-  _cookie: null,
-  _sessionStore: Object.create(null),
-  ___session: "{}",
-  _session: null,
-} as Partial<Request>);
+Request.prototype.response = null as any;
+Request.prototype.port = "";
+Request.prototype._host = null;
+Request.prototype._origin = null;
+Request.prototype._href = null;
+Request.prototype.__url = null;
+Request.prototype.__path = null;
+Request.prototype._accepts = null;
+Request.prototype._type = null;
+Request.prototype._types = null;
+Request.prototype._encoding = null;
+Request.prototype._encodings = null;
+Request.prototype._charset = null;
+Request.prototype._charsets = null;
+Request.prototype._language = null;
+Request.prototype._languages = null;
+Request.prototype._cookie = null;
+Request.prototype._sessionStore = Object.create(null);
+Request.prototype.___session = "{}";
+Request.prototype._session = null;

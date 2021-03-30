@@ -7,7 +7,7 @@ export const Head = (props: PropsWithChildren<{ prefix?: "website" | "article" }
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     {props.children}
-    <script src="/index.js" type="module"></script>
-    <script src="/index.system.js" noModule defer></script>
+    <script src="/index.js" type="module" />
+    <script src="/index.system.js" noModule defer />
   </head>
 );

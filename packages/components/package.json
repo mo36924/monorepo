@@ -26,5 +26,8 @@
       "browser": "./dist/index.client.js",
       "import": "./dist/index.js"
     }
+  },
+  "dependencies": {
+    "@mo36924/graphql-react": "^1.1.54"
   }
 }

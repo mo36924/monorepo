@@ -9,6 +9,7 @@ export default async () => {
   for (const path of paths) {
     try {
       await access(join(path, "..", "src"));
+      await access(join(path, "..", "dist"));
     } catch {
       continue;
     }
