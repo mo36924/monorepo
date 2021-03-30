@@ -1,5 +1,6 @@
 import { text } from "@mo36924/escape";
 import { stringify } from "@mo36924/graphql-json";
+import { useContext } from "react";
 import { context } from "./context";
 
 export const GraphQLScript = () => (

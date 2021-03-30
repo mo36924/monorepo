@@ -1,4 +1,4 @@
-import { access, readdir, readFile, writeFile } from "fs/promises";
+import { readdir, readFile, writeFile } from "fs/promises";
 import { basename, dirname, join } from "path";
 import glob from "fast-glob";
 import prettier from "prettier";
@@ -7,10 +7,9 @@ export default async () => {
   const paths = await glob("packages/*/package.json");
 
   for (const path of paths) {
-    try {
-      await access(join(path, "..", "src"));
-      await access(join(path, "..", "dist"));
-    } catch {
+    const name = basename(dirname(path));
+
+    if (name === "types") {
       continue;
     }
 
@@ -32,7 +31,7 @@ export default async () => {
 
       if (files.includes("bin.js")) {
         pkg.bin = {
-          [basename(dirname(path))]: "./dist/bin.js",
+          [name]: "./dist/bin.js",
         };
       }
 
