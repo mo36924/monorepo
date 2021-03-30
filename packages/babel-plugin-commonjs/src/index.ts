@@ -1,3 +1,5 @@
+import { createRequire } from "module";
+import { resolve } from "path";
 import type { default as babel, NodePath, PluginObj, PluginPass } from "@babel/core";
 
 export type Options = { [name: string]: string[] };
@@ -6,11 +8,13 @@ type State = PluginPass & {
   hasRequire: boolean;
 };
 
+const _require = createRequire(resolve("index.js"));
+
 export default ({ types: t }: typeof babel, options: Options): PluginObj<State> => {
   const namedExports: Options = Object.create(null);
 
   for (const [mod, names] of Object.entries(options)) {
-    namedExports[require.resolve(mod)] = names;
+    namedExports[_require.resolve(mod)] = names;
   }
 
   const log = (path: NodePath<any>, msg: string) => {

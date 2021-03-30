@@ -1,14 +1,17 @@
-import { transformSync } from "@babel/core";
-import { describe, test, expect } from "@jest/globals";
-import plugin from "./index";
+import { createRequire } from "module";
+import { resolve } from "path";
+import { TransformOptions, transformSync } from "@babel/core";
+import { describe, expect, test } from "@jest/globals";
+import plugin, { Options } from "./index";
 
-const transform = (code: string) =>
+const transform = (code: string, opts: TransformOptions = {}) =>
   transformSync(code, {
     babelrc: false,
     configFile: false,
     sourceType: "module",
     filename: "index.js",
-    plugins: [[plugin]],
+    plugins: [[plugin, { react: ["createElement"] } as Options]],
+    ...opts,
   });
 
 describe("babel-plugin-commonjs", () => {
@@ -63,6 +66,24 @@ describe("babel-plugin-commonjs", () => {
       }
 
       export default module.exports;
+    `);
+  });
+
+  test("named export", () => {
+    const _require = createRequire(resolve("index.js"));
+    const react = _require.resolve("react");
+
+    const code = transform(`Object.assign(module.exports, {createElement: () => {}});`, { filename: react });
+
+    expect(code).toMatchInlineSnapshot(`
+      const module = {
+        exports: {},
+      };
+      Object.assign(module.exports, {
+        createElement: () => {},
+      });
+      export default module.exports;
+      export const { createElement } = module.exports;
     `);
   });
 });

@@ -1,5 +1,5 @@
 import { createRequire } from "module";
-import { join } from "path";
+import { resolve } from "path";
 import process from "process";
 import type { ConfigAPI, default as babel, TransformOptions } from "@babel/core";
 // @ts-ignore
@@ -15,10 +15,10 @@ import iifeUnwrap from "@mo36924/babel-plugin-iife-unwrap";
 import inject, { Options as injectOptions } from "@mo36924/babel-plugin-inject";
 import jsxDev from "@mo36924/babel-plugin-jsx-development";
 import replace from "@mo36924/babel-plugin-replace";
-import resolve, { Options as resolveOptions } from "@mo36924/babel-plugin-resolve";
+import _resolve, { Options as resolveOptions } from "@mo36924/babel-plugin-resolve";
 import subpath from "@mo36924/babel-plugin-resolve-subpath";
 
-const _require = createRequire(join(process.cwd(), "index.js"));
+const _require = createRequire(resolve("index.js"));
 
 type Api = ConfigAPI & typeof babel;
 
@@ -129,7 +129,7 @@ export default (_api: Api, options: Options): TransformOptions => {
       [deadCodeElimination],
       [iifeUnwrap],
       [
-        resolve,
+        _resolve,
         {
           ignoreBuiltins: __SERVER__,
           ignoreBareImport: __SERVER__,
