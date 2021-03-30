@@ -8,20 +8,18 @@ import react from "@babel/preset-react";
 // @ts-ignore
 import typescript from "@babel/preset-typescript";
 import deadCodeElimination from "@mo36924/babel-plugin-dead-code-elimination";
-import type { Options as injectOptions } from "@mo36924/babel-plugin-inject";
 import resolve, { Options as resolveOptions } from "@mo36924/babel-plugin-resolve";
 
 type Api = ConfigAPI & typeof babel;
 
 export type Options = {
   target?: "client" | "server";
-  inject?: injectOptions;
 };
 
 const { NODE_TARGET } = process.env;
 
 export default (_api: Api, options: Options): TransformOptions => {
-  const { target = NODE_TARGET ?? "server", inject: _inject = {} } = options;
+  const target = options.target ?? NODE_TARGET ?? "server";
   const server = target === "server";
 
   return {
