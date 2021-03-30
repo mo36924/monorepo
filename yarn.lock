@@ -2723,6 +2723,13 @@ babel-plugin-polyfill-regenerator@^0.1.2:
   resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-resolve-subpath/-/babel-plugin-resolve-subpath-1.1.7.tgz#550fdfc3488e41be12c10dc9cfaaecfd09951a6a"
   integrity sha512-HfAg3ryyF2fbffII3kJrxk7tucowUY1RwRFqZCsHdwb0N0iacK17G7G9wNz5P4QDFaIU/ZzH8Swvo1Rbc592iQ==
 
+"babel-plugin-resolve@npm:@mo36924/babel-plugin-resolve@1.1.31":
+  version "1.1.31"
+  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-resolve/-/babel-plugin-resolve-1.1.31.tgz#c1b1bf4d58180b20eb880255ab92cfcb8387b847"
+  integrity sha512-ep4V6AidzmVNbHWl8AkBno6DI3jVWecHGA/OMt9DV7hA76+s12g5YklXJ2ZVcI78eYw1cBcYb65B+sxaj83MpA==
+  dependencies:
+    enhanced-resolve "^5.7.0"
+
 babel-preset-current-node-syntax@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/babel-preset-current-node-syntax/-/babel-preset-current-node-syntax-1.0.1.tgz#b4399239b89b2a011f9ddbe3e4f401fc40cff73b"

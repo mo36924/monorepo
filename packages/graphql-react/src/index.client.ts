@@ -1,4 +1,4 @@
-export * from "./cache.client";
+export * from "./cache";
 export * from "./context";
 export * from "./GraphQLScript";
-export * from "./useQuery.client";
+export * from "./useQuery";

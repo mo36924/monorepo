@@ -7,7 +7,6 @@ import env, { Options as envOptions } from "@babel/preset-env";
 import react from "@babel/preset-react";
 // @ts-ignore
 import typescript from "@babel/preset-typescript";
-import deadCodeElimination from "@mo36924/babel-plugin-dead-code-elimination";
 import resolve, { Options as resolveOptions } from "@mo36924/babel-plugin-resolve";
 
 type Api = ConfigAPI & typeof babel;
@@ -19,8 +18,7 @@ export type Options = {
 const { NODE_TARGET } = process.env;
 
 export default (_api: Api, options: Options): TransformOptions => {
-  const target = options.target ?? NODE_TARGET ?? "server";
-  const server = target === "server";
+  const target = (options.target ?? NODE_TARGET) === "client" ? "client" : "server";
 
   return {
     presets: [
@@ -48,47 +46,28 @@ export default (_api: Api, options: Options): TransformOptions => {
       ],
     ],
     plugins: [
-      [deadCodeElimination],
       [
         resolve,
         {
           ignoreBuiltins: true,
           ignoreBareImport: true,
-          extensions: server
-            ? [
-                ".server.tsx",
-                ".server.ts",
-                ".server.jsx",
-                ".server.mjs",
-                ".server.js",
-                ".server.cjs",
-                ".server.json",
-                ".tsx",
-                ".ts",
-                ".jsx",
-                ".mjs",
-                ".js",
-                ".cjs",
-                ".json",
-                ".node",
-              ]
-            : [
-                ".client.tsx",
-                ".client.ts",
-                ".client.jsx",
-                ".client.mjs",
-                ".client.js",
-                ".client.cjs",
-                ".client.json",
-                ".tsx",
-                ".ts",
-                ".jsx",
-                ".mjs",
-                ".js",
-                ".cjs",
-                ".json",
-                ".node",
-              ],
+          extensions: [
+            `.${target}.tsx`,
+            `.${target}.ts`,
+            `.${target}.jsx`,
+            `.${target}.mjs`,
+            `.${target}.js`,
+            `.${target}.cjs`,
+            `.${target}.json`,
+            ".tsx",
+            ".ts",
+            ".jsx",
+            ".mjs",
+            ".js",
+            ".cjs",
+            ".json",
+            ".node",
+          ],
         } as resolveOptions,
       ],
       [constant],

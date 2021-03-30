@@ -1,8 +1,11 @@
-import { join, parse, relative, resolve } from "path";
-import presetEnv from "@babel/preset-env";
-import presetReact from "@babel/preset-react";
+import { parse, relative, resolve } from "path";
+import constant from "@babel/plugin-transform-react-constant-elements";
+import env from "@babel/preset-env";
+import react from "@babel/preset-react";
+import typescript from "@babel/preset-typescript";
 import { babel } from "@rollup/plugin-babel";
-import resolveSubpath from "babel-plugin-resolve-subpath";
+import _resolve from "babel-plugin-resolve";
+import subpath from "babel-plugin-resolve-subpath";
 import glob from "fast-glob";
 import MagicString from "magic-string";
 import dts from "rollup-plugin-dts";
@@ -26,12 +29,12 @@ const host = ts.createWatchCompilerHost(
     outDir: false,
     sourceMap: true,
     inlineSourceMap: false,
-    inlineSources: false,
+    inlineSources: true,
   },
   {
     ...sys,
     writeFile(path, data) {
-      cache[path] = data;
+      cache[path.replace(/\.js(x)?(\.map)?$/, ".ts$1$2")] = data;
     },
   },
   ts.createEmitAndSemanticDiagnosticsBuilderProgram,
@@ -60,26 +63,11 @@ export default async () => {
 
   /** @type {import("rollup").Plugin} */
   const cachePlugin = {
-    resolveId(source, importer) {
-      if (!importer) {
-        const _source = resolve(source.replace(/\.ts(x)?$/, ".js$1"));
+    resolveId(source, importer = "index.ts") {
+      const id = resolve(importer, "..", source);
 
-        if (_source in cache) {
-          return _source;
-        }
-
-        throw new Error(`Can't resolve ${source}`);
-      }
-
-      const js = join(importer, "..", source + ".js");
-      const jsx = js + "x";
-
-      if (js in cache) {
-        return js;
-      }
-
-      if (jsx in cache) {
-        return jsx;
+      if (id in cache) {
+        return id;
       }
 
       throw new Error(`Can't resolve ${source}`);
@@ -89,7 +77,7 @@ export default async () => {
         return { code: cache[id], map: cache[id + ".map"] };
       }
 
-      throw new Error(`Could not resolve '${id}'`);
+      throw new Error(`Could not load '${id}'`);
     },
     renderChunk(code, chunk) {
       if (!chunk.isEntry || chunk.name !== "bin") {
@@ -102,38 +90,72 @@ export default async () => {
     },
   };
 
-  const babelPlugin = babel({
-    configFile: false,
-    babelrc: false,
-    babelHelpers: "bundled",
-    presets: [
-      [
-        presetEnv,
-        {
-          bugfixes: true,
-          modules: false,
-          loose: false,
-          ignoreBrowserslistConfig: true,
-          targets: {
-            node: true,
+  const babelPlugin = (target) => {
+    target = target === "client" ? "client" : "server";
+    return babel({
+      extensions: [".ts", ".tsx", ".js", ".jsx", ".mjs"],
+      configFile: false,
+      babelrc: false,
+      babelHelpers: "bundled",
+      presets: [
+        [
+          env,
+          {
+            bugfixes: true,
+            modules: false,
+            loose: false,
+            ignoreBrowserslistConfig: true,
+            targets: {
+              node: "14",
+              chrome: "83",
+            },
+            useBuiltIns: false,
           },
-          useBuiltIns: false,
-        },
+        ],
+        [typescript],
+        [
+          react,
+          {
+            runtime: "automatic",
+            importSource: "react",
+          },
+        ],
       ],
-      [
-        presetReact,
-        {
-          runtime: "automatic",
-          development: false,
-          importSource: "react",
-        },
+      plugins: [
+        [
+          _resolve,
+          {
+            ignoreBuiltins: true,
+            ignoreBareImport: true,
+            extensions: [
+              `.${target}.tsx`,
+              `.${target}.ts`,
+              `.${target}.jsx`,
+              `.${target}.mjs`,
+              `.${target}.js`,
+              `.${target}.cjs`,
+              `.${target}.json`,
+              `.tsx`,
+              `.ts`,
+              `.jsx`,
+              `.mjs`,
+              `.js`,
+              `.cjs`,
+              `.json`,
+              `.node`,
+            ],
+          },
+        ],
+        [subpath],
+        [constant],
       ],
-    ],
-    plugins: [[resolveSubpath]],
-  });
+    });
+  };
 
   /** @type {import("rollup").Plugin[]} */
-  const plugins = [cachePlugin, babelPlugin];
+  const serverPlugins = [cachePlugin, babelPlugin("server")];
+  /** @type {import("rollup").Plugin[]} */
+  const clientPlugins = [cachePlugin, babelPlugin("client")];
 
   const [paths, clients, bins] = await Promise.all(
     ["packages/*/src/index.{ts,tsx}", "packages/*/src/index.client.{ts,tsx}", "packages/*/src/bin.ts"].map((source) =>
@@ -167,7 +189,7 @@ export default async () => {
         },
       ],
       external,
-      plugins,
+      plugins: serverPlugins,
     });
   }
 
@@ -185,7 +207,7 @@ export default async () => {
         inlineDynamicImports: true,
       },
       external,
-      plugins,
+      plugins: clientPlugins,
     });
   }
 
@@ -202,7 +224,7 @@ export default async () => {
         preferConst: true,
       },
       external,
-      plugins,
+      plugins: serverPlugins,
     });
   }
 
