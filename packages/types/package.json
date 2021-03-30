@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@mo36924/components": "^1.1.55",
+    "@mo36924/graphql-react": "^1.1.56",
     "@mo36924/page": "^1.1.38",
     "@mo36924/page-match": "^1.1.51",
     "@mo36924/pages": "^1.1.51",

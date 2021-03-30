@@ -20,8 +20,10 @@
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
+  "browser": "./dist/index.client.js",
   "exports": {
     ".": {
+      "browser": "./dist/index.client.js",
       "import": "./dist/index.js"
     }
   },

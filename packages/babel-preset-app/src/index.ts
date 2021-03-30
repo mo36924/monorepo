@@ -193,6 +193,7 @@ export default (_api: Api, options: Options): TransformOptions => {
             Head: ["@mo36924/components", "Head"],
             Html: ["@mo36924/components", "Html"],
             Title: ["@mo36924/components", "Title"],
+            useQuery: ["@mo36924/graphql-react", "useQuery"],
             hydrate: ["@mo36924/hydrate", "default"],
             pageMatch: ["@mo36924/page-match", "default"],
             pages: ["@mo36924/pages", "default"],
