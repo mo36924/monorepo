@@ -1,3 +1,5 @@
+import { watch } from "fs";
+import { readFile } from "fs/promises";
 import type { IncomingMessage } from "http";
 import { parse as querystring } from "querystring";
 import type { Middleware } from "@mo36924/http-server";
@@ -5,6 +7,7 @@ import accepts from "accepts";
 import type { GraphiQLOptions } from "express-graphql/renderGraphiQL";
 import {
   buildASTSchema,
+  buildSchema,
   DocumentNode,
   executeSync,
   getOperationAST,
@@ -22,12 +25,35 @@ import type { ExecutionResult, GraphQLParams, Options } from "./type";
 import { validateSchema } from "./validate-schema";
 
 export default async (options: Options): Promise<Middleware> => {
-  const schema = buildASTSchema(options.ast);
+  let schema = buildASTSchema(options.ast);
   const execute = options.execute;
   const send = options.send ?? defaultSend;
   const graphiql = options.graphiql ?? true;
-  const schemaValidationErrors = validateSchema(schema);
+  let schemaValidationErrors = validateSchema(schema);
   const validationRules = specifiedRules;
+  const url: string = (options.ast as any).url;
+
+  if (url) {
+    let data = await readFile(url, "utf8");
+    schema = buildSchema(data);
+    schemaValidationErrors = validateSchema(schema);
+
+    watch(url, async (event, filename = url) => {
+      if (event !== "change") {
+        return;
+      }
+
+      const _data = await readFile(filename, "utf8");
+
+      if (data === _data) {
+        return;
+      }
+
+      data = _data;
+      schema = buildSchema(data);
+      schemaValidationErrors = validateSchema(schema);
+    });
+  }
 
   return async (request, response) => {
     const url = request.url;
