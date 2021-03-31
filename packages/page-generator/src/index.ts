@@ -29,6 +29,9 @@ export const staticPages = {
 export const dynamicPages = [
   /*__dynamicPages__*/
 ];
+export const errorPages = [
+  /*__errorPages__*/
+];
 `;
 
 export default async (options?: Options) => {
@@ -154,8 +157,9 @@ export default async (options?: Options) => {
       .flatMap(([_dir, names]) => names.map((name) => pathToRoute(resolve(dir, _dir, name))))
       .sort((a, b) => (b.rank as any) - (a.rank as any));
 
-    const staticPages = [];
-    const dynamicPages = [];
+    const staticPages: string[] = [];
+    const dynamicPages: string[] = [];
+    const errorPages: string[] = [];
 
     for (const { importPath, pagePath, isDynamic, paramNames } of pagePaths) {
       if (isDynamic) {
@@ -164,6 +168,8 @@ export default async (options?: Options) => {
         dynamicPages.push(
           `[${pagePath}, ${JSON.stringify(paramNames)}, (): PromisePageModule<{${params}}> => import('${importPath}')]`,
         );
+      } else if (/^\/[45]\d\d$/.test(pagePath)) {
+        errorPages.push(`${pagePath.slice(1)}: (): PromisePageModule<any> => import('${importPath}')`);
       } else {
         staticPages.push(`'${pagePath}': (): PromisePageModule<any> => import('${importPath}')`);
       }
@@ -178,7 +184,10 @@ export default async (options?: Options) => {
       await writeFileAsync(template, code);
     }
 
-    code = code.replace("/*__staticPages__*/", staticPages.join()).replace("/*__dynamicPages__*/", dynamicPages.join());
+    code = code
+      .replace("/*__staticPages__*/", staticPages.join())
+      .replace("/*__dynamicPages__*/", dynamicPages.join())
+      .replace("/*__errorPages__*/", errorPages.join());
 
     code = await format(code, file);
     await writeFileAsync(file, code);
