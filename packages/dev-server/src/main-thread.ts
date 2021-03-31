@@ -40,8 +40,6 @@ export default async (options: Options) => {
         }
       }
     } catch {}
-
-    return "";
   };
 
   const getClientData = async (url: string | URL) => {
@@ -56,8 +54,6 @@ export default async (options: Options) => {
         }
       }
     } catch {}
-
-    return "";
   };
 
   if (ts.sys.fileExists(serverInput)) {

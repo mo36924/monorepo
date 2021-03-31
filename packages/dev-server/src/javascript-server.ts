@@ -17,7 +17,7 @@ export default async (options: Options) => async (path: string) => {
 
   data = cache.typescript[path];
 
-  if (data !== undefined) {
+  if (data === undefined) {
     data = await readFile(path, "utf8");
   }
 
