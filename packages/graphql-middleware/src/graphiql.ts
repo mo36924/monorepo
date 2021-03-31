@@ -1,4 +1,4 @@
-import { watch } from "fs";
+import { watch, watchFile } from "fs";
 import { readFile } from "fs/promises";
 import type { IncomingMessage } from "http";
 import { parse as querystring } from "querystring";
@@ -31,27 +31,28 @@ export default async (options: Options): Promise<Middleware> => {
   const graphiql = options.graphiql ?? true;
   let schemaValidationErrors = validateSchema(schema);
   const validationRules = specifiedRules;
-  const url: string = (options.ast as any).url;
+  const path: string = (options.ast as any).path;
 
-  if (url) {
-    let data = await readFile(url, "utf8");
+  if (path) {
+    let data = await readFile(path, "utf8");
     schema = buildSchema(data);
     schemaValidationErrors = validateSchema(schema);
 
-    watch(url, async (event, filename = url) => {
-      if (event !== "change") {
-        return;
+    watch(path, { persistent: false }, async function listener() {
+      try {
+        const _data = await readFile(path, "utf8");
+
+        if (data === _data) {
+          return;
+        }
+
+        data = _data;
+        schema = buildSchema(data);
+        schemaValidationErrors = validateSchema(schema);
+        watch(path, { persistent: false }, listener);
+      } catch {
+        watchFile(path, { persistent: false }, listener);
       }
-
-      const _data = await readFile(filename, "utf8");
-
-      if (data === _data) {
-        return;
-      }
-
-      data = _data;
-      schema = buildSchema(data);
-      schemaValidationErrors = validateSchema(schema);
     });
   }
 

@@ -181,11 +181,7 @@ export default async (options: Options = {}) => {
         try {
           const data = await readFile(path, "utf8");
           const documentNode = parse(data, { noLocation: true });
-
-          const documentNodeJson = JSON.stringify({
-            ...documentNode,
-            url: pathToFileURL(path).href,
-          });
+          const documentNodeJson = JSON.stringify({ ...documentNode, path });
 
           const documentNodeString = documentNodeJson.includes("'")
             ? JSON.stringify(documentNodeJson)
