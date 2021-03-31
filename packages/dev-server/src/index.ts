@@ -1,5 +1,5 @@
 import { isMainThread, parentPort } from "worker_threads";
-import type { Options } from "./main-thread";
+import type { Options } from "./type";
 
 type Resolve = (
   specifier: string,
