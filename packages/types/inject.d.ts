@@ -1,5 +1,5 @@
-import type * as components from "@mo36924/components";
-import type { useQuery as _useQuery } from "@mo36924/graphql-react";
+import type * as Components from "@mo36924/components";
+import type * as GraphQLReact from "@mo36924/graphql-react";
 import type _hydrate from "@mo36924/hydrate";
 import type { PromisePageModule as _PromisePageModule } from "@mo36924/page";
 import type _pageMatch from "@mo36924/page-match";
@@ -9,9 +9,9 @@ import type ReactDom from "react-dom";
 import type ReactDomServer from "react-dom/server";
 
 declare global {
-  const { Body, Head, Html, Title } = components;
-  const useQuery: typeof _useQuery;
-  const hydrate: typeof _hydrate;
+  const { Body, Head, Html, Title } = Components;
+  const { useQuery } = GraphQLReact;
+  const hydrate = _hydrate;
   const pageMatch: typeof _pageMatch;
   const pages: typeof _pages;
   const Children: typeof React.Children;

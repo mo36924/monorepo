@@ -3,7 +3,10 @@ import type { FormattedExecutionResult } from "graphql";
 import { useContext } from "react";
 import { context } from "./context";
 
-export const useQuery = (args: { query: string; variables: any }): FormattedExecutionResult & { loading?: boolean } => {
+export const useQuery = (args: {
+  query: string;
+  variables?: { [key: string]: any } | null;
+}): FormattedExecutionResult & { loading?: boolean } => {
   const graphql = useContext(context);
   const qs = querystring(args);
   const result = graphql[qs] || (graphql[qs] = get(qs).then((result) => (graphql[qs] = result)));
