@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/dev-server",
-  "version": "1.1.69",
+  "version": "1.1.74",
   "description": "dev-server",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.13.14",
-    "@mo36924/babel-preset-app": "^1.1.60",
+    "@mo36924/babel-preset-app": "^1.1.74",
     "@mo36924/components": "^1.1.65",
     "@mo36924/graphql-react": "^1.1.65",
     "@mo36924/hydrate": "^1.1.61",
