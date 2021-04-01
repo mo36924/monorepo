@@ -26,9 +26,9 @@
     }
   },
   "dependencies": {
-    "@babel/plugin-transform-react-constant-elements": "^7.13.10",
+    "@babel/plugin-transform-react-constant-elements": "^7.13.13",
     "@babel/preset-env": "^7.13.12",
-    "@babel/preset-react": "^7.12.13",
+    "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "^7.13.0",
     "@mo36924/babel-plugin-commonjs": "^1.1.60",
     "@mo36924/babel-plugin-dead-code-elimination": "^1.1.27",
@@ -40,6 +40,6 @@
     "@mo36924/babel-plugin-resolve-subpath": "^1.1.31"
   },
   "peerDependencies": {
-    "@babel/core": "^7.13.10"
+    "@babel/core": "^7.13.14"
   }
 }

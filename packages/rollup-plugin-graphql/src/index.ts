@@ -9,7 +9,7 @@ export default (options: Options = {}): Plugin => {
   return {
     name: "graphql",
     transform(code: string, id: string) {
-      if (!id.endsWith(".gql") || !id.endsWith(".graphql") || !filter(id)) {
+      if ((!id.endsWith(".gql") && !id.endsWith(".graphql")) || !filter(id)) {
         return null;
       }
 
@@ -17,11 +17,13 @@ export default (options: Options = {}): Plugin => {
         const documentNode = parse(code, { noLocation: true });
         const documentNodeJson = JSON.stringify(documentNode);
 
-        const documentNodeString = documentNodeJson.includes("'")
-          ? JSON.stringify(documentNodeJson)
-          : `'${documentNodeJson}'`;
+        const documentNodeString = !documentNodeJson.includes("'")
+          ? `'${documentNodeJson}'`
+          : !documentNodeJson.includes("`")
+          ? `\`${documentNodeJson}\``
+          : JSON.stringify(documentNodeJson);
 
-        return `export default JSON.parse(${documentNodeString});`;
+        return { code: `export default JSON.parse(${documentNodeString});`, map: { mappings: "" } };
       } catch (err) {
         const message = "Could not parse GraphQL file";
         this.warn({ id, message });

@@ -29,6 +29,6 @@
     "babel-plugin-minify-dead-code-elimination": "^0.5.1"
   },
   "peerDependencies": {
-    "@babel/core": "^7.13.10"
+    "@babel/core": "^7.13.14"
   }
 }

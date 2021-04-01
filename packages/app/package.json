@@ -29,6 +29,7 @@
     }
   },
   "dependencies": {
+    "@mo36924/babel-preset-app": "^1.1.60",
     "@mo36924/components": "^1.1.65",
     "@mo36924/dev-server": "^1.1.69",
     "@mo36924/graphql-database-schema-generator": "^1.1.13",
@@ -38,13 +39,21 @@
     "@mo36924/graphql-schema-generator": "^1.1.0",
     "@mo36924/http-server": "^1.1.73",
     "@mo36924/page-generator": "^1.1.70",
+    "@mo36924/rollup-plugin-graphql": "^1.1.43",
     "@mo36924/ssr-error-middleware": "^1.1.73",
     "@mo36924/ssr-middleware": "^1.1.73",
     "@mo36924/types": "^1.1.65",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^18.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-typescript": "^8.2.1",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
+    "acorn": "^8.1.0",
+    "acorn-jsx": "^5.3.1",
     "commander": "^7.2.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "rollup": "^2.44.0"
   }
 }

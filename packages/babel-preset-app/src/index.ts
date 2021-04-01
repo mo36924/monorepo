@@ -132,7 +132,7 @@ export default (_api: Api, options: Options): TransformOptions => {
         _resolve,
         {
           ignoreBuiltins: __SERVER__,
-          ignoreBareImport: __SERVER__,
+          ignoreBareImport: __SERVER__ && !__PROD__,
           aliasFields: __SERVER__ ? [] : ["browser"],
           mainFields: __SERVER__ ? ["module", "main"] : ["browser", "module", "main"],
           conditionNames: __SERVER__ ? ["import", "require"] : ["browser", "import", "require"],

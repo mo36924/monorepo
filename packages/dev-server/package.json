@@ -29,7 +29,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "^7.13.10",
+    "@babel/core": "^7.13.14",
     "@mo36924/babel-preset-app": "^1.1.60",
     "@mo36924/components": "^1.1.65",
     "@mo36924/graphql-react": "^1.1.65",
