@@ -7,8 +7,13 @@ import prepass from "react-ssr-prepass";
 
 export default (errorPages: { [statusCode: string]: () => PromisePageModule<any> }): ErrorMiddlewareFactory => () => {
   const errorPageComponents: { [statusCode: string]: PageComponent<any> | undefined } = Object.create(null);
+  const entries = Object.entries(errorPages);
 
-  for (const [statusCode, errorPage] of Object.entries(errorPages)) {
+  if (!entries.length) {
+    return;
+  }
+
+  for (const [statusCode, errorPage] of entries) {
     errorPageComponents[statusCode] = page(errorPage);
   }
 

@@ -67,6 +67,16 @@ export class Server {
       } catch (err) {
         const _httpError = httpError.isHttpError(err) ? err : httpError(500, err instanceof Error ? err : String(err));
 
+        if (!response.headersSent) {
+          response.statusCode = _httpError.statusCode;
+
+          if (_httpError.headers) {
+            for (const [name, value] of Object.keys(_httpError.headers)) {
+              response.setHeader(name, value);
+            }
+          }
+        }
+
         try {
           for (const errorMiddleware of errorMiddlewares) {
             let result = errorMiddleware(_httpError, request as Request, response as Response);
@@ -80,10 +90,6 @@ export class Server {
             }
           }
         } catch {}
-
-        if (!response.headersSent) {
-          response.writeHead(_httpError.statusCode, _httpError.headers);
-        }
 
         if (!response.writableEnded) {
           response.end(_httpError.message);
