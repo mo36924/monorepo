@@ -1,0 +1,38 @@
+{
+  "name": "@mo36924/ssr-error-middleware",
+  "version": "1.0.0",
+  "description": "ssr-error-middleware",
+  "keywords": [],
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/ssr-error-middleware"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@mo36924/graphql-react": "^1.1.65",
+    "@mo36924/http-server": "^1.1.66",
+    "@mo36924/page": "^1.1.61",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-ssr-prepass": "^1.4.0"
+  }
+}
