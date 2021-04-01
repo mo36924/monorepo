@@ -38,6 +38,7 @@
     "@mo36924/graphql-schema-generator": "^1.1.0",
     "@mo36924/http-server": "^1.1.66",
     "@mo36924/page-generator": "^1.1.70",
+    "@mo36924/ssr-error-middleware": "^1.1.71",
     "@mo36924/ssr-middleware": "^1.1.66",
     "@mo36924/types": "^1.1.65",
     "@types/react": "^17.0.3",
