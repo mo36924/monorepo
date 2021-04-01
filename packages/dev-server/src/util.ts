@@ -21,3 +21,8 @@ export const formatDiagnosticsHost: ts.FormatDiagnosticsHost = {
   getCanonicalFileName: (fileName) => fileName,
   getNewLine: () => ts.sys.newLine,
 };
+
+export const memoize = (
+  fn: (path: string) => Promise<string | undefined>,
+  cache: { [path: string]: string | undefined } = Object.create(null),
+) => async (path: string) => (cache[path] ??= await fn(path));

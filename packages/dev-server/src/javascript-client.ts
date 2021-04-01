@@ -10,17 +10,7 @@ export default async (options: Options) => async (path: string) => {
     return;
   }
 
-  let data = cache.client[path];
-
-  if (data !== undefined) {
-    return data;
-  }
-
-  data = cache.typescript[path];
-
-  if (data === undefined) {
-    data = await readFile(path, "utf8");
-  }
+  let data = cache.typescript[path] ?? (await readFile(path, "utf8"));
 
   const result = await transformAsync(data!, {
     filename: path,
@@ -32,7 +22,6 @@ export default async (options: Options) => async (path: string) => {
   });
 
   data = result!.code!;
-  cache.client[path] = data;
   const map = result!.map!;
 
   if (!map.sourcesContent) {

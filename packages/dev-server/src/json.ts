@@ -1,7 +1,6 @@
 import { readFile } from "fs/promises";
 import reserved from "reserved-words";
 import ts from "typescript";
-import cache from "./cache";
 import { formatDiagnosticsHost } from "./util";
 
 export default async () => async (path: string) => {
@@ -9,13 +8,7 @@ export default async () => async (path: string) => {
     return;
   }
 
-  let data = cache.json[path];
-
-  if (data !== undefined) {
-    return data;
-  }
-
-  data = await readFile(path, "utf8");
+  let data = await readFile(path, "utf8");
   const diagnostics: ts.Diagnostic[] = [];
   const obj = ts.convertToObject(ts.parseJsonText(path, data), diagnostics);
 
@@ -32,6 +25,5 @@ export default async () => async (path: string) => {
     data = `export default ${JSON.stringify(obj, null, 2)};`;
   }
 
-  cache.json[path] = data;
   return data;
 };

@@ -9,17 +9,7 @@ export default async (options: Options) => async (path: string) => {
     return;
   }
 
-  let data = cache.server[path];
-
-  if (data !== undefined) {
-    return data;
-  }
-
-  data = cache.typescript[path];
-
-  if (data === undefined) {
-    data = await readFile(path, "utf8");
-  }
+  const data = cache.typescript[path] ?? (await readFile(path, "utf8"));
 
   const result = await transformAsync(data!, {
     filename: path,
@@ -30,7 +20,5 @@ export default async (options: Options) => async (path: string) => {
     presets: [[app, { target: "server", env: "development", inject: options.inject } as AppOptions]],
   });
 
-  data = result!.code!;
-  cache.server[path] = data;
-  return data;
+  return result!.code!;
 };

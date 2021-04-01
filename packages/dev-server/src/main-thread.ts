@@ -4,12 +4,14 @@ import { fileURLToPath, pathToFileURL } from "url";
 import { Worker } from "worker_threads";
 import httpProxy from "http-proxy";
 import ts from "typescript";
+import cache from "./cache";
 import graphql from "./graphql";
 import client from "./javascript-client";
 import server from "./javascript-server";
 import json from "./json";
 import type { Options } from "./type";
 import typescript from "./typescript";
+import { memoize } from "./util";
 
 export default async (options: Options) => {
   const serverInput = "lib/index.ts";
@@ -17,23 +19,36 @@ export default async (options: Options) => {
   const port = parseInt(env.PORT!, 10) || 3000;
   const workerPort = (port + 1).toFixed();
 
-  const [_graphql, _server, _client, _json] = await Promise.all([
-    graphql(),
-    server(options),
-    client(options),
-    json(),
-    typescript(),
-  ]);
+  const [
+    graphqlTransformer,
+    javascriptServerTransformer,
+    javascriptClientTransformer,
+    jsonTransformer,
+  ] = await Promise.all([graphql(), server(options), client(options), json(), typescript()]);
 
-  const servers = [_graphql, _server, _json];
-  const clients = [_graphql, _client, _json];
+  const graphqlTransformerWithCache = memoize(graphqlTransformer, cache.graphql);
+  const javascriptServerTransformerWithCache = memoize(javascriptServerTransformer, cache.server);
+  const javascriptClientTransformerWithCache = memoize(javascriptClientTransformer, cache.client);
+  const jsonTransformerWithCache = memoize(jsonTransformer, cache.json);
 
-  const getServerData = async (url: string | URL) => {
+  const serverTransformers = [
+    graphqlTransformerWithCache,
+    javascriptServerTransformerWithCache,
+    jsonTransformerWithCache,
+  ];
+
+  const clientTransformers = [
+    graphqlTransformerWithCache,
+    javascriptClientTransformerWithCache,
+    jsonTransformerWithCache,
+  ];
+
+  const serverTransformer = async (url: string | URL) => {
     try {
       const path = fileURLToPath(url);
 
-      for (const server of servers) {
-        const data = await server(path);
+      for (const transformer of serverTransformers) {
+        const data = await transformer(path);
 
         if (data !== undefined) {
           return data;
@@ -42,12 +57,12 @@ export default async (options: Options) => {
     } catch {}
   };
 
-  const getClientData = async (url: string | URL) => {
+  const clientTransformer = async (url: string | URL) => {
     try {
       const path = fileURLToPath(url);
 
-      for (const client of clients) {
-        const data = await client(path);
+      for (const transformer of clientTransformers) {
+        const data = await transformer(path);
 
         if (data !== undefined) {
           return data;
@@ -65,7 +80,7 @@ export default async (options: Options) => {
     });
 
     worker.on("message", async (url: string) => {
-      const data = await getServerData(url);
+      const data = (await serverTransformer(url)) ?? "";
       worker.postMessage([url, data]);
     });
   }
@@ -83,7 +98,7 @@ export default async (options: Options) => {
         return;
       }
 
-      const data = await getClientData(url);
+      const data = await clientTransformer(url);
 
       if (data !== undefined) {
         res.setHeader("content-type", "application/javascript; charset=utf-8");
