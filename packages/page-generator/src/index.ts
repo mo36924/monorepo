@@ -8,7 +8,6 @@ export type Options = {
   watch?: boolean;
   dir?: string;
   file?: string;
-  template?: string;
   include?: string[];
   exclude?: string[];
 };
@@ -17,34 +16,17 @@ const defaultOptions: Required<Options> = {
   watch: process.env.NODE_ENV !== "production",
   dir: "pages",
   file: "lib/pages.ts",
-  template: "lib/pages.template.ts",
   include: ["**/*.tsx"],
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
 
-const defaultTemplate = `
-export const staticPages = {
-  /*__staticPages__*/
-};
-export const dynamicPages = [
-  /*__dynamicPages__*/
-];
-export const errorPages = [
-  /*__errorPages__*/
-];
-`;
-
 export default async (options?: Options) => {
-  const { watch: watchMode, dir, file, template, include, exclude } = {
+  const { watch: watchMode, dir, file, include, exclude } = {
     ...defaultOptions,
     ...options,
   };
 
-  await Promise.all([
-    mkdir(dir, { recursive: true }),
-    mkdir(dirname(file), { recursive: true }),
-    mkdir(dirname(template), { recursive: true }),
-  ]);
+  await Promise.all([mkdir(dir, { recursive: true }), mkdir(dirname(file), { recursive: true })]);
 
   const watcher = watch(include, { cwd: dir, ignored: exclude });
   watcher.on("add", generateDefaultFile);
@@ -175,19 +157,17 @@ export default async (options?: Options) => {
       }
     }
 
-    let code = defaultTemplate;
-
-    try {
-      code = await readFile(template, "utf8");
-    } catch {
-      code = await format(defaultTemplate, file);
-      await writeFileAsync(template, code);
-    }
-
-    code = code
-      .replace("/*__staticPages__*/", staticPages.join())
-      .replace("/*__dynamicPages__*/", dynamicPages.join())
-      .replace("/*__errorPages__*/", errorPages.join());
+    let code = `
+      export const staticPages = {
+        ${staticPages.join()}
+      };
+      export const dynamicPages = [
+        ${dynamicPages.join()}
+      ];
+      export const errorPages = {
+        ${errorPages.join()}
+      };
+    `;
 
     code = await format(code, file);
     await writeFileAsync(file, code);
