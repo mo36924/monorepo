@@ -147,6 +147,11 @@ export default (files: { [path: string]: string } = {}): Plugin => {
   const promise = getStaticMiddleWareCacheCode(files);
   return {
     name: "static",
+    resolveId(id) {
+      if (id === staticMiddleWareCachePath) {
+        return staticMiddleWareCachePath;
+      }
+    },
     load(id) {
       if (id === staticMiddleWarePath) {
         return staticMiddleWareCode;
