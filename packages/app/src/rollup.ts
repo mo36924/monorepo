@@ -1,6 +1,7 @@
 import { builtinModules } from "module";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import graphql from "@mo36924/rollup-plugin-graphql";
+import _static from "@mo36924/rollup-plugin-static";
 import vfs from "@mo36924/rollup-plugin-vfs";
 import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
@@ -80,6 +81,7 @@ export default async () => {
       vfs({
         "node_modules/pg/lib/native/index.js": "export default {};",
       }),
+      _static(),
       typescript({
         sourceMap: true,
         inlineSourceMap: false,
