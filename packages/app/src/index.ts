@@ -5,7 +5,7 @@ import graphqlSchemaGenerator from "@mo36924/graphql-schema-generator";
 import pageGenerator, { Options as pageGeneratorOptions } from "@mo36924/page-generator";
 import rollup from "./rollup";
 
-type Options = {
+export type Options = {
   watch?: boolean;
   jsx?: "react" | "preact";
   inject?: injectOptions;

@@ -104,7 +104,7 @@ export default async () => {
         sourceMaps: true,
         presets: [[app, { target: "server", env: "production" } as AppOptions]],
       }),
-      terser({ ecma: 2020, module: true, compress: { passes: 10 }, ...{ sourceMap: true } }),
+      terser({ ecma: 2020, module: true, compress: { passes: 10 } }),
     ],
   });
 
@@ -114,6 +114,7 @@ export default async () => {
     sourcemap: true,
     compact: true,
     minifyInternalExports: true,
+    preferConst: true,
     entryFileNames: "index.js",
     chunkFileNames: "index.js",
   });

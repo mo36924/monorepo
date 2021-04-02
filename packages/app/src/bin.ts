@@ -1,34 +1,29 @@
 import { readFile } from "fs/promises";
-import { basename, extname, resolve } from "path";
+import { extname } from "path";
 import { pathToFileURL } from "url";
-import program from "commander";
-import app from "./index";
+import program, { Command } from "commander";
+import app, { Options } from "./index";
 
-const pkg = "package.json";
+program.arguments("[source]").action(bin);
+program.command("build [source]").description("Build project.").action(bin);
+program.parse();
 
-const options = program
-  .option("-p, --project <file>", "Compile the project given the path to its configuration file.", pkg)
-  .parse()
-  .opts();
+async function bin(source: string = "package.json", options: Options, command: Command) {
+  try {
+    const name = command.name();
+    const watch = name !== "build";
 
-(async () => {
-  const project = options.project;
-  const ext = extname(project);
-  let config: any;
+    if (extname(source) === ".json") {
+      const json = await readFile(source, "utf8");
+      options = { ...JSON.parse(json), ...options, watch };
+    } else {
+      const mod = await import(pathToFileURL(source).href);
+      options = { ...mod.default, ...options, watch };
+    }
 
-  if (basename(project) === pkg) {
-    const json = await readFile(resolve(project), "utf8");
-    config = JSON.parse(json);
-  } else if (ext === ".json") {
-    const json = await readFile(resolve(project), "utf8");
-    config = JSON.parse(json);
-  } else {
-    const mod = await import(pathToFileURL(project).href);
-    config = mod.default;
+    await app(options);
+  } catch (err) {
+    process.exitCode = 1;
+    console.error(String(err));
   }
-
-  await app(config);
-})().catch((err) => {
-  process.exitCode = 1;
-  console.error(String(err));
-});
+}
