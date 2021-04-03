@@ -1,6 +1,7 @@
 import { builtinModules } from "module";
 import { sep } from "path";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
+import esbuild from "@mo36924/rollup-plugin-esbuild";
 import graphql from "@mo36924/rollup-plugin-graphql";
 import _static from "@mo36924/rollup-plugin-static";
 import vfs from "@mo36924/rollup-plugin-vfs";
@@ -12,7 +13,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 // @ts-ignore
 import jsx from "acorn-jsx";
-import { rollup } from "rollup";
+import { rollup, RollupOptions } from "rollup";
 import { terser } from "rollup-plugin-terser";
 
 export default async () => {
@@ -73,58 +74,91 @@ export default async () => {
 
   // await bundle.close();
 
-  const bundle = await rollup({
-    input: "lib/index.ts",
-    acornInjectPlugins: [jsx()],
-    external: builtinModules,
-    preserveEntrySignatures: false,
-    context: "globalThis",
-    plugins: [
-      vfs({
-        "node_modules/pg/lib/native/index.js": "export default {};",
-      }),
-      _static(),
-      typescript({
-        sourceMap: true,
-        inlineSourceMap: false,
-        inlineSources: true,
-      }),
-      json({ compact: true, namedExports: true, preferConst: true }),
-      graphql(),
-      alias({
-        entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
-      }),
-      resolve({
-        extensions: [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs"],
-        browser: false,
-        exportConditions: ["import"],
-        mainFields: ["module", "main"],
-        preferBuiltins: true,
-      }),
-      commonjs({ extensions: [".js", ".cjs"], ignoreGlobal: true, sourceMap: true }),
-      babel({
-        extensions: [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs"],
-        babelrc: false,
-        configFile: false,
-        compact: false,
-        babelHelpers: "bundled",
-        sourceMaps: true,
-        presets: [[app, { target: "server", env: "production" } as AppOptions]],
-      }),
-      terser({ ecma: 2020, module: true, compress: { passes: 10 } }),
-    ],
-  });
+  const intramoduleCircularDependencies = new Set<string>();
 
-  await bundle.write({
-    dir: "dist",
-    format: "module",
-    sourcemap: true,
-    compact: true,
-    minifyInternalExports: true,
-    preferConst: true,
-    entryFileNames: "index.js",
-    chunkFileNames: "index.js",
-  });
+  const checkIntramoduleCircularDependencyOptions: RollupOptions = {
+    onwarn(warning) {
+      if (warning.code !== "CIRCULAR_DEPENDENCY" || !warning.cycle) {
+        return;
+      }
 
-  await bundle.close();
+      const [path, ...paths] = warning.cycle;
+      const matches = path.match(/node_modules\/((?:@[^\/]+\/)?[^\/]+)\//);
+
+      if (!matches) {
+        return;
+      }
+
+      if (paths.every((path) => path.includes(matches[0]))) {
+        intramoduleCircularDependencies.add(matches[1]);
+      }
+    },
+  };
+
+  const server = async (options: RollupOptions = {}) => {
+    const bundle = await rollup({
+      input: "lib/index.ts",
+      acornInjectPlugins: [jsx()],
+      external: builtinModules,
+      preserveEntrySignatures: false,
+      context: "globalThis",
+      plugins: [
+        esbuild([...intramoduleCircularDependencies]),
+        vfs({
+          "node_modules/pg/lib/native/index.js": "export default {};",
+        }),
+        _static(),
+        typescript({
+          sourceMap: true,
+          inlineSourceMap: false,
+          inlineSources: true,
+        }),
+        json({ compact: true, namedExports: true, preferConst: true }),
+        graphql(),
+        alias({
+          entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
+        }),
+        resolve({
+          extensions: [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs"],
+          browser: false,
+          exportConditions: ["import"],
+          mainFields: ["module", "main"],
+          preferBuiltins: true,
+        }),
+        commonjs({ extensions: [".js", ".cjs"], ignoreGlobal: true, sourceMap: true }),
+        babel({
+          extensions: [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs"],
+          babelrc: false,
+          configFile: false,
+          compact: false,
+          babelHelpers: "bundled",
+          sourceMaps: true,
+          presets: [[app, { target: "server", env: "production" } as AppOptions]],
+        }),
+        terser({ ecma: 2020, module: true, compress: { passes: 10 } }),
+      ],
+      ...options,
+    });
+
+    if (options === checkIntramoduleCircularDependencyOptions) {
+      await bundle.close();
+      await server();
+      return;
+    }
+
+    await bundle.write({
+      dir: "dist",
+      format: "module",
+      sourcemap: true,
+      compact: true,
+      minifyInternalExports: true,
+      preferConst: true,
+      entryFileNames: "index.js",
+      chunkFileNames: "index.js",
+    });
+
+    await bundle.close();
+  };
+
+  await server(checkIntramoduleCircularDependencyOptions);
 };
