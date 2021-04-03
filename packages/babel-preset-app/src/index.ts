@@ -74,9 +74,14 @@ export default (_api: Api, options: Options): TransformOptions => {
           modules: false,
           loose: false,
           ignoreBrowserslistConfig: true,
-          targets: __SERVER__
+          targets: !__PROD__
             ? {
-                node: true,
+                node: "14",
+                chrome: "83",
+              }
+            : __SERVER__
+            ? {
+                node: "14",
               }
             : __NOMODULE__
             ? {
@@ -93,7 +98,8 @@ export default (_api: Api, options: Options): TransformOptions => {
             : {
                 esmodules: true,
               },
-          useBuiltIns: false,
+          useBuiltIns: __PROD__ ? "usage" : false,
+          corejs: __PROD__ ? "3.10" : undefined,
         } as envOptions,
       ],
       [typescript],
@@ -130,57 +136,59 @@ export default (_api: Api, options: Options): TransformOptions => {
       [iifeUnwrap],
       [
         _resolve,
-        {
-          ignoreBuiltins: __SERVER__,
-          ignoreBareImport: __SERVER__ && !__PROD__,
-          aliasFields: __SERVER__ ? [] : ["browser"],
-          mainFields: __SERVER__ ? ["module", "main"] : ["browser", "module", "main"],
-          conditionNames: __SERVER__ ? ["import", "require"] : ["browser", "import", "require"],
-          baseUrl: ".",
-          paths: { "~/": "./" },
-          alias:
-            jsx === "preact"
-              ? {
-                  react: "preact/compat",
-                  "react-dom": "preact/compat",
-                }
-              : {},
-          extensions: __SERVER__
-            ? [
-                ".server.tsx",
-                ".server.ts",
-                ".server.jsx",
-                ".server.mjs",
-                ".server.js",
-                ".server.cjs",
-                ".server.json",
-                ".tsx",
-                ".ts",
-                ".jsx",
-                ".mjs",
-                ".js",
-                ".cjs",
-                ".json",
-                ".node",
-              ]
-            : [
-                ".client.tsx",
-                ".client.ts",
-                ".client.jsx",
-                ".client.mjs",
-                ".client.js",
-                ".client.cjs",
-                ".client.json",
-                ".tsx",
-                ".ts",
-                ".jsx",
-                ".mjs",
-                ".js",
-                ".cjs",
-                ".json",
-                ".node",
-              ],
-        } as resolveOptions,
+        __PROD__
+          ? false
+          : ({
+              ignoreBuiltins: __SERVER__,
+              ignoreBareImport: __SERVER__ && !__PROD__,
+              aliasFields: __SERVER__ ? [] : ["browser"],
+              mainFields: __SERVER__ ? ["module", "main"] : ["browser", "module", "main"],
+              conditionNames: __SERVER__ ? ["import"] : ["browser", "import"],
+              baseUrl: ".",
+              paths: { "~/": "./" },
+              alias:
+                jsx === "preact"
+                  ? {
+                      react: "preact/compat",
+                      "react-dom": "preact/compat",
+                    }
+                  : {},
+              extensions: __SERVER__
+                ? [
+                    ".server.tsx",
+                    ".server.ts",
+                    ".server.jsx",
+                    ".server.mjs",
+                    ".server.js",
+                    ".server.cjs",
+                    ".server.json",
+                    ".tsx",
+                    ".ts",
+                    ".jsx",
+                    ".mjs",
+                    ".js",
+                    ".cjs",
+                    ".json",
+                    ".node",
+                  ]
+                : [
+                    ".client.tsx",
+                    ".client.ts",
+                    ".client.jsx",
+                    ".client.mjs",
+                    ".client.js",
+                    ".client.cjs",
+                    ".client.json",
+                    ".tsx",
+                    ".ts",
+                    ".jsx",
+                    ".mjs",
+                    ".js",
+                    ".cjs",
+                    ".json",
+                    ".node",
+                  ],
+            } as resolveOptions),
       ],
       [subpath, __SERVER__ ? {} : false],
       [commonjs, __SERVER__ ? false : exports],

@@ -1,8 +1,10 @@
 import { builtinModules } from "module";
+import { sep } from "path";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import graphql from "@mo36924/rollup-plugin-graphql";
 import _static from "@mo36924/rollup-plugin-static";
 import vfs from "@mo36924/rollup-plugin-vfs";
+import alias from "@rollup/plugin-alias";
 import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
@@ -89,10 +91,13 @@ export default async () => {
       }),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
+      alias({
+        entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
+      }),
       resolve({
         extensions: [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs"],
         browser: false,
-        exportConditions: ["import", "require"],
+        exportConditions: ["import"],
         mainFields: ["module", "main"],
         preferBuiltins: true,
       }),

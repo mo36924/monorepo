@@ -38,7 +38,7 @@ const staticMiddleWarePath = resolve("node_modules/@mo36924/static-middleware/di
 const staticMiddleWareCachePath = `\0${staticMiddleWarePath}`;
 
 const staticMiddleWareCode = `export default () => async () => {
-  const { default: cache } = import(${JSON.stringify(staticMiddleWareCachePath)});
+  const { default: cache } = await import(${JSON.stringify(staticMiddleWareCachePath)});
 
   return async (request, response) => {
     if (request.method !== "GET" && request.method !== "POST") {
