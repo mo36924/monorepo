@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/app",
-  "version": "1.1.80",
+  "version": "1.1.81",
   "description": "app",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -30,9 +30,9 @@
   },
   "dependencies": {
     "@babel/core": "^7.13.14",
-    "@mo36924/babel-preset-app": "^1.1.74",
+    "@mo36924/babel-preset-app": "^1.1.81",
     "@mo36924/components": "^1.1.65",
-    "@mo36924/dev-server": "^1.1.74",
+    "@mo36924/dev-server": "^1.1.81",
     "@mo36924/graphql-database-schema-generator": "^1.1.13",
     "@mo36924/graphql-middleware": "^1.1.74",
     "@mo36924/graphql-postgres-json-middleware": "^1.1.74",
@@ -41,7 +41,7 @@
     "@mo36924/http-server": "^1.1.74",
     "@mo36924/page-generator": "^1.1.70",
     "@mo36924/rollup-plugin-graphql": "^1.1.74",
-    "@mo36924/rollup-plugin-static": "^1.1.80",
+    "@mo36924/rollup-plugin-static": "^1.1.81",
     "@mo36924/rollup-plugin-vfs": "^1.1.75",
     "@mo36924/ssr-error-middleware": "^1.1.74",
     "@mo36924/ssr-middleware": "^1.1.74",
