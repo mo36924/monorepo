@@ -40,7 +40,7 @@
     "@mo36924/graphql-schema-generator": "^1.1.0",
     "@mo36924/http-server": "^1.1.74",
     "@mo36924/page-generator": "^1.1.70",
-    "@mo36924/rollup-plugin-esbuild": "^1.1.82",
+    "@mo36924/rollup-plugin-commonjs-prebuild": "^1.0.0",
     "@mo36924/rollup-plugin-graphql": "^1.1.74",
     "@mo36924/rollup-plugin-static": "^1.1.81",
     "@mo36924/rollup-plugin-vfs": "^1.1.75",
