@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import { readFile } from "fs/promises";
-import { extname, resolve, sep } from "path";
+import { extname, relative, resolve, sep } from "path";
 import { promisify } from "util";
 import { brotliCompress, constants } from "zlib";
 import { gzipAsync } from "@gfx/zopfli";
@@ -10,9 +10,10 @@ import { charset, contentType } from "mime-types";
 import type { Plugin } from "rollup";
 
 export type Options = { [path: string]: string };
+const cwd = process.cwd();
 
 const normalize = (path: string) => {
-  path = path.split(sep).join("/");
+  path = relative(cwd, path).split(sep).join("/");
 
   if (path[0] !== "/") {
     path = `/${path}`;

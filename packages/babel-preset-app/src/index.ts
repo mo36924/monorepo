@@ -4,18 +4,18 @@ import process from "process";
 import type { ConfigAPI, default as babel, TransformOptions } from "@babel/core";
 // @ts-ignore
 import constant from "@babel/plugin-transform-react-constant-elements";
-import env, { Options as envOptions } from "@babel/preset-env";
+import env, { Options as EnvOptions } from "@babel/preset-env";
 // @ts-ignore
 import react from "@babel/preset-react";
 // @ts-ignore
 import typescript from "@babel/preset-typescript";
-import commonjs, { Options as commonjsOptions } from "@mo36924/babel-plugin-commonjs";
+import commonjs, { Options as CommonjsOptions } from "@mo36924/babel-plugin-commonjs";
 import deadCodeElimination from "@mo36924/babel-plugin-dead-code-elimination";
 import iifeUnwrap from "@mo36924/babel-plugin-iife-unwrap";
-import inject, { Options as injectOptions } from "@mo36924/babel-plugin-inject";
+import inject, { Options as InjectOptions } from "@mo36924/babel-plugin-inject";
 import jsxDev from "@mo36924/babel-plugin-jsx-development";
-import replace from "@mo36924/babel-plugin-replace";
-import _resolve, { Options as resolveOptions } from "@mo36924/babel-plugin-resolve";
+import replace, { Options as ReplaceOptions } from "@mo36924/babel-plugin-replace";
+import _resolve, { Options as ResolveOptions } from "@mo36924/babel-plugin-resolve";
 import subpath from "@mo36924/babel-plugin-resolve-subpath";
 
 const _require = createRequire(resolve("index.js"));
@@ -27,8 +27,9 @@ export type Options = {
   target?: "client" | "server";
   nomodule?: boolean;
   jsx?: "react" | "preact";
-  inject?: injectOptions;
-  exports?: commonjsOptions;
+  inject?: InjectOptions;
+  replace?: ReplaceOptions;
+  exports?: CommonjsOptions;
 };
 
 const { NODE_ENV, NODE_TARGET, NODE_NOMODULE } = process.env;
@@ -40,6 +41,7 @@ export default (_api: Api, options: Options): TransformOptions => {
     nomodule = NODE_NOMODULE !== "false" && !!NODE_NOMODULE,
     jsx = "react",
     inject: _inject = {},
+    replace: _replace = {},
     exports = {},
   } = options;
 
@@ -100,7 +102,7 @@ export default (_api: Api, options: Options): TransformOptions => {
               },
           useBuiltIns: __PROD__ ? "usage" : false,
           corejs: __PROD__ ? "3.10" : undefined,
-        } as envOptions,
+        } as EnvOptions,
       ],
       [typescript],
       [
@@ -116,6 +118,7 @@ export default (_api: Api, options: Options): TransformOptions => {
       [
         replace,
         {
+          ..._replace,
           "typeof self": __SERVER__ ? '"undefined"' : '"object"',
           "typeof global": __SERVER__ ? '"object"' : '"undefined"',
           "typeof process": '"object"',
@@ -188,7 +191,7 @@ export default (_api: Api, options: Options): TransformOptions => {
                     ".json",
                     ".node",
                   ],
-            } as resolveOptions),
+            } as ResolveOptions),
       ],
       [subpath, __SERVER__ ? {} : false],
       [commonjs, __SERVER__ ? false : exports],
@@ -237,7 +240,7 @@ export default (_api: Api, options: Options): TransformOptions => {
             renderToStaticMarkup: ["react-dom/server", "renderToStaticMarkup"],
             renderToString: ["react-dom/server", "renderToString"],
           },
-        } as injectOptions,
+        } as InjectOptions,
       ],
       [jsxDev, __PROD__ ? false : {}],
       [constant, __PROD__ ? {} : false],

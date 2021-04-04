@@ -9,9 +9,9 @@ import type ReactDom from "react-dom";
 import type ReactDomServer from "react-dom/server";
 
 declare global {
-  const { Body, Head, Html, Title } = Components;
-  const { useQuery } = GraphQLReact;
-  const hydrate = _hydrate;
+  const { Body, Head, Html, Title }: typeof Components;
+  const { useQuery }: typeof GraphQLReact;
+  const hydrate: typeof _hydrate;
   const pageMatch: typeof _pageMatch;
   const pages: typeof _pages;
   const Children: typeof React.Children;
