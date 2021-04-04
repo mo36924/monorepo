@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import { builtinModules } from "module";
-import { resolve, sep } from "path";
+import { sep } from "path";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import base64url from "@mo36924/base64url";
 import prebuild from "@mo36924/rollup-plugin-commonjs-prebuild";
@@ -33,7 +33,7 @@ const getOutputFiles = ({ output }: RollupOutput): OutputFiles => {
         entry = chunk.fileName;
       }
 
-      files[resolve(chunk.fileName)] = chunk.code;
+      files[chunk.fileName] = chunk.code;
     }
   }
 
@@ -45,10 +45,10 @@ const getOutputFiles = ({ output }: RollupOutput): OutputFiles => {
 
 const changeChunkName = async ({ entry, files }: OutputFiles) => {
   const fileNames = (chunkInfo: PreRenderedChunk) => {
-    return md5(files[chunkInfo.facadeModuleId!]) + ".js";
+    return md5(files[`${chunkInfo.name}.js`]) + ".js";
   };
 
-  const bundle = await rollup({ input: entry, plugins: [vfs(files)] });
+  const bundle = await rollup({ input: entry, plugins: [vfs(files)], preserveEntrySignatures: false });
 
   const rollupOutput = await bundle.generate({
     dir: "dist",
@@ -112,6 +112,7 @@ export default async () => {
         babelrc: false,
         configFile: false,
         compact: false,
+        exclude: [/\/node_modules\/core-js\//],
         babelHelpers: "bundled",
         sourceMaps: false,
         presets: [[app, { target: "client", env: "production" } as AppOptions]],
@@ -185,6 +186,7 @@ export default async () => {
         babelrc: false,
         configFile: false,
         compact: false,
+        exclude: [/\/node_modules\/core-js\//],
         babelHelpers: "bundled",
         sourceMaps: true,
         presets: [
