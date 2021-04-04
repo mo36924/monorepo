@@ -42,6 +42,7 @@
     "@mo36924/page-generator": "^1.1.70",
     "@mo36924/rollup-plugin-commonjs-prebuild": "^1.1.83",
     "@mo36924/rollup-plugin-graphql": "^1.1.74",
+    "@mo36924/rollup-plugin-replace-module": "^1.1.83",
     "@mo36924/rollup-plugin-static": "^1.1.81",
     "@mo36924/rollup-plugin-vfs": "^1.1.83",
     "@mo36924/ssr-error-middleware": "^1.1.74",
