@@ -150,7 +150,6 @@
     "babel-plugin-minify-dead-code-elimination": "^0.5.1",
     "babel-plugin-resolve": "npm:@mo36924/babel-plugin-resolve@1.1.31",
     "babel-plugin-resolve-subpath": "npm:@mo36924/babel-plugin-resolve-subpath@1.1.7",
-    "base64url": "^3.0.1",
     "change-case": "^4.1.2",
     "chokidar": "^3.5.1",
     "commander": "^7.2.0",

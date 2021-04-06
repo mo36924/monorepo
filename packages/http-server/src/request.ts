@@ -1,7 +1,7 @@
 import { IncomingMessage } from "http";
 import { ParsedPath, posix } from "path";
+import base64url from "@mo36924/base64url";
 import accepts, { Accepts } from "accepts";
-import base64url from "base64url";
 import { parse as parseCookie } from "cookie";
 import { v4 } from "uuid";
 import type { Response } from "./response";
@@ -21,7 +21,7 @@ export type SessionStore = {
 
 const { parse: parsePath } = posix;
 
-export const sid = () => base64url.fromBase64(v4(null, Buffer.alloc(16)).toString("base64"));
+export const sid = () => base64url(v4(null, Buffer.alloc(16)).toString("base64"));
 
 export class Request extends IncomingMessage {
   response!: Response;

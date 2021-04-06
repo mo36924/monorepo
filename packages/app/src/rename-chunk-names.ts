@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import { parse, traverse, types as t } from "@babel/core";
-import base64url from "base64url";
+import base64url from "@mo36924/base64url";
 import type { OutputChunk, RollupOutput } from "rollup";
 
 export type Chunks = { isEntry: boolean; fileName: string; code: string }[];
