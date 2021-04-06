@@ -88,7 +88,7 @@ const getCacheMiddlewareCode = (options: Options & { middlewareVirtual: string }
   }
 
   return `export default () => async () => {
-  const { default: cache } = await import(${JSON.stringify(`\0${options.middlewareVirtual}`)});
+  const { default: cache } = await import(${JSON.stringify(options.middlewareVirtual)});
 
   return (request, response) => {
     if (request.method !== "GET" && request.method !== "POST") {
