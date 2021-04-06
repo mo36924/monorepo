@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/rollup-plugin-entrypoint",
-  "version": "1.0.0",
+  "version": "1.1.87",
   "description": "rollup-plugin-entrypoint",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -26,8 +26,8 @@
     }
   },
   "dependencies": {
-    "@mo36924/entrypoint": "^1.0.0",
-    "@mo36924/rollup-plugin-cache": "^1.0.0"
+    "@mo36924/entrypoint": "^1.1.87",
+    "@mo36924/rollup-plugin-cache": "^1.1.87"
   },
   "peerDependencies": {
     "rollup": "^2.44.0"
