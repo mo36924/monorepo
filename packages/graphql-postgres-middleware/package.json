@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-postgres-middleware",
-  "version": "1.1.87",
+  "version": "1.1.90",
   "description": "graphql-postgres-middleware",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -26,9 +26,9 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-middleware": "^1.1.87",
+    "@mo36924/graphql-middleware": "^1.1.90",
     "@mo36924/graphql-utils": "^1.1.1",
-    "@mo36924/http-server": "^1.1.87",
+    "@mo36924/http-server": "^1.1.90",
     "@mo36924/postgres-escape": "^1.1.0",
     "graphql": "^15.5.0",
     "pg": "^8.5.1"
