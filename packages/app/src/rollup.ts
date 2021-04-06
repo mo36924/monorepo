@@ -1,13 +1,14 @@
 import { createHash } from "crypto";
+import { readFile } from "fs/promises";
 import { builtinModules } from "module";
 import { sep } from "path";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import base64url from "@mo36924/base64url";
 import prebuild from "@mo36924/rollup-plugin-commonjs-prebuild";
+import entrypoint from "@mo36924/rollup-plugin-entrypoint";
 import graphql from "@mo36924/rollup-plugin-graphql";
 import replaceModule from "@mo36924/rollup-plugin-replace-module";
 import _static from "@mo36924/rollup-plugin-static";
-import vfs from "@mo36924/rollup-plugin-vfs";
 import alias from "@rollup/plugin-alias";
 import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
@@ -16,54 +17,8 @@ import _resolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 // @ts-ignore
 import jsx from "acorn-jsx";
-import { PreRenderedChunk, rollup, RollupOutput } from "rollup";
+import { rollup } from "rollup";
 import { terser } from "rollup-plugin-terser";
-
-type OutputFiles = { entry: string; files: { [path: string]: string } };
-
-const md5 = (data: string) => base64url(createHash("md5").update(data).digest("base64"));
-
-const getOutputFiles = ({ output }: RollupOutput): OutputFiles => {
-  let entry = "";
-  const files: { [name: string]: string } = Object.create(null);
-
-  for (const chunk of output) {
-    if (chunk.type === "chunk") {
-      if (chunk.isEntry) {
-        entry = chunk.fileName;
-      }
-
-      files[chunk.fileName] = chunk.code;
-    }
-  }
-
-  return {
-    entry,
-    files,
-  };
-};
-
-const changeChunkName = async ({ entry, files }: OutputFiles) => {
-  const fileNames = (chunkInfo: PreRenderedChunk) => {
-    return md5(files[`${chunkInfo.name}.js`]) + ".js";
-  };
-
-  const bundle = await rollup({ input: entry, plugins: [vfs(files)], preserveEntrySignatures: false });
-
-  const rollupOutput = await bundle.generate({
-    dir: "dist",
-    format: "module",
-    sourcemap: false,
-    compact: true,
-    minifyInternalExports: true,
-    preferConst: true,
-    entryFileNames: fileNames,
-    chunkFileNames: fileNames,
-  });
-
-  await bundle.close();
-  return getOutputFiles(rollupOutput);
-};
 
 export default async () => {
   let bundle = await rollup({
@@ -121,21 +76,42 @@ export default async () => {
     ],
   });
 
-  const rollupOutput = await bundle.generate({
+  const { output } = await bundle.generate({
     dir: "dist",
     format: "module",
     sourcemap: false,
     compact: true,
     minifyInternalExports: true,
     preferConst: true,
-    entryFileNames: "index.js",
-    chunkFileNames: "index.js",
+    entryFileNames: "[name]-[hash].js",
+    chunkFileNames: "[name]-[hash].js",
   });
 
-  let outputFiles = getOutputFiles(rollupOutput);
+  const files: { [path: string]: string | Buffer } = Object.create(null);
+  let entry = "";
+
+  for (const chunk of output) {
+    if (chunk.type !== "chunk") {
+      continue;
+    }
+
+    if (chunk.isEntry) {
+      entry = chunk.fileName;
+    }
+
+    files[chunk.fileName] = chunk.code;
+  }
+
+  let favicon: string | undefined;
+
+  try {
+    const data = await readFile("favicon.ico");
+    const hash = base64url(createHash("sha256").update(data).digest("base64"));
+    favicon = `${hash}.ico`;
+    files[favicon] = data;
+  } catch {}
+
   await bundle.close();
-  outputFiles = await changeChunkName(outputFiles);
-  outputFiles = await changeChunkName(outputFiles);
 
   bundle = await rollup({
     input: "lib/index.ts",
@@ -146,7 +122,7 @@ export default async () => {
     plugins: [
       prebuild({ packages: ["readable-stream"] }),
       replaceModule({ "pg-native": "module.exports = {};" }),
-      _static(outputFiles.files),
+      entrypoint({ entrypoint: { favicon, module: entry }, files }),
       typescript({
         sourceMap: true,
         inlineSourceMap: false,
@@ -195,7 +171,6 @@ export default async () => {
             {
               target: "server",
               env: "production",
-              replace: { ENTRY_MODULE: JSON.stringify(`/${outputFiles.entry}`) },
             } as AppOptions,
           ],
         ],

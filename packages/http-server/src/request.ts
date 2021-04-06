@@ -28,9 +28,10 @@ export class Request extends IncomingMessage {
   port!: string;
   _host!: string | null;
   _origin!: string | null;
+  _path!: string | null;
   _href!: string | null;
   __url!: URL | null;
-  __path!: ParsedPath | null;
+  _parsedPath!: ParsedPath | null;
   _accepts!: Accepts | null;
   _type!: { [type: string]: string | false } | null;
   _types!: string[] | null;
@@ -57,7 +58,7 @@ export class Request extends IncomingMessage {
     return (this._origin ||= `${this.protocol}//${this.host}`);
   }
   get path() {
-    return this.url || "/";
+    return (this._path ||= this.url || "/");
   }
   get href() {
     return (this._href ||= `${this.origin}${this.path}`);
@@ -74,20 +75,20 @@ export class Request extends IncomingMessage {
   get searchParams() {
     return this._url.searchParams;
   }
-  get _path() {
-    return (this.__path ||= parsePath(this.pathname));
+  get parsedPath() {
+    return (this._parsedPath ||= parsePath(this.pathname));
   }
   get dir() {
-    return this._path.dir;
+    return this.parsedPath.dir;
   }
   get base() {
-    return this._path.base;
+    return this.parsedPath.base;
   }
   get name() {
-    return this._path.name;
+    return this.parsedPath.name;
   }
   get ext() {
-    return this._path.ext;
+    return this.parsedPath.ext;
   }
   get userAgent() {
     return this.headers["user-agent"] || "";
@@ -170,9 +171,10 @@ Request.prototype.response = null as any;
 Request.prototype.port = "";
 Request.prototype._host = null;
 Request.prototype._origin = null;
+Request.prototype._path = null;
 Request.prototype._href = null;
 Request.prototype.__url = null;
-Request.prototype.__path = null;
+Request.prototype._parsedPath = null;
 Request.prototype._accepts = null;
 Request.prototype._type = null;
 Request.prototype._types = null;

@@ -28,6 +28,8 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-react": "^1.1.65"
+    "@mo36924/entrypoint": "^1.0.0",
+    "@mo36924/graphql-react": "^1.1.65",
+    "react": "^17.0.2"
   }
 }

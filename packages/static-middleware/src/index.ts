@@ -1,20 +1,17 @@
 import { readFile } from "fs/promises";
-import { join, resolve } from "path";
+import { join } from "path";
 import type { MiddlewareFactory } from "@mo36924/http-server";
 
 export default (): MiddlewareFactory => () => {
-  const dir = resolve("static");
-
   return async (request, response) => {
     if (request.method !== "GET" && request.method !== "POST") {
       return;
     }
 
-    const path = join(dir, request.pathname.slice(1));
     let data: Buffer;
 
     try {
-      data = await readFile(path);
+      data = await readFile(join("static", request.pathname));
     } catch {
       return;
     }

@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/rollup-plugin-static",
-  "version": "1.1.85",
-  "description": "rollup-plugin-static",
+  "name": "@mo36924/cache-middleware",
+  "version": "1.0.0",
+  "description": "cache-middleware",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/rollup-plugin-static"
+    "directory": "packages/cache-middleware"
   },
   "publishConfig": {
     "access": "public"
@@ -26,9 +26,6 @@
     }
   },
   "dependencies": {
-    "@mo36924/rollup-plugin-cache": "^1.0.0"
-  },
-  "peerDependencies": {
-    "rollup": "^2.44.0"
+    "@mo36924/http-server": "^1.1.85"
   }
 }
