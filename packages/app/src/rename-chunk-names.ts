@@ -15,7 +15,7 @@ export const getChunks = ({ output }: RollupOutput) =>
 const getHashes = (chunks: Chunks) =>
   Object.fromEntries(
     chunks.map(({ fileName, code }) => [
-      `./${fileName}`,
+      fileName,
       `${base64url(createHash("sha256").update(code).digest("base64"))}.js`,
     ]),
   );
@@ -47,7 +47,7 @@ const getSources = (code: string) => {
     },
   });
 
-  return sources.reverse();
+  return sources;
 };
 
 const getChunkWithSources = (chunks: Chunks) =>
@@ -56,15 +56,25 @@ const getChunkWithSources = (chunks: Chunks) =>
 const renameChunkNames = (chunkWithSources: ChunkWithSources) => {
   const hashes = getHashes(chunkWithSources);
   return chunkWithSources.map(({ isEntry, fileName, code, sources }) => {
+    let gap = 0;
+
     code = sources.reduce((code, source) => {
-      const { start, end, value } = source;
-      const _value = JSON.stringify(`./${hashes[value]}`);
-      source.end = start + _value.length;
-      source.value = _value;
-      return `${code.slice(0, start)}${_value}${code.slice(end)}`;
+      const start = source.start + gap;
+      const end = source.end + gap;
+      const importSourceValue = source.value;
+      const importSourceLength = end - start;
+      const fileName = importSourceValue.replace(/^\.\//, "");
+      const _importSourceValue = `./${hashes[fileName]}`;
+      const _importSource = JSON.stringify(_importSourceValue);
+      const _importSourceLength = _importSource.length;
+      source.start = start;
+      source.end = start + _importSourceLength;
+      source.value = _importSourceValue;
+      gap += _importSourceLength - importSourceLength;
+      return `${code.slice(0, start)}${_importSource}${code.slice(end)}`;
     }, code);
 
-    return { isEntry, fileName: hashes[`./${fileName}`], code, sources };
+    return { isEntry, fileName: hashes[fileName], code, sources };
   });
 };
 
