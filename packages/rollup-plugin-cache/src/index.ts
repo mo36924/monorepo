@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import { readFile } from "fs/promises";
-import { extname, join, sep } from "path";
+import { extname, join, sep, resolve } from "path";
 import { promisify } from "util";
 import { brotliCompress, constants } from "zlib";
 import { gzipAsync } from "@gfx/zopfli";
@@ -22,6 +22,8 @@ export type Options = {
 };
 
 const normalize = (path: string) => {
+  path = resolve(path);
+
   if (path.startsWith(cwd)) {
     path = path.slice(cwd.length);
   }

@@ -1,4 +1,4 @@
-import { css, favicon, module, nomodule } from "@mo36924/entrypoint";
+import { css, favicon, module, nomodule } from "@mo36924/config";
 import type { PropsWithChildren } from "react";
 
 export const Head = (props: PropsWithChildren<{ prefix?: "website" | "article" }>) => (

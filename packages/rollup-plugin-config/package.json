@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/rollup-plugin-entrypoint",
-  "version": "1.1.88",
-  "description": "rollup-plugin-entrypoint",
+  "name": "@mo36924/rollup-plugin-config",
+  "version": "1.0.0",
+  "description": "rollup-plugin-config",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/rollup-plugin-entrypoint"
+    "directory": "packages/rollup-plugin-config"
   },
   "publishConfig": {
     "access": "public"
@@ -26,8 +26,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/entrypoint": "^1.1.87",
-    "@mo36924/rollup-plugin-cache": "^1.1.88"
+    "@mo36924/config": "^1.0.0"
   },
   "peerDependencies": {
     "rollup": "^2.44.0"

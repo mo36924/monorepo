@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/entrypoint",
-  "version": "1.1.87",
-  "description": "entrypoint",
+  "name": "@mo36924/config",
+  "version": "1.0.0",
+  "description": "config",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/entrypoint"
+    "directory": "packages/config"
   },
   "publishConfig": {
     "access": "public"
@@ -24,5 +24,9 @@
     ".": {
       "import": "./dist/index.js"
     }
+  },
+  "dependencies": {
+    "cosmiconfig": "^7.0.0",
+    "resolve": "^1.20.0"
   }
 }

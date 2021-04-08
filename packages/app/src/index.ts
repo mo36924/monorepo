@@ -3,7 +3,7 @@ import devServer from "@mo36924/dev-server";
 import databaseSchemaGenerator, { Options as databaseSchemaOptions } from "@mo36924/graphql-database-schema-generator";
 import graphqlSchemaGenerator from "@mo36924/graphql-schema-generator";
 import pageGenerator, { Options as pageGeneratorOptions } from "@mo36924/page-generator";
-import rollup from "./rollup";
+import server from "./server";
 
 export type Options = {
   watch?: boolean;
@@ -27,6 +27,6 @@ export default async (options: Options = {}) => {
   if (watch) {
     await devServer({ inject: options.inject });
   } else {
-    await rollup();
+    await server();
   }
 };

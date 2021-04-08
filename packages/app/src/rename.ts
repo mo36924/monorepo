@@ -1,24 +1,24 @@
-import { createHash } from "crypto";
 import { parse, traverse, types as t } from "@babel/core";
-import base64url from "@mo36924/base64url";
 import type { OutputChunk, RollupOutput } from "rollup";
+import hash from "./hash";
 
-export type Chunks = { isEntry: boolean; fileName: string; code: string }[];
+type Chunk = { fileName: string; code: string };
+type Chunks = Chunk[];
 type Sources = { start: number; end: number; value: string }[];
-type ChunkWithSources = (Chunks[number] & { sources: Sources })[];
+type ChunkWithSources = (Chunk & { sources: Sources })[];
 
-export const getChunks = ({ output }: RollupOutput) =>
-  output
+const getChunks = ({ output }: RollupOutput) => {
+  if (!output[0].isEntry) {
+    throw new Error("The first chunk is not an entry file");
+  }
+
+  return output
     .filter((chunk): chunk is OutputChunk => chunk.type === "chunk")
-    .map(({ isEntry, fileName, code }) => ({ isEntry, fileName, code }));
+    .map(({ fileName, code }) => ({ fileName, code }));
+};
 
 const getHashes = (chunks: Chunks) =>
-  Object.fromEntries(
-    chunks.map(({ fileName, code }) => [
-      fileName,
-      `${base64url(createHash("sha256").update(code).digest("base64"))}.js`,
-    ]),
-  );
+  Object.fromEntries(chunks.map(({ fileName, code }) => [fileName, `${hash(code)}.js`]));
 
 const getSources = (code: string) => {
   const ast = parse(code, { sourceType: "module", babelrc: false, configFile: false });
@@ -51,11 +51,11 @@ const getSources = (code: string) => {
 };
 
 const getChunkWithSources = (chunks: Chunks) =>
-  chunks.map(({ isEntry, fileName, code }) => ({ isEntry, fileName, code, sources: getSources(code) }));
+  chunks.map(({ fileName, code }) => ({ fileName, code, sources: getSources(code) }));
 
-const renameChunkNames = (chunkWithSources: ChunkWithSources) => {
+const renameChunkWithSources = (chunkWithSources: ChunkWithSources) => {
   const hashes = getHashes(chunkWithSources);
-  return chunkWithSources.map(({ isEntry, fileName, code, sources }) => {
+  return chunkWithSources.map(({ fileName, code, sources }) => {
     let gap = 0;
 
     code = sources.reduce((code, source) => {
@@ -74,14 +74,19 @@ const renameChunkNames = (chunkWithSources: ChunkWithSources) => {
       return `${code.slice(0, start)}${_importSource}${code.slice(end)}`;
     }, code);
 
-    return { isEntry, fileName: hashes[fileName], code, sources };
+    return { fileName: hashes[fileName], code, sources };
   });
 };
 
-export default (rollupOutput: RollupOutput) => {
+const renameChunkNames = (rollupOutput: RollupOutput) => {
   const chunks = getChunks(rollupOutput);
   let chunkWithSources = getChunkWithSources(chunks);
-  chunkWithSources = renameChunkNames(chunkWithSources);
-  chunkWithSources = renameChunkNames(chunkWithSources);
+  chunkWithSources = renameChunkWithSources(chunkWithSources);
+  chunkWithSources = renameChunkWithSources(chunkWithSources);
   return chunkWithSources;
+};
+
+export default (rollupOutput: RollupOutput): [path: string, data: string][] => {
+  const chunks = renameChunkNames(rollupOutput);
+  return chunks.map((chunk) => [chunk.fileName, chunk.code]);
 };
