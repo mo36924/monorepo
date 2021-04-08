@@ -28,6 +28,7 @@
   "dependencies": {
     "@gfx/zopfli": "^1.0.15",
     "@mo36924/base64url": "^1.1.78",
+    "@mo36924/cache-middleware": "^1.1.91",
     "fast-glob": "^3.2.5",
     "mime-types": "^2.1.29"
   },
