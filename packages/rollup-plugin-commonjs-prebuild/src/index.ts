@@ -23,7 +23,8 @@ export default (options: (string | string[])[] = []): Plugin => {
     async buildStart() {
       const chunkNames = [...flatPackages];
 
-      for (const packages of _options) {
+      for (let i = 0; i < _options.length; i++) {
+        const packages = _options[i];
         const entry: { [name: string]: any } = Object.create(null);
 
         if (packages.length === 1) {
@@ -49,7 +50,14 @@ export default (options: (string | string[])[] = []): Plugin => {
           const compiler = webpack({
             mode: "production",
             entry,
-            output: { path: outputDir, filename: "[name].js", libraryTarget: "commonjs2" },
+            output: {
+              path: outputDir,
+              filename: "[name].js",
+              libraryTarget: "commonjs2",
+              devtoolModuleFilenameTemplate(info: any) {
+                return info.resourcePath.replace(/^webpack\//, `webpack/${i}/`);
+              },
+            },
             target: "node",
             devtool: "source-map",
             externals({ request }, callback) {
@@ -96,12 +104,16 @@ export default (options: (string | string[])[] = []): Plugin => {
 
           files[id] = {
             code: fs.readFileSync(id, "utf8") as string,
-            map: fs.existsSync(mapId) ? (fs.readFileSync(mapId, "utf8") as string) : `{mappings:""}`,
+            map: fs.existsSync(mapId) ? (fs.readFileSync(mapId, "utf8") as string) : `{"mappings":""}`,
           };
         }
       }
     },
-    resolveId(source) {
+    resolveId(source, importer) {
+      if (importer != null && files[importer] && source[0] === ".") {
+        return resolve(importer, "..", source);
+      }
+
       return resolvedIds[source];
     },
     load(id) {
