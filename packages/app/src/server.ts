@@ -32,7 +32,7 @@ const server = async () => {
     context: "globalThis",
     plugins: [
       _static(),
-      prebuild({ packages: ["readable-stream"] }),
+      prebuild(["readable-stream", ["pg", "pg-pool"]]),
       replaceModule({ "pg-native": "module.exports = {};" }),
       _config(),
       cache(),
@@ -107,7 +107,7 @@ export default async () => {
     context: "globalThis",
     plugins: [
       _static(),
-      prebuild({ packages: ["readable-stream"] }),
+      prebuild(["readable-stream", ["pg", "pg-pool"]]),
       replaceModule({ "pg-native": "module.exports = {};" }),
       _config({
         favicon: `/${_favicon[0]}`,

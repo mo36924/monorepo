@@ -26,7 +26,8 @@
     }
   },
   "dependencies": {
-    "esbuild": "^0.11.4"
+    "memfs": "^3.2.2",
+    "webpack": "^5.31.0"
   },
   "peerDependencies": {
     "rollup": "^2.44.0"

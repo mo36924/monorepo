@@ -1,5 +1,5 @@
 import { readFile } from "fs/promises";
-import { transformAsync } from "@babel/core";
+import babel from "@babel/core";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import cache from "./cache";
 import type { Options } from "./type";
@@ -11,7 +11,7 @@ export default async (options: Options) => async (path: string) => {
 
   const data = cache.typescript[path] ?? (await readFile(path, "utf8"));
 
-  const result = await transformAsync(data!, {
+  const result = await babel.transformAsync(data!, {
     filename: path,
     configFile: false,
     babelrc: false,

@@ -1,6 +1,8 @@
-import { parse, traverse, types as t } from "@babel/core";
+import babel from "@babel/core";
 import type { OutputChunk, RollupOutput } from "rollup";
 import hash from "./hash";
+
+const { parse, traverse, types: t } = babel;
 
 type Chunk = { fileName: string; code: string };
 type Chunks = Chunk[];

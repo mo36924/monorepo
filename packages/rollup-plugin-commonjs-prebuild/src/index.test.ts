@@ -8,11 +8,7 @@ describe("rollup-plugin-commonjs-prebuild", () => {
   it("commonjs-prebuild", async () => {
     const build = await rollup({
       input: "src/index.js",
-      plugins: [
-        vfs({ "src/index.js": `import "readable-stream"` }),
-        nodeResolve(),
-        prebuild({ packages: ["readable-stream"] }),
-      ],
+      plugins: [vfs({ "src/index.js": `import "readable-stream"` }), nodeResolve(), prebuild(["readable-stream"])],
     });
 
     const { output } = await build.generate({ file: "dist/index.js" });
