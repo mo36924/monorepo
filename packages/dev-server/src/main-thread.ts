@@ -2,6 +2,7 @@ import { createServer } from "http";
 import { env } from "process";
 import { fileURLToPath, pathToFileURL } from "url";
 import { Worker } from "worker_threads";
+import * as config from "@mo36924/config";
 import httpProxy from "http-proxy";
 import ts from "typescript";
 import cache from "./cache";
@@ -14,8 +15,8 @@ import typescript from "./typescript";
 import { memoize } from "./util";
 
 export default async (options: Options) => {
-  const serverInput = "lib/index.ts";
-  const clientInput = "lib/index.client.ts";
+  const serverInput = config.server;
+  const clientInput = config.client;
   const port = parseInt(env.PORT!, 10) || 3000;
   const workerPort = (port + 1).toFixed();
 

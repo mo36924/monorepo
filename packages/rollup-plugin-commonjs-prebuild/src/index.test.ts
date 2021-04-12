@@ -1,8 +1,10 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
 import vfs from "@mo36924/rollup-plugin-vfs";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import { rollup } from "rollup";
 import prebuild from "./index";
+
+jest.setTimeout(30000);
 
 describe("rollup-plugin-commonjs-prebuild", () => {
   it("commonjs-prebuild", async () => {

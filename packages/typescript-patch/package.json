@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/graphql-schema",
-  "version": "1.1.0",
-  "description": "graphql-schema",
+  "name": "@mo36924/typescript-patch",
+  "version": "1.0.0",
+  "description": "typescript-patch",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/graphql-schema"
+    "directory": "packages/typescript-patch"
   },
   "publishConfig": {
     "access": "public"
@@ -26,9 +26,6 @@
     }
   },
   "dependencies": {
-    "change-case": "^4.1.2",
-    "graphql": "^15.5.0",
-    "pluralize": "^8.0.0",
-    "prettier": "^2.2.1"
+    "typescript": "^4.2.3"
   }
 }

@@ -27,7 +27,7 @@ export type Options = {
   target?: "client" | "server";
   nomodule?: boolean;
   jsx?: "react" | "preact";
-  inject?: InjectOptions;
+  inject?: InjectOptions["declarations"];
   replace?: ReplaceOptions;
   exports?: CommonjsOptions;
 };
@@ -199,7 +199,7 @@ export default (_api: Api, options: Options): TransformOptions => {
         inject,
         {
           declarations: {
-            ..._inject.declarations,
+            ..._inject,
             Body: ["@mo36924/components", "Body"],
             Head: ["@mo36924/components", "Head"],
             Html: ["@mo36924/components", "Html"],

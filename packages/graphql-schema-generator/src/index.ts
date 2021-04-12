@@ -1,9 +1,7 @@
 import { watch } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname } from "path";
-import { schema as buildSchema } from "@mo36924/graphql-schema";
-import { parse, print, stripIgnoredCharacters } from "graphql";
-import prettier from "prettier";
+import { format, schema as buildSchema } from "@mo36924/graphql-schema";
 
 export type Options = {
   watch?: boolean;
@@ -16,11 +14,6 @@ const defaultOptions: Required<Options> = {
   model: "graphql/model.gql",
   schema: "graphql/schema.gql",
 };
-
-async function format(code: string, filepath: string) {
-  const prettierConfig = await prettier.resolveConfig(filepath);
-  return prettier.format(print(parse(stripIgnoredCharacters(code))), { ...prettierConfig, filepath });
-}
 
 async function writeFileAsync(path: string, data: string) {
   try {
