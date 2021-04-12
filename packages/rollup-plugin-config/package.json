@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/rollup-plugin-config",
-  "version": "1.1.91",
+  "version": "1.1.95",
   "description": "rollup-plugin-config",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -26,7 +26,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/config": "^1.1.91"
+    "@mo36924/config": "^1.1.95"
   },
   "peerDependencies": {
     "rollup": "^2.44.0"
