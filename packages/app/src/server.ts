@@ -1,11 +1,12 @@
 import { builtinModules } from "module";
 import { sep } from "path";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
-import * as config from "@mo36924/config";
+import type { Config } from "@mo36924/config";
 import cache from "@mo36924/rollup-plugin-cache";
 import prebuild from "@mo36924/rollup-plugin-commonjs-prebuild";
 import _config from "@mo36924/rollup-plugin-config";
 import graphql from "@mo36924/rollup-plugin-graphql";
+import graphqlSchema from "@mo36924/rollup-plugin-graphql-schema";
 import replaceModule from "@mo36924/rollup-plugin-replace-module";
 import _static from "@mo36924/rollup-plugin-static";
 import alias from "@rollup/plugin-alias";
@@ -23,7 +24,7 @@ import css from "./css";
 import favicon from "./favicon";
 import rename from "./rename";
 
-const server = async () => {
+const server = async (config: Config) => {
   const bundle = await rollup({
     input: config.server,
     acornInjectPlugins: [jsx()],
@@ -43,6 +44,7 @@ const server = async () => {
       }),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
+      graphqlSchema(config),
       alias({
         entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
       }),
@@ -91,11 +93,11 @@ const server = async () => {
   return entries;
 };
 
-export default async () => {
+export default async (config: Config) => {
   const _favicon = await favicon();
   const _module = await module();
   const _nomodule = await nomodule();
-  const _server = await server();
+  const _server = await server(config);
   const _css = await css([..._module, ..._nomodule, ..._server].map(([, data]) => ({ extension: "js", raw: data })));
   const files = Object.fromEntries<string | Buffer>([_favicon, ..._module, ..._nomodule]);
 
@@ -123,6 +125,7 @@ export default async () => {
       }),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
+      graphqlSchema(config),
       alias({
         entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
       }),
