@@ -10322,10 +10322,10 @@ upath@^2.0.1:
   resolved "https://registry.yarnpkg.com/upath/-/upath-2.0.1.tgz#50c73dea68d6f6b990f51d279ce6081665d61a8b"
   integrity sha512-1uEe95xksV1O0CYKXo8vQvN1JEbtJp7lb7C5U9HMsIp6IVwntkH/oNUzyVNQSd4S1sYk2FpSSW44FqMc8qee5w==
 
-"update-package-field@npm:@mo36924/update-package-field@1.1.99":
-  version "1.1.99"
-  resolved "https://registry.yarnpkg.com/@mo36924/update-package-field/-/update-package-field-1.1.99.tgz#bcb0733c243c789aef39b71883c755cd6a4d8ed9"
-  integrity sha512-80bIWdxWlWovVEp+tcXefHpo7Sv5Mg/mZVcfp1a0YBNdBICjj5i+vjzf7zj2/c9+qes0U/p0hAD9+7yHxsd9Vg==
+"update-package-field@npm:@mo36924/update-package-field@1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@mo36924/update-package-field/-/update-package-field-1.2.3.tgz#d1e2d0960caa3648cf3abbc2ac6b232dac8619d0"
+  integrity sha512-DaQ0VLEMmtLPULeXM9EFXSN1ieBiAFIekRkc++kMFLHnS247dDd/BXfYexMFyjNyXKVdTpvJcsE56OEi0HKMkA==
   dependencies:
     fast-glob "^3.2.5"
     prettier "^2.2.1"

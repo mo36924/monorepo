@@ -18,13 +18,13 @@
     "access": "public"
   },
   "type": "module",
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "browser": "./dist/index.client.js",
   "exports": {
     ".": {
       "browser": "./dist/index.client.js",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
   },
