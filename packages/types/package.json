@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/types",
-  "version": "1.1.96",
+  "version": "1.2.0",
   "description": "types",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -26,11 +26,11 @@
     }
   },
   "dependencies": {
-    "@mo36924/components": "^1.1.96",
-    "@mo36924/graphql-react": "^1.1.65",
-    "@mo36924/page": "^1.1.61",
-    "@mo36924/page-match": "^1.1.61",
-    "@mo36924/pages": "^1.1.61",
+    "@mo36924/components": "^1.2.0",
+    "@mo36924/graphql-react": "^1.2.0",
+    "@mo36924/page": "^1.2.0",
+    "@mo36924/page-match": "^1.2.0",
+    "@mo36924/pages": "^1.2.0",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3"
   }

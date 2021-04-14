@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/node-fetch-polyfill",
-  "version": "1.1.54",
+  "version": "1.2.0",
   "description": "node-fetch-polyfill",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",

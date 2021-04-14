@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-postgres-json-query",
-  "version": "1.1.95",
+  "version": "1.2.0",
   "description": "graphql-postgres-json-query",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -27,9 +27,9 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-query": "^1.1.95",
-    "@mo36924/graphql-schema": "^1.1.95",
-    "@mo36924/postgres-escape": "^1.1.0",
+    "@mo36924/graphql-query": "^1.2.0",
+    "@mo36924/graphql-schema": "^1.2.0",
+    "@mo36924/postgres-escape": "^1.2.0",
     "graphql": "^15.5.0",
     "uuid": "^8.3.2"
   }
