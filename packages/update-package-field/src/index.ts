@@ -44,6 +44,7 @@ export default async () => {
           ".": {
             browser: undefined,
             import: undefined,
+            require: undefined,
             ...exports,
           },
         };
