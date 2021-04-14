@@ -44,7 +44,7 @@ const server = async (config: Config) => {
       }),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
-      graphqlSchema(config),
+      graphqlSchema(),
       alias({
         entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
       }),
@@ -125,7 +125,7 @@ export default async (config: Config) => {
       }),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
-      graphqlSchema(config),
+      graphqlSchema(),
       alias({
         entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
       }),

@@ -6,6 +6,7 @@ import inject from "./inject";
 import normalize from "./normalize";
 import pkg from "./package";
 import page from "./page";
+import path from "./path";
 import resolve from "./resolve";
 
 export const watch = process.env.NODE_ENV !== "production";
@@ -18,5 +19,6 @@ export const favicon = normalize(cosmiconfig.favicon ?? "./lib/favicon.ico");
 export const css = normalize(cosmiconfig.css ?? "./lib/index.css");
 export const module = normalize(cosmiconfig.module ?? client);
 export const nomodule = normalize(cosmiconfig.nomodule ?? client);
-export const graphql: string = cosmiconfig.graphql ?? "./lib/index.gql";
+export const graphql = path(cosmiconfig.graphql ?? "./lib/index.gql");
+export const cwd = cosmiconfig.cwd;
 export { database, extensions, inject, page };

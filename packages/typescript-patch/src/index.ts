@@ -1,14 +1,50 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { access, readFile, writeFile } from "fs/promises";
+import { createRequire } from "module";
+import { join } from "path";
+import type { TypeChecker } from "typescript";
 
-const patch = "node_modules/typescript/lib/patch";
+export type Checker = TypeChecker & {
+  createTupleType: any;
+  getLiteralType: any;
+  getIntersectionType: any;
+  createSyntheticExpression: any;
+  getGlobalType: any;
+  createSymbolTable: any;
+  emptyArray: any;
+  createSymbol: any;
+  createAnonymousType: any;
+  createArrayType: any;
+  getUnionType: any;
+  getNullType: any;
+  getStringType: any;
+  getNumberType: any;
+  getBooleanType: any;
+  getAnyType: any;
+  getNeverType: any;
+};
 
-if (!existsSync(patch)) {
-  const checker = `
-        var checker = {
-`;
+export const hookName = "taggedTemplateExpressionHook";
+export const checker = "var checker = {";
+export const getEffectiveCallArguments = "function getEffectiveCallArguments(node) {";
 
-  const replaceChecker = `
-        var checker = {
+export const patch = async () => {
+  let path: string | undefined;
+
+  try {
+    const require = createRequire(join(process.cwd(), "index.js"));
+    path = `${require.resolve("typescript")}.patch`;
+  } catch {
+    return;
+  }
+
+  try {
+    await access(path);
+    return;
+  } catch {
+    await writeFile(path, "");
+  }
+
+  const replaceChecker = `${checker}
             createTupleType: createTupleType,
             getLiteralType: getLiteralType,
             getIntersectionType: getIntersectionType,
@@ -18,25 +54,13 @@ if (!existsSync(patch)) {
             emptyArray: ts.emptyArray,
 `;
 
-  const getEffectiveCallArguments1 = `
-        function getEffectiveCallArguments(node) {
-            if (node.kind === 205) {
-`;
-
-  const getEffectiveCallArguments2 = `
-        function getEffectiveCallArguments(node) {
-            if (node.kind === 205 /* TaggedTemplateExpression */) {
-`;
-
-  const replaceGetEffectiveCallArguments = `
-        function getEffectiveCallArguments(node) {
-            if (node.kind === 205 /* TaggedTemplateExpression */) {
-                if(ts.taggedTemplateExpressionHook){
-                    var args = ts.taggedTemplateExpressionHook(node, checker);
-                    if(args){
-                        return args;
-                    }
-                }
+  const replaceGetEffectiveCallArguments = `${getEffectiveCallArguments}
+            if (node.kind === 205 && ts.${hookName}) {
+              var args = ts.${hookName}(node, checker);
+              if(args){
+                  return args;
+              }
+            }
 `;
 
   const files = [
@@ -48,14 +72,11 @@ if (!existsSync(patch)) {
     "node_modules/typescript/lib/typingsInstaller.js",
   ];
 
-  for (const file of files) {
-    const code = readFileSync(file, "utf-8")
-      .replace(checker, replaceChecker)
-      .replace(getEffectiveCallArguments1, replaceGetEffectiveCallArguments)
-      .replace(getEffectiveCallArguments2, replaceGetEffectiveCallArguments);
-
-    writeFileSync(file, code);
-  }
-
-  writeFileSync(patch, "");
-}
+  await Promise.all(
+    files.map(async (file) => {
+      let code = await readFile(file, "utf-8");
+      code = code.replace(checker, replaceChecker).replace(getEffectiveCallArguments, replaceGetEffectiveCallArguments);
+      await writeFile(file, code);
+    }),
+  );
+};

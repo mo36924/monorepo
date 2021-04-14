@@ -1,7 +1,8 @@
 import type { PartialConfig } from "@mo36924/config";
-import "./patch";
+import { patch } from "@mo36924/typescript-patch";
 
 export default async (partialConfig: PartialConfig = {}) => {
-  const { default: app } = await import("./main");
-  await app(partialConfig);
+  await patch();
+  const app = await import("./app");
+  await app.default(partialConfig);
 };

@@ -1,8 +1,9 @@
 import { resolve } from "path";
 import _resolve, { SyncOpts } from "resolve";
+import cosmiconfig from "./cosmiconfig";
 import extensions from "./extensions";
 
-const cwd = process.cwd();
+const cwd = cosmiconfig.cwd;
 
 const clientOptions: SyncOpts = {
   basedir: cwd,

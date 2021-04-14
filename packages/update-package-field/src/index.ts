@@ -29,6 +29,10 @@ export default async () => {
         exports.browser = "./dist/index.client.js";
       }
 
+      if (files.includes("cjs.js")) {
+        exports.require = "./dist/cjs.js";
+      }
+
       if (files.includes("bin.js")) {
         pkg.bin = {
           [name]: "./dist/bin.js",
