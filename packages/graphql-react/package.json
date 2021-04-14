@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-react",
-  "version": "1.2.0",
+  "version": "1.2.4",
   "description": "graphql-react",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -29,9 +29,9 @@
     }
   },
   "dependencies": {
-    "@mo36924/escape": "^1.2.0",
-    "@mo36924/graphql": "^1.2.0",
-    "@mo36924/graphql-json": "^1.2.0",
+    "@mo36924/escape": "^1.2.4",
+    "@mo36924/graphql": "^1.2.4",
+    "@mo36924/graphql-json": "^1.2.4",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "graphql": "^15.5.0",

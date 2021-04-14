@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/ssr-error-middleware",
-  "version": "1.2.0",
+  "version": "1.2.4",
   "description": "ssr-error-middleware",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -27,9 +27,9 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-react": "^1.2.0",
-    "@mo36924/http-server": "^1.2.0",
-    "@mo36924/page": "^1.2.0",
+    "@mo36924/graphql-react": "^1.2.4",
+    "@mo36924/http-server": "^1.2.4",
+    "@mo36924/page": "^1.2.4",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
     "react": "^17.0.2",

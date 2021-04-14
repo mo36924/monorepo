@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql",
-  "version": "1.2.0",
+  "version": "1.2.4",
   "description": "graphql",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -29,8 +29,8 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-json": "^1.2.0",
-    "@mo36924/node-fetch-polyfill": "^1.2.0",
+    "@mo36924/graphql-json": "^1.2.4",
+    "@mo36924/node-fetch-polyfill": "^1.2.4",
     "graphql": "^15.5.0"
   }
 }

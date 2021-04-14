@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/rollup-plugin-graphql",
-  "version": "1.2.0",
+  "version": "1.2.4",
   "description": "rollup-plugin-graphql",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
