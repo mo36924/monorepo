@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-schema-middleware",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "graphql-schema-middleware",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@mo36924/config": "^1.2.0",
-    "@mo36924/graphql-postgres-json-middleware": "^1.2.0",
+    "@mo36924/graphql-postgres-json-middleware": "^1.2.2",
     "@mo36924/graphql-schema": "^1.2.0",
     "@mo36924/http-server": "^1.2.0",
     "graphql": "^15.5.0"
