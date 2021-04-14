@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { model, schema as graphqlSchema } from "@mo36924/graphql-schema";
 import { buildSchema as graphqlBuildSchema, DocumentNode, GraphQLSchema, parse } from "graphql";
 import { raw } from "jest-snapshot-serializer-raw";
+import uuid from "uuid";
 import postgresQuery from "./index";
 
 const buildSchema = (gql: string) => graphqlBuildSchema(graphqlSchema(model(gql)));
@@ -16,11 +17,13 @@ const rawQuery = (
   return raw(result.data!.map((query) => query + ";").join("\n"));
 };
 
-let i = 0;
-
 jest.mock("uuid", () => {
+  let i = 0;
   return {
     v4: () => `00000000-0000-4000-a000-${(i++).toString().padStart(12, "0")}`,
+    reset() {
+      i = 0;
+    },
   };
 });
 
@@ -28,7 +31,7 @@ jest.useFakeTimers("modern").setSystemTime(new Date("2020-01-01").getTime());
 
 describe("graphql-postgres-json-query", () => {
   beforeEach(() => {
-    i = 0;
+    (uuid as any).reset();
   });
 
   const schema = buildSchema(`

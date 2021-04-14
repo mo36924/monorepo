@@ -9,6 +9,7 @@ import subpath from "babel-plugin-resolve-subpath";
 import glob from "fast-glob";
 import MagicString from "magic-string";
 import dts from "rollup-plugin-dts";
+import importMetaUrl from "rollup-plugin-import-meta-url";
 import ts from "typescript";
 
 const sys = ts.sys;
@@ -153,7 +154,7 @@ export default async () => {
   };
 
   /** @type {import("rollup").Plugin[]} */
-  const serverPlugins = [cachePlugin, babelPlugin("server")];
+  const serverPlugins = [cachePlugin, babelPlugin("server"), importMetaUrl()];
   /** @type {import("rollup").Plugin[]} */
   const clientPlugins = [cachePlugin, babelPlugin("client")];
 

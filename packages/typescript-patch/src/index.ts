@@ -31,7 +31,7 @@ export const patch = async () => {
   let path: string | undefined;
 
   try {
-    const require = createRequire(join(process.cwd(), "index.js"));
+    const require = createRequire(import.meta.url);
     path = `${require.resolve("typescript")}.patch`;
   } catch {
     return;
