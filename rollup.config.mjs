@@ -157,34 +157,24 @@ export default async () => {
   /** @type {import("rollup").Plugin[]} */
   const clientPlugins = [cachePlugin, babelPlugin("client")];
 
-  const [paths, clients, bins, cjs] = await Promise.all(
-    [
-      "packages/*/src/index.{ts,tsx}",
-      "packages/*/src/index.client.{ts,tsx}",
-      "packages/*/src/bin.ts",
-      "packages/*/src/cjs.ts",
-    ].map((source) => glob(source, { absolute: true })),
+  const [paths, clients, bins] = await Promise.all(
+    ["packages/*/src/index.{ts,tsx}", "packages/*/src/index.client.{ts,tsx}", "packages/*/src/bin.ts"].map((source) =>
+      glob(source, { absolute: true }),
+    ),
   );
 
   const binSet = new Set(bins);
-  const cjsSet = new Set(cjs);
   const dtsInput = [];
 
   for (const path of paths) {
     const dir = resolve(path, "..", "..", "dist");
     const bin = resolve(path, "..", "bin.ts");
-    const cjs = resolve(path, "..", "cjs.ts");
     const input = [path];
     dtsInput.push(path);
 
     if (binSet.has(bin)) {
       input.push(bin);
       binSet.delete(bin);
-    }
-
-    if (cjsSet.has(cjs)) {
-      input.push(cjs);
-      cjsSet.delete(cjs);
     }
 
     options.push({
@@ -196,6 +186,19 @@ export default async () => {
           sourcemap: true,
           sourcemapExcludeSources: true,
           preferConst: true,
+          entryFileNames: "[name].mjs",
+          chunkFileNames: "[name]-[hash].mjs",
+        },
+        {
+          dir,
+          format: "commonjs",
+          sourcemap: true,
+          sourcemapExcludeSources: true,
+          preferConst: true,
+          entryFileNames: "[name].cjs",
+          chunkFileNames: "[name]-[hash].cjs",
+          interop: "auto",
+          exports: "named",
         },
       ],
       external,
@@ -209,12 +212,13 @@ export default async () => {
     options.push({
       input: client,
       output: {
-        file: resolve(dir, "index.client.js"),
+        dir,
         format: "module",
         sourcemap: true,
         sourcemapExcludeSources: true,
         preferConst: true,
-        inlineDynamicImports: true,
+        entryFileNames: "[name].js",
+        chunkFileNames: "[name]-[hash].js",
       },
       external,
       plugins: clientPlugins,
@@ -232,6 +236,8 @@ export default async () => {
         sourcemap: true,
         sourcemapExcludeSources: true,
         preferConst: true,
+        entryFileNames: "[name].mjs",
+        chunkFileNames: "[name]-[hash].mjs",
       },
       external,
       plugins: serverPlugins,

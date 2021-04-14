@@ -23,6 +23,8 @@ const init: ts.server.PluginModuleFactory = (mod) => {
   };
 };
 
+export default init;
+
 if (typeof module !== "undefined" && typeof exports !== "undefined") {
   module.exports = Object.assign(init, exports);
 }
