@@ -40,7 +40,6 @@ export default async () => {
           ...pkg,
           type: undefined,
           exports: undefined,
-          dependencies: undefined,
           devDependencies: undefined,
           peerDependencies: undefined,
         };
