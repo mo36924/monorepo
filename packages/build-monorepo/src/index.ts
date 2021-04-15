@@ -11,7 +11,7 @@ export default async () => {
   for (const option of options) {
     const start = Date.now();
     const outputs = Array.isArray(option.output) ? option.output : option.output ? [option.output] : [];
-    const outputFiles = outputs.map((output) => output.file || output.dir!).join(", ");
+    const outputFiles = [...new Set(outputs.map((output) => output.file || output.dir!))].join(", ");
     let inputFiles = "";
 
     if (typeof option.input === "string") {
