@@ -3177,6 +3177,25 @@ buffer-writer@2.0.0:
   resolved "https://registry.yarnpkg.com/buffer-writer/-/buffer-writer-2.0.0.tgz#ce7eb81a38f7829db09c873f2fbb792c0c98ec04"
   integrity sha512-a7ZpuTZU1TRtnwyCNW3I5dc0wWNC3VR9S++Ewyk2HHZdrO3CQJqSpd+95Us590V6AL7JqUAH2IwZ/398PmNFgw==
 
+"build-monorepo@npm:@mo36924/build-monorepo@1.3.8":
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/@mo36924/build-monorepo/-/build-monorepo-1.3.8.tgz#bc450d25fd19a437dc67e26d7a4120c6075f099a"
+  integrity sha512-P+OSvtfzycgKdgE8N9jTpTdumPb8KzBPTUlCyiYq7CYQNGdj0d+WW63jdvqe+GpLZVSDnX/0tyQXDkyVIf43hQ==
+  dependencies:
+    "@babel/plugin-transform-react-constant-elements" "^7.13.13"
+    "@babel/preset-env" "^7.13.12"
+    "@babel/preset-react" "^7.13.13"
+    "@babel/preset-typescript" "^7.13.0"
+    "@rollup/plugin-babel" "^5.3.0"
+    babel-plugin-resolve "npm:@mo36924/babel-plugin-resolve@1.3.0"
+    babel-plugin-resolve-subpath "npm:@mo36924/babel-plugin-resolve-subpath@1.3.0"
+    fast-glob "^3.2.5"
+    magic-string "^0.25.7"
+    rollup "^2.44.0"
+    rollup-plugin-dts "^3.0.1"
+    rollup-plugin-import-meta-url "npm:@mo36924/rollup-plugin-import-meta-url@1.3.0"
+    typescript "^4.2.3"
+
 builtin-modules@^3.1.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-3.2.0.tgz#45d5db99e7ee5e6bc4f362e008bf917ab5049887"
@@ -7785,6 +7804,11 @@ parse-json@^5.0.0:
     json-parse-even-better-errors "^2.3.0"
     lines-and-columns "^1.1.6"
 
+parse-ms@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/parse-ms/-/parse-ms-2.1.0.tgz#348565a753d4391fa524029956b172cb7753097d"
+  integrity sha512-kHt7kzLoS9VBZfUsiKjv43mr91ea+U05EyKkEtqp7vNbHxmaVuEqN7XxeEVnGrMtYOAxGrDElSi96K7EgO1zCA==
+
 parse-path@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/parse-path/-/parse-path-4.0.3.tgz#82d81ec3e071dcc4ab49aa9f2c9c0b8966bb22bf"
@@ -8483,6 +8507,13 @@ pretty-hrtime@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/pretty-hrtime/-/pretty-hrtime-1.0.3.tgz#b7e3ea42435a4c9b2759d99e0f201eb195802ee1"
   integrity sha1-t+PqQkNaTJsnWdmeDyAesZWALuE=
+
+pretty-ms@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/pretty-ms/-/pretty-ms-7.0.1.tgz#7d903eaab281f7d8e03c66f867e239dc32fb73e8"
+  integrity sha512-973driJZvxiGOQ5ONsFhOF/DtzPMOMtgC11kCpUrPGMTgqp2q/1gwzCquocrN33is0VZ5GFHXZYMM9l6h67v2Q==
+  dependencies:
+    parse-ms "^2.1.0"
 
 process-nextick-args@~2.0.0:
   version "2.0.1"

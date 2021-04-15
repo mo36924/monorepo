@@ -28,7 +28,7 @@ describe("babel-plugin-resolve-subpath", () => {
   });
 
   test("relative", () => {
-    const result = transform(`import rollup from "./rollup.config"`);
-    expect(result).toMatchInlineSnapshot(`import rollup from "./rollup.config";`);
+    const result = transform(`import rollup from "./package"`);
+    expect(result).toMatchInlineSnapshot(`import rollup from "./package";`);
   });
 });
