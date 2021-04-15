@@ -80,7 +80,7 @@ export default async () => {
           };
         }
 
-        const dependencies: { [pkg: string]: string } = Object.create(null);
+        const dependencies: { [pkg: string]: string } = { ...pkg.dependencies };
 
         await Promise.all(
           files
