@@ -17,16 +17,15 @@
   "publishConfig": {
     "access": "public"
   },
-  "type": "module",
   "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "bin": {
-    "update-package-field": "./dist/bin.js"
+    "update-package-field": "./dist/bin.mjs"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "dependencies": {
