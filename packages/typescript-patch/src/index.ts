@@ -1,7 +1,8 @@
-import { access, readFile, writeFile } from "fs/promises";
+import { promises } from "fs";
 import { createRequire } from "module";
-import { join } from "path";
 import type { TypeChecker } from "typescript";
+
+const { access, readFile, writeFile } = promises;
 
 export type Checker = TypeChecker & {
   createTupleType: any;

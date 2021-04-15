@@ -3,8 +3,8 @@ import { graphql } from "@mo36924/config";
 import { schema } from "@mo36924/graphql-schema";
 import { buildSchema, GraphQLSchema } from "graphql";
 
-let _gql = "";
-let _graphQLSchema: GraphQLSchema = buildSchema("scalar Unknown");
+let _gql = "scalar Unknown";
+let _graphQLSchema: GraphQLSchema = buildSchema(_gql);
 
 const _schema = () => {
   try {
