@@ -2,29 +2,42 @@ import { readdir, readFile, writeFile } from "fs/promises";
 import { basename, dirname, join, resolve } from "path";
 import babel from "@babel/core";
 import typescript from "@babel/plugin-syntax-typescript";
-import glob from "fast-glob";
 import prettier from "prettier";
 
 const { parseAsync, traverse, types } = babel;
 
 export default async () => {
-  const [pkgJson, paths] = await Promise.all([readFile("package.json", "utf8"), glob("packages/*/package.json")]);
+  const [packageJson, names, prettierOptions] = await Promise.all([
+    readFile("package.json", "utf8"),
+    readdir("packages"),
+    prettier.resolveConfig("package.json"),
+  ]);
 
   const devDependencies: { [pkg: string]: string } = Object.assign(
     Object.create(null),
-    JSON.parse(pkgJson).devDependencies,
+    JSON.parse(packageJson).devDependencies,
+  );
+
+  const packageJsonPaths = names.map((name) => resolve("packages", name, "package.json"));
+  const pkgs: { [packageJsonPath: string]: { [key: string]: any } } = Object.create(null);
+
+  await Promise.all(
+    packageJsonPaths.map(async (packageJsonPath) => {
+      try {
+        const pkg = JSON.parse(await readFile(packageJsonPath, "utf8"));
+        pkgs[packageJsonPath] = pkg;
+        devDependencies[pkg.name] = `^${pkg.version}`;
+      } catch {}
+    }),
   );
 
   await Promise.all(
-    paths.map(async (path) => {
-      const name = basename(dirname(path));
-
-      if (name === "types") {
-        return;
-      }
+    Object.entries(pkgs).map(async ([packageJsonPath, pkg]) => {
+      const name = basename(dirname(packageJsonPath));
 
       try {
-        const pkg: { [key: string]: any } = {
+        pkg = {
+          ...pkg,
           type: undefined,
           exports: undefined,
           dependencies: undefined,
@@ -33,7 +46,7 @@ export default async () => {
         };
 
         const exports: { [key: string]: any } = {};
-        const files = await readdir(join(path, "..", "dist"));
+        const files = await readdir(join(packageJsonPath, "..", "dist"));
 
         if (files.includes("index.js")) {
           pkg.main = "./dist/index.js";
@@ -73,7 +86,7 @@ export default async () => {
           files
             .filter((file) => /\.(mjs|d\.ts)$/.test(file))
             .map(async (file) => {
-              const filename = resolve(path, "..", "dist", file);
+              const filename = resolve(packageJsonPath, "..", "dist", file);
               const code = await readFile(filename, "utf8");
               const ast = await parseAsync(code, { sourceType: "module", plugins: [typescript], filename });
 
@@ -124,16 +137,15 @@ export default async () => {
             dependencies: undefined,
             devDependencies: undefined,
             peerDependencies: undefined,
-            ...JSON.parse(await readFile(path, "utf8")),
             ...pkg,
           }),
           {
-            ...(await prettier.resolveConfig(path)),
-            filepath: path,
+            ...prettierOptions,
+            filepath: packageJsonPath,
           },
         );
 
-        await writeFile(path, formattedCode);
+        await writeFile(packageJsonPath, formattedCode);
       } catch (err) {
         console.error(String(err));
       }

@@ -6280,10 +6280,10 @@ jest-serializer@^26.6.2:
   resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-graphql/-/jest-snapshot-serializer-graphql-1.3.0.tgz#647c981572c7180115de8d8382eb20341f39a35e"
   integrity sha512-QIYZt7tZkYGAIzoh+yG3Ob7XQcfuodf9G0aD6uiMUfG+RuJiEvcWBtq5wfkyjpRiLJfk/Tx5jqdkF2inlssBtg==
 
-"jest-snapshot-serializer-preact@npm:@mo36924/jest-snapshot-serializer-preact@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-preact/-/jest-snapshot-serializer-preact-1.3.0.tgz#fbbdbc53b87208e12d6f27b748f7b56884017501"
-  integrity sha512-QJU/CefNeF6wnNGWkx0iCgtIp6hv9Flv5N5DQPa4k3uBYPPueF+8P4gSavJthyxP50qox2QTfc7QnV+dUqLfYQ==
+"jest-snapshot-serializer-preact@npm:@mo36924/jest-snapshot-serializer-preact@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-preact/-/jest-snapshot-serializer-preact-1.3.1.tgz#a3657d8ce07dc88a20c85d648bf848f79ccdb6f5"
+  integrity sha512-g36NEG/jxA4Mmlf8ZqoUkcOwcwachTGLAqbt/3lP+ev+9I7OAdtTiOVp71CWA3sr9fr01Zz1GyYwjkvfWfDOxg==
 
 "jest-snapshot-serializer-raw@npm:@mo36924/jest-snapshot-serializer-raw@1.3.0":
   version "1.3.0"
