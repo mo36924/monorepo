@@ -36,16 +36,18 @@ export default async () => {
       const name = basename(dirname(packageJsonPath));
 
       try {
+        const dependencies: { [pkg: string]: string } = { ...pkg.dependencies };
+        const exports: { [key: string]: any } = {};
+        const files = await readdir(join(packageJsonPath, "..", "dist"));
+
         pkg = {
           ...pkg,
           type: undefined,
           exports: undefined,
+          dependencies: undefined,
           devDependencies: undefined,
           peerDependencies: undefined,
         };
-
-        const exports: { [key: string]: any } = {};
-        const files = await readdir(join(packageJsonPath, "..", "dist"));
 
         if (files.includes("index.js")) {
           pkg.main = "./dist/index.js";
@@ -79,8 +81,6 @@ export default async () => {
           };
         }
 
-        const dependencies: { [pkg: string]: string } = { ...pkg.dependencies };
-
         await Promise.all(
           files
             .filter((file) => /\.(mjs|d\.ts)$/.test(file))
@@ -108,11 +108,13 @@ export default async () => {
             }),
         );
 
-        pkg.dependencies = Object.fromEntries(
-          Object.keys(dependencies)
-            .sort()
-            .map((pkg) => [pkg, dependencies[pkg]]),
-        );
+        const packageNames = Object.keys(dependencies);
+
+        if (packageNames.length) {
+          pkg.dependencies = Object.fromEntries(
+            packageNames.sort().map((packageName) => [packageName, dependencies[packageName]]),
+          );
+        }
 
         const formattedCode = prettier.format(
           JSON.stringify({
