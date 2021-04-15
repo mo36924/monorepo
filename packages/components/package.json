@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/components",
-  "version": "1.3.0",
+  "version": "1.3.6",
   "description": "components",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -28,7 +28,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/config": "^1.3.0",
+    "@mo36924/config": "^1.3.6",
     "@mo36924/graphql-react": "^1.3.0",
     "react": "^17.0.2"
   }

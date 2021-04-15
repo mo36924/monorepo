@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/typescript-graphql",
-  "version": "1.3.0",
+  "version": "1.3.6",
   "description": "typescript-graphql",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -26,7 +26,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/config": "^1.3.0",
+    "@mo36924/config": "^1.3.6",
     "@mo36924/graphql-schema": "^1.3.0",
     "@mo36924/typescript-patch": "^1.3.0",
     "graphql": "^15.5.0",

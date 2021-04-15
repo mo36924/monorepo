@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-postgres-json-query",
-  "version": "1.3.0",
+  "version": "1.3.6",
   "description": "graphql-postgres-json-query",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
