@@ -17,12 +17,13 @@
   "publishConfig": {
     "access": "public"
   },
-  "type": "module",
-  "main": "./index.js",
-  "module": "./index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./index.d.ts",
   "exports": {
     ".": {
-      "import": "./index.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "dependencies": {

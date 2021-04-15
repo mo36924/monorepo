@@ -32,6 +32,7 @@
     "cookie": "^0.4.1",
     "encodeurl": "^1.0.2",
     "http-errors": "jshttp/http-errors#2.0",
-    "mime-types": "^2.1.29"
+    "mime-types": "^2.1.29",
+    "uuid": "^8.3.2"
   }
 }

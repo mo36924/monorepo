@@ -6,6 +6,13 @@ import prettier from "prettier";
 
 const { parseAsync, traverse, types } = babel;
 
+const getPackageName = (source: string) => {
+  return source
+    .split("/")
+    .slice(0, source[0] === "@" ? 2 : 1)
+    .join("/");
+};
+
 export default async () => {
   const [packageJson, names, prettierOptions] = await Promise.all([
     readFile("package.json", "utf8"),
@@ -91,17 +98,25 @@ export default async () => {
 
               traverse(ast, {
                 ModuleDeclaration({ node }) {
-                  if ("source" in node && node.source && devDependencies[node.source.value]) {
-                    dependencies[node.source.value] = devDependencies[node.source.value];
+                  if (!("source" in node && node.source)) {
+                    return;
+                  }
+
+                  const packageName = getPackageName(node.source.value);
+
+                  if (devDependencies[packageName]) {
+                    dependencies[packageName] = devDependencies[packageName];
                   }
                 },
                 Import({ parent }) {
-                  if (
-                    types.isCallExpression(parent) &&
-                    types.isStringLiteral(parent.arguments[0]) &&
-                    devDependencies[parent.arguments[0].value]
-                  ) {
-                    dependencies[parent.arguments[0].value] = devDependencies[parent.arguments[0].value];
+                  if (!(types.isCallExpression(parent) && types.isStringLiteral(parent.arguments[0]))) {
+                    return;
+                  }
+
+                  const packageName = getPackageName(parent.arguments[0].value);
+
+                  if (devDependencies[packageName]) {
+                    dependencies[packageName] = devDependencies[packageName];
                   }
                 },
               });

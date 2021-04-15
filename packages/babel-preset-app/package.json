@@ -40,8 +40,5 @@
     "@mo36924/babel-plugin-resolve": "^1.3.0",
     "@mo36924/babel-plugin-resolve-subpath": "^1.3.0",
     "core-js": "^3.10.0"
-  },
-  "peerDependencies": {
-    "@babel/core": "^7.13.14"
   }
 }
