@@ -1,3 +1,3 @@
-import updatePackageField from "./index";
+import index from "./index";
 
-updatePackageField();
+index();

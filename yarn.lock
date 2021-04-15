@@ -2961,10 +2961,10 @@ babel-plugin-dynamic-import-node@^2.3.3:
   dependencies:
     object.assign "^4.1.0"
 
-"babel-plugin-import-meta-url@npm:@mo36924/babel-plugin-import-meta-url@1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-import-meta-url/-/babel-plugin-import-meta-url-1.2.4.tgz#710bf3a9eb4300912ce095665c3f180cfca02026"
-  integrity sha512-BNiLw4Ihb71nlYAnCDKTVC5Bd6cfoV3iC+sUIbrksre9OVSVu7IHKhhp1cV60qjfpQT0WnP9aBlhaYtwe0YiMA==
+"babel-plugin-import-meta-url@npm:@mo36924/babel-plugin-import-meta-url@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-import-meta-url/-/babel-plugin-import-meta-url-1.3.0.tgz#9330c8167f3e7af930a1e3cf08a3140ad9de394c"
+  integrity sha512-yb/aq8yOYm65dDONww+jex2EMo3S+q8F5DMfDuBTlvGA/UXaabmefjb3PDiOnkD6LjzEzUF+E8F36FuhSqXAxA==
 
 babel-plugin-istanbul@^6.0.0:
   version "6.0.0"
@@ -3021,15 +3021,17 @@ babel-plugin-polyfill-regenerator@^0.1.2:
   dependencies:
     "@babel/helper-define-polyfill-provider" "^0.1.5"
 
-"babel-plugin-resolve-subpath@npm:@mo36924/babel-plugin-resolve-subpath@1.1.7":
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-resolve-subpath/-/babel-plugin-resolve-subpath-1.1.7.tgz#550fdfc3488e41be12c10dc9cfaaecfd09951a6a"
-  integrity sha512-HfAg3ryyF2fbffII3kJrxk7tucowUY1RwRFqZCsHdwb0N0iacK17G7G9wNz5P4QDFaIU/ZzH8Swvo1Rbc592iQ==
+"babel-plugin-resolve-subpath@npm:@mo36924/babel-plugin-resolve-subpath@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-resolve-subpath/-/babel-plugin-resolve-subpath-1.3.0.tgz#3d57c8d8e8f6ef7c0eaa518885d406a85ba7f97b"
+  integrity sha512-Ozi44zi5Bg9ipLVj90vdmZgofQ4eyVMLSM8gqBznVtGeyK3tNFWYDzK30gVkkdf8mVLdX1T1IYUjYo0SNwKcHA==
+  dependencies:
+    enhanced-resolve "^5.7.0"
 
-"babel-plugin-resolve@npm:@mo36924/babel-plugin-resolve@1.1.31":
-  version "1.1.31"
-  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-resolve/-/babel-plugin-resolve-1.1.31.tgz#c1b1bf4d58180b20eb880255ab92cfcb8387b847"
-  integrity sha512-ep4V6AidzmVNbHWl8AkBno6DI3jVWecHGA/OMt9DV7hA76+s12g5YklXJ2ZVcI78eYw1cBcYb65B+sxaj83MpA==
+"babel-plugin-resolve@npm:@mo36924/babel-plugin-resolve@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-resolve/-/babel-plugin-resolve-1.3.0.tgz#63d1b0768c878504cda25fd761fd85de6a9e843f"
+  integrity sha512-tsSoWW/cgLMsZjoAYiqYhIzXM1kfhD9YYd69XDAJ9/z4b9OPAjpzGFQ/AHcV/20dvLcFRb8j8g897tTDQ0VYRA==
   dependencies:
     enhanced-resolve "^5.7.0"
 
@@ -3796,10 +3798,10 @@ cosmiconfig@^7.0.0:
     path-type "^4.0.0"
     yaml "^1.10.0"
 
-"create-package@npm:@mo36924/create-package@1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@mo36924/create-package/-/create-package-1.1.2.tgz#6d8ca07e1e8ade156c8773bb733089ee1b72d41b"
-  integrity sha512-NfIyNFfD8XJtA+KvOZZKTUZ4cSUB19ylSywwMFLDydLHDTxL/e47BLuJFKgm4C2wvGmd3yJJ5McNCwmY2q/Fng==
+"create-package@npm:@mo36924/create-package@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/create-package/-/create-package-1.3.0.tgz#f24fef8b5f15522d695e7cdbc13ad862f437c3d5"
+  integrity sha512-CFqTPr8CNJz/B1zkBaNKjp7uVLFJmg5osploFBoscat+r0UQh8fs5BZ68yd+D/KPEk9s1bu4ntxxRtGUqTP5oA==
   dependencies:
     prettier "^2.2.1"
 
@@ -6268,25 +6270,25 @@ jest-serializer@^26.6.2:
     "@types/node" "*"
     graceful-fs "^4.2.4"
 
-"jest-snapshot-serializer-babel@npm:@mo36924/jest-snapshot-serializer-babel@1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-babel/-/jest-snapshot-serializer-babel-1.0.11.tgz#e9421bb5cca652d86e330d98882217661cbcc290"
-  integrity sha512-Ww94NimXDpPHIHPtx1x6vkqV8J1a2PgIzCHtHrHbf5Pm6mNGw29w91v/G4PZDK3NjDm5C0lNaRL2XMgjZgB0WQ==
+"jest-snapshot-serializer-babel@npm:@mo36924/jest-snapshot-serializer-babel@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-babel/-/jest-snapshot-serializer-babel-1.3.0.tgz#6383c22e4808954a50ee4e7d74ef2e6bf75f89df"
+  integrity sha512-RdZYZ/3OfQe0g6oEIDBJJ283HvWfBARsABZ4QhoNU7WbBO6UDu3KD4P1jqiU47PbmSw/ADbpG4p+ErCLVdC8eA==
 
-"jest-snapshot-serializer-graphql@npm:@mo36924/jest-snapshot-serializer-graphql@1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-graphql/-/jest-snapshot-serializer-graphql-1.0.11.tgz#f383cafc1a7624920b3a2ed406da99c9b01b64d8"
-  integrity sha512-Wdiq3vqpNSx7xm2T6qLGMvsa9UBSg9JjyKedLY5mUws3S+CdBIiwywkN3x9MSkFnk4NyaWNgDHdjy/joOxBx/A==
+"jest-snapshot-serializer-graphql@npm:@mo36924/jest-snapshot-serializer-graphql@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-graphql/-/jest-snapshot-serializer-graphql-1.3.0.tgz#647c981572c7180115de8d8382eb20341f39a35e"
+  integrity sha512-QIYZt7tZkYGAIzoh+yG3Ob7XQcfuodf9G0aD6uiMUfG+RuJiEvcWBtq5wfkyjpRiLJfk/Tx5jqdkF2inlssBtg==
 
-"jest-snapshot-serializer-preact@npm:@mo36924/jest-snapshot-serializer-preact@1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-preact/-/jest-snapshot-serializer-preact-1.0.11.tgz#6da075022c24e4db70ac26b81f35f61ab97035c0"
-  integrity sha512-hHMsXypwxKdWYtuD580nI7LZabHmQm8/Hl9R8xnNTOVZiT+zmiJUiBHKu24Oqtvv0Q8HZLykP4aW2PpZvnDCBg==
+"jest-snapshot-serializer-preact@npm:@mo36924/jest-snapshot-serializer-preact@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-preact/-/jest-snapshot-serializer-preact-1.3.0.tgz#fbbdbc53b87208e12d6f27b748f7b56884017501"
+  integrity sha512-QJU/CefNeF6wnNGWkx0iCgtIp6hv9Flv5N5DQPa4k3uBYPPueF+8P4gSavJthyxP50qox2QTfc7QnV+dUqLfYQ==
 
-"jest-snapshot-serializer-raw@npm:@mo36924/jest-snapshot-serializer-raw@1.0.18":
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-raw/-/jest-snapshot-serializer-raw-1.0.18.tgz#0c6197a961d2c39792177661719f09f6c644172f"
-  integrity sha512-VmLPDkad2na351z+5qtlKsC/ZzuOgy8eT5qrENt7ED50zO6D0QtKzCowmxMCgDEipWK3nUirXajkFJpuTocK0g==
+"jest-snapshot-serializer-raw@npm:@mo36924/jest-snapshot-serializer-raw@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/jest-snapshot-serializer-raw/-/jest-snapshot-serializer-raw-1.3.0.tgz#71f7ecc714ad2114cddacc3b6cb7f17d0f0f09a8"
+  integrity sha512-0u7xnc53II4Jv/LOdxAE1HqfEoyOvokX8SRKX8Bo0do3Bs10Z9qQAvpYE+d2zF5pr6B8WrCS/8SQCpW22Sdpug==
 
 jest-snapshot@^26.6.2:
   version "26.6.2"
@@ -9081,10 +9083,10 @@ rollup-plugin-dts@^3.0.1:
   optionalDependencies:
     "@babel/code-frame" "^7.12.13"
 
-"rollup-plugin-import-meta-url@npm:@mo36924/rollup-plugin-import-meta-url@1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@mo36924/rollup-plugin-import-meta-url/-/rollup-plugin-import-meta-url-1.2.4.tgz#684c812f331f6b60ef55e0b01af8a4dd51874a48"
-  integrity sha512-+UF8o3Ja44qJsN10XlSwcD/MCJqRAXvfe86oVruv4X49PS1T+/cKXPy2VTggarGP3Pvs7xkMGpMhAIDdhrpqiQ==
+"rollup-plugin-import-meta-url@npm:@mo36924/rollup-plugin-import-meta-url@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/rollup-plugin-import-meta-url/-/rollup-plugin-import-meta-url-1.3.0.tgz#8c3edef92cc4e76a0ddd806a8ab5a89e04cd3a88"
+  integrity sha512-YtDH8sn0bnln20jY/qnu7ZPOdIjciWI0azBBiskV2l7TpwJZgiIesPhn9OkN6pm+CK1cFa3Omj8FEgvjRMQHEQ==
 
 rollup-plugin-terser@^7.0.2:
   version "7.0.2"
@@ -10322,10 +10324,10 @@ upath@^2.0.1:
   resolved "https://registry.yarnpkg.com/upath/-/upath-2.0.1.tgz#50c73dea68d6f6b990f51d279ce6081665d61a8b"
   integrity sha512-1uEe95xksV1O0CYKXo8vQvN1JEbtJp7lb7C5U9HMsIp6IVwntkH/oNUzyVNQSd4S1sYk2FpSSW44FqMc8qee5w==
 
-"update-package-field@npm:@mo36924/update-package-field@1.2.5":
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/@mo36924/update-package-field/-/update-package-field-1.2.5.tgz#4e984d17b4bcdefa4334ee06192bfc63fbf0cd3d"
-  integrity sha512-c5pH6RDp6fuaR0mneLOgFyF9zaTycUhJ/VlhXDGG3XEtxwInhFuDr01tVivxrhFSHP9E308oZzZRv0xW6b6SSw==
+"update-package-field@npm:@mo36924/update-package-field@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@mo36924/update-package-field/-/update-package-field-1.3.0.tgz#aa6eae29a86b5dfead702f012c6d85405ebc3547"
+  integrity sha512-b8dbq0eCx7ieBFKSAnkMdNXkREp7tfnomNdmxCNI83LImMfl33LoLfmvrSme76uY9FoaJ2NT/c5slP3wN39Tag==
   dependencies:
     fast-glob "^3.2.5"
     prettier "^2.2.1"
