@@ -14,14 +14,13 @@ export default async () => {
     }
 
     try {
-      const pkg: { [key: string]: any } = { type: "module", exports: undefined };
+      const pkg: { [key: string]: any } = { type: undefined, exports: undefined };
       const exports: { [key: string]: any } = {};
       const files = await readdir(join(path, "..", "dist"));
 
       if (files.includes("index.js")) {
         pkg.main = "./dist/index.js";
-        pkg.module = "./dist/index.js";
-        exports.import = "./dist/index.js";
+        exports.require = "./dist/index.js";
       }
 
       if (files.includes("index.client.js")) {
@@ -29,13 +28,14 @@ export default async () => {
         exports.browser = "./dist/index.client.js";
       }
 
-      if (files.includes("index.cjs")) {
-        exports.require = "./dist/index.cjs";
+      if (files.includes("index.mjs")) {
+        pkg.module = "./dist/index.mjs";
+        exports.import = "./dist/index.mjs";
       }
 
-      if (files.includes("bin.js")) {
+      if (files.includes("bin.mjs")) {
         pkg.bin = {
-          [name]: "./dist/bin.js",
+          [name]: "./dist/bin.mjs",
         };
       }
 

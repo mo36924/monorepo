@@ -2961,10 +2961,10 @@ babel-plugin-dynamic-import-node@^2.3.3:
   dependencies:
     object.assign "^4.1.0"
 
-"babel-plugin-import-meta-url@npm:@mo36924/babel-plugin-import-meta-url@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-import-meta-url/-/babel-plugin-import-meta-url-1.2.0.tgz#35036dbfa1da5df480a14c91f176dcbdca09db39"
-  integrity sha512-VRcGMg6CiyeTa27aBBV7XTEQaBDgcXSBPe46HNMpXUTVo6jdiUlNEZa52+S6OgYW0xiniQykPXH3KwXBdlQw9Q==
+"babel-plugin-import-meta-url@npm:@mo36924/babel-plugin-import-meta-url@1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@mo36924/babel-plugin-import-meta-url/-/babel-plugin-import-meta-url-1.2.4.tgz#710bf3a9eb4300912ce095665c3f180cfca02026"
+  integrity sha512-BNiLw4Ihb71nlYAnCDKTVC5Bd6cfoV3iC+sUIbrksre9OVSVu7IHKhhp1cV60qjfpQT0WnP9aBlhaYtwe0YiMA==
 
 babel-plugin-istanbul@^6.0.0:
   version "6.0.0"
@@ -9081,10 +9081,10 @@ rollup-plugin-dts@^3.0.1:
   optionalDependencies:
     "@babel/code-frame" "^7.12.13"
 
-"rollup-plugin-import-meta-url@npm:@mo36924/rollup-plugin-import-meta-url@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@mo36924/rollup-plugin-import-meta-url/-/rollup-plugin-import-meta-url-1.2.1.tgz#0df679771c803009f1b356c37a1a33a47cc7364b"
-  integrity sha512-+DShqNImP3ODNS1Xk1vn0onZdNqb4TsIOnsJNfZ88hVRUBeIDQdvxJUbLpHUsFWT+k2/VQ/wrZpKYKiXb1wvqg==
+"rollup-plugin-import-meta-url@npm:@mo36924/rollup-plugin-import-meta-url@1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@mo36924/rollup-plugin-import-meta-url/-/rollup-plugin-import-meta-url-1.2.4.tgz#684c812f331f6b60ef55e0b01af8a4dd51874a48"
+  integrity sha512-+UF8o3Ja44qJsN10XlSwcD/MCJqRAXvfe86oVruv4X49PS1T+/cKXPy2VTggarGP3Pvs7xkMGpMhAIDdhrpqiQ==
 
 rollup-plugin-terser@^7.0.2:
   version "7.0.2"
