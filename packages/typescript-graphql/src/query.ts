@@ -1,4 +1,4 @@
-import type { GraphQLError, GraphQLSchema } from "graphql";
+import type { GraphQLSchema } from "graphql";
 import type typescript from "typescript";
 import type { TaggedTemplateExpression } from "typescript/lib/tsserverlibrary";
 import { encode } from "./base52";
@@ -62,20 +62,20 @@ export const query = (ts: typeof typescript, schema: GraphQLSchema, node: Tagged
   }
 
   if (tagName === "useQuery" || tagName === "useMutation") {
-    let errors: readonly GraphQLError[];
+    const documentNode = parse(minify(source(query)));
 
-    try {
-      errors = validate(schema, parse(minify(source(query))));
-    } catch {
-      errors = [];
-    }
+    if (!(documentNode instanceof Error)) {
+      const errors = validate(schema, documentNode);
 
-    for (const error of errors) {
-      const match = error.message.match(/^Variable ".*?" of type "Unknown" used in position expecting type "(.*?)"\.$/);
+      for (const error of errors) {
+        const match = error.message.match(
+          /^Variable ".*?" of type "Unknown" used in position expecting type "(.*?)"\.$/,
+        );
 
-      if (match) {
-        query = query.replace("Unknown", match[1]);
-        offset += 7 - match[1].length;
+        if (match) {
+          query = query.replace("Unknown", match[1]);
+          offset += 7 - match[1].length;
+        }
       }
     }
   }

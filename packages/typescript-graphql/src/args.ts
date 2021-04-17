@@ -1,4 +1,4 @@
-import type { Checker } from "@mo36924/typescript-patch";
+import type { Checker, Typescript } from "@mo36924/typescript-patch";
 import {
   DocumentNode,
   getNamedType,
@@ -13,13 +13,12 @@ import {
   visitWithTypeInfo,
 } from "graphql";
 import type { TaggedTemplateExpression } from "typescript";
-import { getType } from "./type";
-import type { typescript } from "./typescript";
+import { getTypescriptType } from "./typescript-type";
 
 const cache = new WeakMap<GraphQLSchema, WeakMap<DocumentNode, any[] | null>>();
 
 export const getArgs = (
-  ts: typescript,
+  ts: Typescript,
   schema: GraphQLSchema,
   node: TaggedTemplateExpression,
   checker: Checker,
@@ -85,7 +84,7 @@ export const getArgs = (
         const inputType = typeInfo.getInputType()!;
         const nullableType = getNullableType(inputType);
         const namedType = getNamedType(nullableType);
-        let type = getType(checker, namedType);
+        let type = getTypescriptType(checker, namedType);
 
         if (isListType(nullableType)) {
           type = createArrayType(type);
@@ -111,7 +110,7 @@ export const getArgs = (
           const symbol = createSymbol(4, fieldName);
           const outputType = typeInfo.getType()!;
           const namedType = getNamedType(outputType);
-          let type = getType(checker, namedType);
+          let type = getTypescriptType(checker, namedType);
 
           if (isNullableType(outputType)) {
             type = getUnionType([type, getNullType()]);

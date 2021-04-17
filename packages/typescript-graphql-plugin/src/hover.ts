@@ -1,8 +1,7 @@
-import { isGraphqlTag } from "@mo36924/typescript-graphql";
-import type typescript from "typescript/lib/tsserverlibrary";
-import type { SourceFile, TaggedTemplateExpression } from "typescript/lib/tsserverlibrary";
+import { isGraphqlTag, Typescript } from "@mo36924/typescript-graphql";
+import type { SourceFile, TaggedTemplateExpression } from "typescript";
 
-export const hover = (ts: typeof typescript, sourceFile: SourceFile, position: number) => {
+export const hover = (ts: Typescript, sourceFile: SourceFile, position: number) => {
   const tag = ts.forEachChild(sourceFile, function visitor(node): true | undefined | TaggedTemplateExpression {
     if (position < node.pos) {
       return true;

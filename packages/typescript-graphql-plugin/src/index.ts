@@ -1,4 +1,10 @@
-import { isGraphqlTag, query as _query, watchSchema } from "@mo36924/typescript-graphql";
+import {
+  isGraphqlTag,
+  query as _query,
+  source,
+  TypescriptWithGraphQLSchema,
+  watchSchema,
+} from "@mo36924/typescript-graphql";
 import {
   getAutocompleteSuggestions,
   getHoverInformation,
@@ -12,7 +18,16 @@ import { diagnostics } from "./diagnostics";
 import { hover } from "./hover";
 import { sourceFile } from "./source-file";
 
-const init: ts.server.PluginModuleFactory = ({ typescript: ts }) => {
+const init: ts.server.PluginModuleFactory = (mod) => {
+  const ts: TypescriptWithGraphQLSchema = mod.typescript;
+
+  let schema = watchSchema((_schema) => {
+    schema = _schema;
+    ts.graphqlSchema = schema;
+  });
+
+  ts.graphqlSchema = schema;
+
   return {
     create(info) {
       const languageService = info.languageService;
@@ -23,7 +38,6 @@ const init: ts.server.PluginModuleFactory = ({ typescript: ts }) => {
       }
 
       proxy.getQuickInfoAtPosition = (fileName: string, position: number) => {
-        const schema = watchSchema();
         const _sourceFile = sourceFile(languageService, fileName);
 
         if (!_sourceFile) {
@@ -61,7 +75,6 @@ const init: ts.server.PluginModuleFactory = ({ typescript: ts }) => {
         position: number,
         options: GetCompletionsAtPositionOptions | undefined,
       ) => {
-        const schema = watchSchema();
         const _sourceFile = sourceFile(languageService, fileName);
 
         if (!_sourceFile) {
@@ -115,7 +128,6 @@ const init: ts.server.PluginModuleFactory = ({ typescript: ts }) => {
       };
 
       proxy.getSemanticDiagnostics = (fileName: string) => {
-        const schema = watchSchema();
         const _diagnostics = languageService.getSemanticDiagnostics(fileName);
         const _sourceFile = sourceFile(languageService, fileName);
 
@@ -129,7 +141,7 @@ const init: ts.server.PluginModuleFactory = ({ typescript: ts }) => {
 
             if (isGraphqlTag(tagName)) {
               const { query, offset } = _query(ts, schema, node);
-              const graphqlDiagnostics = diagnostics(schema, query);
+              const graphqlDiagnostics = diagnostics(schema, source(query));
 
               for (const {
                 range: { start, end },

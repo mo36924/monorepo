@@ -1,46 +1,26 @@
-import { parse, source as _source } from "@mo36924/typescript-graphql";
-import type { DocumentNode, GraphQLSchema, Source } from "graphql";
+import { memoize2, parse } from "@mo36924/typescript-graphql";
+import type { GraphQLSchema, Source } from "graphql";
 import { DIAGNOSTIC_SEVERITY, getRange, validateQuery } from "graphql-language-service-interface";
 import type { Diagnostic } from "vscode-languageserver-types";
 
-const schemaCache = new WeakMap<GraphQLSchema, WeakMap<Source, Diagnostic[]>>();
+export const diagnostics = memoize2((schema: GraphQLSchema, source: Source) => {
+  const documentNode = parse(source);
 
-export const diagnostics = (schema: GraphQLSchema, query: string) => {
-  let cache = schemaCache.get(schema);
+  if (documentNode instanceof Error) {
+    const location = documentNode.locations?.[0] ?? { line: 1, column: 1 };
+    const range = getRange(location, source.body);
 
-  if (!cache) {
-    cache = new WeakMap();
-    schemaCache.set(schema, cache);
-  }
-
-  const source = _source(query);
-  let diagnostics = cache.get(source);
-
-  if (diagnostics) {
-    return diagnostics;
-  }
-
-  let documentNode: DocumentNode;
-
-  try {
-    documentNode = parse(source);
-  } catch (error) {
-    const range = getRange(error.locations[0], query);
-
-    diagnostics = [
+    const diagnostics: Diagnostic[] = [
       {
         severity: DIAGNOSTIC_SEVERITY.Error,
-        message: error.message,
+        message: documentNode.message,
         source: "GraphQL: Syntax",
         range,
       },
     ];
 
-    cache.set(source, diagnostics);
     return diagnostics;
   }
 
-  diagnostics = validateQuery(documentNode, schema);
-  cache.set(source, diagnostics);
-  return diagnostics;
-};
+  return validateQuery(documentNode, schema);
+});

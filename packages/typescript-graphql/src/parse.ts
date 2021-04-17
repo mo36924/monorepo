@@ -1,25 +1,14 @@
-import { DocumentNode, GraphQLError, parse as _parse, Source } from "graphql";
+import { parse as _parse, Source, GraphQLError } from "graphql";
+import { memoize } from "./memoize";
 
-const cache = new WeakMap<Source, DocumentNode | GraphQLError>();
-
-export const parse = (source: Source) => {
-  let documentNode = cache.get(source);
-
-  if (documentNode) {
-    if (documentNode instanceof Error) {
-      throw documentNode;
+export const parse = memoize((source: Source) => {
+  try {
+    return _parse(source);
+  } catch (err) {
+    if (err instanceof GraphQLError) {
+      return err;
     }
 
-    return documentNode;
+    return new GraphQLError(String(err));
   }
-
-  try {
-    documentNode = _parse(source);
-  } catch (err) {
-    cache.set(source, err);
-    throw err;
-  }
-
-  cache.set(source, documentNode);
-  return documentNode;
-};
+}, new WeakMap());

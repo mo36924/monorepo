@@ -1,21 +1,11 @@
 import { Source, stripIgnoredCharacters } from "graphql";
+import { memoize } from "./memoize";
 import { source as _source } from "./source";
 
-const cache = new WeakMap<Source, Source>();
-
-export const minify = (source: Source) => {
-  let minifySource = cache.get(source);
-
-  if (minifySource) {
-    return minifySource;
-  }
-
-  minifySource = source;
-
+export const minify = memoize((source: Source) => {
   try {
-    minifySource = _source(stripIgnoredCharacters(source));
-  } catch {}
-
-  cache.set(source, minifySource);
-  return minifySource;
-};
+    return _source(stripIgnoredCharacters(source));
+  } catch {
+    return source;
+  }
+}, new WeakMap());

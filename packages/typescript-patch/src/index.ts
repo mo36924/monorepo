@@ -1,9 +1,11 @@
 import { promises } from "fs";
-import { createRequire } from "module";
-import type { TypeChecker } from "typescript";
+import type { default as typescript, TaggedTemplateExpression, TypeChecker } from "typescript";
 
 const { access, readFile, writeFile } = promises;
 
+export type Typescript = typeof typescript & {
+  taggedTemplateExpressionHooks?: TaggedTemplateExpressionHook[];
+};
 export type Checker = TypeChecker & {
   createTupleType: any;
   getLiteralType: any;
@@ -23,20 +25,25 @@ export type Checker = TypeChecker & {
   getAnyType: any;
   getNeverType: any;
 };
-
-export const hookName = "taggedTemplateExpressionHook";
+export type TaggedTemplateExpressionHook = (ts: Typescript, node: TaggedTemplateExpression, checker: Checker) => any;
+export const typescriptNamespace = "var ts;";
 export const checker = "var checker = {";
-export const getEffectiveCallArguments = "function getEffectiveCallArguments(node) {";
+export const getEffectiveCallArguments =
+  "function getEffectiveCallArguments(node) {\n            if (node.kind === 205) {";
+export const getEffectiveCallArgumentsWithComment =
+  "function getEffectiveCallArguments(node) {\n            if (node.kind === 205 /* TaggedTemplateExpression */) {";
+export const files = [
+  "node_modules/typescript/lib/tsc.js",
+  "node_modules/typescript/lib/tsserver.js",
+  "node_modules/typescript/lib/tsserverlibrary.js",
+  "node_modules/typescript/lib/typescript.js",
+  "node_modules/typescript/lib/typescriptServices.js",
+  "node_modules/typescript/lib/typingsInstaller.js",
+];
 
 export const patch = async () => {
-  let path: string | undefined;
-
-  try {
-    const require = createRequire(import.meta.url);
-    path = `${require.resolve("typescript")}.patch`;
-  } catch {
-    return;
-  }
+  const path = "node_modules/typescript/lib/patch";
+  const taggedTemplateExpressionHooks = "taggedTemplateExpressionHooks";
 
   try {
     await access(path);
@@ -45,6 +52,12 @@ export const patch = async () => {
     await writeFile(path, "");
   }
 
+  const replaceTypescriptNamespace = `var ts;
+(function (ts) {
+    ts.${taggedTemplateExpressionHooks} = [];
+})(ts || (ts = {}));
+var ts;`;
+
   const replaceChecker = `${checker}
             createTupleType: createTupleType,
             getLiteralType: getLiteralType,
@@ -52,31 +65,29 @@ export const patch = async () => {
             createSyntheticExpression: createSyntheticExpression,
             getGlobalType: getGlobalType,
             createSymbolTable: ts.createSymbolTable,
-            emptyArray: ts.emptyArray,
-`;
+            emptyArray: ts.emptyArray,`;
 
-  const replaceGetEffectiveCallArguments = `${getEffectiveCallArguments}
-            if (node.kind === 205 && ts.${hookName}) {
-              var args = ts.${hookName}(node, checker);
-              if(args){
-                  return args;
-              }
-            }
-`;
+  const callTaggedTemplateExpressionHooks = `
+                for (var i = 0; i < ts.${taggedTemplateExpressionHooks}.length; i++) {
+                    var args = ts.${taggedTemplateExpressionHooks}[i](ts, node, checker);
+                    if (args) {
+                        return args;
+                    }
+                }`;
 
-  const files = [
-    "node_modules/typescript/lib/tsc.js",
-    "node_modules/typescript/lib/tsserver.js",
-    "node_modules/typescript/lib/tsserverlibrary.js",
-    "node_modules/typescript/lib/typescript.js",
-    "node_modules/typescript/lib/typescriptServices.js",
-    "node_modules/typescript/lib/typingsInstaller.js",
-  ];
+  const replaceGetEffectiveCallArguments = `${getEffectiveCallArguments}${callTaggedTemplateExpressionHooks}`;
+  const replaceGetEffectiveCallArgumentsWithComment = `${getEffectiveCallArgumentsWithComment}${callTaggedTemplateExpressionHooks}`;
 
   await Promise.all(
     files.map(async (file) => {
       let code = await readFile(file, "utf-8");
-      code = code.replace(checker, replaceChecker).replace(getEffectiveCallArguments, replaceGetEffectiveCallArguments);
+
+      code = code
+        .replace(typescriptNamespace, replaceTypescriptNamespace)
+        .replace(checker, replaceChecker)
+        .replace(getEffectiveCallArguments, replaceGetEffectiveCallArguments)
+        .replace(getEffectiveCallArgumentsWithComment, replaceGetEffectiveCallArgumentsWithComment);
+
       await writeFile(file, code);
     }),
   );
