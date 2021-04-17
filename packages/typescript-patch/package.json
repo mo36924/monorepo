@@ -28,10 +28,10 @@
       "require": "./dist/index.js"
     }
   },
-  "dependencies": {
-    "typescript": "^4.2.3"
-  },
   "scripts": {
     "postinstall": "node ./dist/bin.mjs"
+  },
+  "dependencies": {
+    "typescript": "^4.2.3"
   }
 }

@@ -1,7 +1,16 @@
 import { createHash } from "crypto";
 import { constants, promises } from "fs";
+import { createRequire } from "module";
+import { join } from "path";
 import { fileURLToPath } from "url";
 import type { default as typescript, TaggedTemplateExpression, TypeChecker } from "typescript";
+import {
+  checker,
+  getEffectiveCallArguments,
+  getEffectiveCallArgumentsWithComment,
+  typescriptNames,
+  typescriptNamespace,
+} from "./constants";
 
 const { readFile, writeFile, copyFile } = promises;
 
@@ -28,25 +37,14 @@ export type Checker = TypeChecker & {
   getNeverType: any;
 };
 export type TaggedTemplateExpressionHook = (ts: Typescript, node: TaggedTemplateExpression, checker: Checker) => any;
-export const typescriptNamespace = "var ts;";
-export const checker = "var checker = {";
-export const getEffectiveCallArguments =
-  "function getEffectiveCallArguments(node) {\n            if (node.kind === 205) {";
-export const getEffectiveCallArgumentsWithComment =
-  "function getEffectiveCallArguments(node) {\n            if (node.kind === 205 /* TaggedTemplateExpression */) {";
-export const files = [
-  "node_modules/typescript/lib/tsc.js",
-  "node_modules/typescript/lib/tsserver.js",
-  "node_modules/typescript/lib/tsserverlibrary.js",
-  "node_modules/typescript/lib/typescript.js",
-  "node_modules/typescript/lib/typescriptServices.js",
-  "node_modules/typescript/lib/typingsInstaller.js",
-];
 
 export default async () => {
-  const selfCode = await readFile(fileURLToPath(import.meta.url), "utf-8");
+  const selfFilename = fileURLToPath(import.meta.url);
+  const selfCode = await readFile(selfFilename, "utf-8");
   const hash = createHash("sha256").update(selfCode).digest("hex");
-  const patchPath = "node_modules/typescript/lib/patch";
+  const _require = createRequire(selfFilename);
+  const patchPath = `${_require.resolve("typescript")}.patch`;
+  const typescriptPaths = typescriptNames.map((typescriptName) => join(patchPath, "..", typescriptName));
   const copyPath = (path: string) => `${path}_`;
 
   try {
@@ -56,7 +54,11 @@ export default async () => {
       return;
     }
   } catch {
-    await Promise.allSettled(files.map((file) => copyFile(file, copyPath(file), constants.COPYFILE_EXCL)));
+    await Promise.allSettled(
+      typescriptPaths.map((typescriptPath) =>
+        copyFile(typescriptPath, copyPath(typescriptPath), constants.COPYFILE_EXCL),
+      ),
+    );
   }
 
   const taggedTemplateExpressionHooks = "taggedTemplateExpressionHooks";
@@ -87,10 +89,10 @@ ${typescriptNamespace}`;
   const replaceGetEffectiveCallArguments = `${getEffectiveCallArguments}${callTaggedTemplateExpressionHooks}`;
   const replaceGetEffectiveCallArgumentsWithComment = `${getEffectiveCallArgumentsWithComment}${callTaggedTemplateExpressionHooks}`;
 
-  await Promise.allSettled([
+  await Promise.all([
     writeFile(patchPath, hash),
-    ...files.map(async (file) => {
-      let code = await readFile(copyPath(file), "utf-8");
+    ...typescriptPaths.map(async (typescriptPath) => {
+      let code = await readFile(copyPath(typescriptPath), "utf-8");
 
       code = code
         .replace(typescriptNamespace, replaceTypescriptNamespace)
@@ -98,7 +100,7 @@ ${typescriptNamespace}`;
         .replace(getEffectiveCallArguments, replaceGetEffectiveCallArguments)
         .replace(getEffectiveCallArgumentsWithComment, replaceGetEffectiveCallArgumentsWithComment);
 
-      await writeFile(file, code);
+      await writeFile(typescriptPath, code);
     }),
   ]);
 };
