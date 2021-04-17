@@ -150,6 +150,7 @@ export default async () => {
             bin: undefined,
             types: undefined,
             exports: undefined,
+            scripts: undefined,
             dependencies: undefined,
             devDependencies: undefined,
             peerDependencies: undefined,

@@ -1,7 +1,9 @@
-import { promises } from "fs";
+import { createHash } from "crypto";
+import { constants, promises } from "fs";
+import { fileURLToPath } from "url";
 import type { default as typescript, TaggedTemplateExpression, TypeChecker } from "typescript";
 
-const { access, readFile, writeFile } = promises;
+const { readFile, writeFile, copyFile } = promises;
 
 export type Typescript = typeof typescript & {
   taggedTemplateExpressionHooks?: TaggedTemplateExpressionHook[];
@@ -41,22 +43,29 @@ export const files = [
   "node_modules/typescript/lib/typingsInstaller.js",
 ];
 
-export const patch = async () => {
-  const path = "node_modules/typescript/lib/patch";
-  const taggedTemplateExpressionHooks = "taggedTemplateExpressionHooks";
+export default async () => {
+  const selfCode = await readFile(fileURLToPath(import.meta.url), "utf-8");
+  const hash = createHash("sha256").update(selfCode).digest("hex");
+  const patchPath = "node_modules/typescript/lib/patch";
+  const copyPath = (path: string) => `${path}_`;
 
   try {
-    await access(path);
-    return;
+    const _hash = await readFile(patchPath, "utf-8");
+
+    if (hash === _hash) {
+      return;
+    }
   } catch {
-    await writeFile(path, "");
+    await Promise.allSettled(files.map((file) => copyFile(file, copyPath(file), constants.COPYFILE_EXCL)));
   }
 
-  const replaceTypescriptNamespace = `var ts;
+  const taggedTemplateExpressionHooks = "taggedTemplateExpressionHooks";
+
+  const replaceTypescriptNamespace = `${typescriptNamespace}
 (function (ts) {
     ts.${taggedTemplateExpressionHooks} = [];
 })(ts || (ts = {}));
-var ts;`;
+${typescriptNamespace}`;
 
   const replaceChecker = `${checker}
             createTupleType: createTupleType,
@@ -78,9 +87,10 @@ var ts;`;
   const replaceGetEffectiveCallArguments = `${getEffectiveCallArguments}${callTaggedTemplateExpressionHooks}`;
   const replaceGetEffectiveCallArgumentsWithComment = `${getEffectiveCallArgumentsWithComment}${callTaggedTemplateExpressionHooks}`;
 
-  await Promise.all(
-    files.map(async (file) => {
-      let code = await readFile(file, "utf-8");
+  await Promise.allSettled([
+    writeFile(patchPath, hash),
+    ...files.map(async (file) => {
+      let code = await readFile(copyPath(file), "utf-8");
 
       code = code
         .replace(typescriptNamespace, replaceTypescriptNamespace)
@@ -90,5 +100,5 @@ var ts;`;
 
       await writeFile(file, code);
     }),
-  );
+  ]);
 };
