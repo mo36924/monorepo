@@ -1,5 +1,4 @@
 export * from "./args";
-export * from "./base52";
 export * from "./factory";
 export * from "./is-graphql-tag";
 export * from "./memoize";

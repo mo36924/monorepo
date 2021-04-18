@@ -1,5 +1,13 @@
-const baseName = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const baseNameLength = baseName.length;
+let baseName = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const baseNameLength = 52;
+
+export const base = (base: string) => {
+  if (baseNameLength !== base.length) {
+    throw new Error("Invalid Argument Value");
+  }
+
+  baseName = base;
+};
 
 export const encode = (value: number) => {
   let result = "";

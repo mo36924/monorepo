@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { decode, encode } from "./base52";
+import { decode, encode } from "./index";
 
 describe("base52", () => {
   it("decode", () => {

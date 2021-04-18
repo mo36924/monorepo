@@ -1,7 +1,7 @@
+import { encode } from "@mo36924/base52";
 import type { GraphQLSchema } from "graphql";
 import type typescript from "typescript";
 import type { TaggedTemplateExpression } from "typescript/lib/tsserverlibrary";
-import { encode } from "./base52";
 import { minify } from "./minify";
 import { parse } from "./parse";
 import { source } from "./source";
