@@ -1,7 +1,7 @@
-import type { Typescript } from "@mo36924/typescript-graphql";
+import type typescript from "typescript";
 import { DiagnosticSeverity } from "vscode-languageserver-types";
 
-export const diagnosticCategory = (ts: Typescript, severity?: number) => {
+export const diagnosticCategory = (ts: typeof typescript, severity?: number) => {
   switch (severity) {
     case DiagnosticSeverity.Error:
       return ts.DiagnosticCategory.Error;

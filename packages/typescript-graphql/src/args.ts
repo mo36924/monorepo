@@ -1,4 +1,3 @@
-import type { Checker, Typescript } from "@mo36924/typescript-patch";
 import {
   DocumentNode,
   getNamedType,
@@ -12,29 +11,31 @@ import {
   visit,
   visitWithTypeInfo,
 } from "graphql";
-import type { TaggedTemplateExpression } from "typescript";
+import {
+  default as typescript,
+  Expression,
+  Symbol,
+  SymbolFlags,
+  TaggedTemplateExpression,
+  Type,
+  TypeChecker,
+} from "typescript";
+import { memoize } from "./memoize";
 import { getTypescriptType } from "./typescript-type";
 
-const cache = new WeakMap<GraphQLSchema, WeakMap<DocumentNode, any[] | null>>();
+const cache = memoize((_schema: GraphQLSchema) => new WeakMap<DocumentNode, Expression[] | undefined>(), new WeakMap());
 
 export const getArgs = (
-  ts: Typescript,
+  ts: typeof typescript,
   schema: GraphQLSchema,
   node: TaggedTemplateExpression,
-  checker: Checker,
+  checker: TypeChecker,
   documentNode: DocumentNode,
 ) => {
-  let argsCache = cache.get(schema);
+  const map = cache(schema);
 
-  if (!argsCache) {
-    argsCache = new WeakMap();
-    cache.set(schema, argsCache);
-  }
-
-  let args = argsCache.get(documentNode);
-
-  if (!args) {
-    return args;
+  if (map.has(documentNode)) {
+    return map.get(documentNode);
   }
 
   let operationDefinition: OperationDefinitionNode | undefined;
@@ -44,15 +45,15 @@ export const getArgs = (
       if (operationDefinition === undefined) {
         operationDefinition = definition;
       } else {
-        argsCache.set(documentNode, null);
-        return;
+        map.set(documentNode, undefined);
+        return undefined;
       }
     }
   }
 
   if (operationDefinition === undefined) {
-    argsCache.set(documentNode, null);
-    return;
+    map.set(documentNode, undefined);
+    return undefined;
   }
 
   const {
@@ -69,8 +70,14 @@ export const getArgs = (
     getNullType,
   } = checker;
 
+  const createPropertySymbolWithType = (name: string, type: Type, readonly?: boolean) => {
+    const symbol: Symbol & { type?: Type } = createSymbol(SymbolFlags.Property, name, readonly ? 8 : undefined);
+    symbol.type = type;
+    return symbol;
+  };
+
   const typeInfo = new TypeInfo(schema);
-  const values: any[] = [];
+  const values: Type[] = [];
   const variables: Symbol[] = [];
   const symbols: Symbol[] = [];
   const symbolsMap = new Map<readonly SelectionNode[], Symbol[]>();
@@ -80,7 +87,6 @@ export const getArgs = (
     visitWithTypeInfo(typeInfo, {
       VariableDefinition(node) {
         const variableName = node.variable.name.value;
-        const symbol = createSymbol(4, variableName);
         const inputType = typeInfo.getInputType()!;
         const nullableType = getNullableType(inputType);
         const namedType = getNamedType(nullableType);
@@ -94,7 +100,7 @@ export const getArgs = (
           type = getUnionType([type, getNullType()]);
         }
 
-        symbol.type = type;
+        const symbol = createPropertySymbolWithType(variableName, type);
         values.push(type);
         variables.push(symbol);
       },
@@ -107,7 +113,7 @@ export const getArgs = (
 
           const parentSymbols = symbolsMap.get(parent) || symbols;
           const fieldName = (node.alias ?? node.name).value;
-          const symbol = createSymbol(4, fieldName);
+
           const outputType = typeInfo.getType()!;
           const namedType = getNamedType(outputType);
           let type = getTypescriptType(checker, namedType);
@@ -116,14 +122,13 @@ export const getArgs = (
             type = getUnionType([type, getNullType()]);
           }
 
-          symbol.type = type;
+          const symbol = createPropertySymbolWithType(fieldName, type);
           parentSymbols.push(symbol);
           return false;
         },
         leave(node, _key, parent: any) {
           const parentSymbols = symbolsMap.get(parent) || symbols;
           const fieldName = (node.alias ?? node.name).value;
-          const symbol = createSymbol(4, fieldName);
           const outputType = typeInfo.getType()!;
           const nullableType = getNullableType(outputType);
           const selectionSymbols = symbolsMap.get(node.selectionSet!.selections)!;
@@ -138,40 +143,38 @@ export const getArgs = (
             type = getUnionType([type, getNullType()]);
           }
 
-          symbol.type = type;
+          const symbol = createPropertySymbolWithType(fieldName, type);
           parentSymbols.push(symbol);
         },
       },
     }),
   );
 
-  const valuesSymbol = createSymbol(4, "_values");
-  valuesSymbol.type = createTupleType(values, undefined);
-  const variablesSymbol = createSymbol(4, "_variables");
-  const variablesSymbolTable = createSymbolTable(variables);
+  const valuesSymbol = createPropertySymbolWithType("values", createTupleType(values, undefined));
 
-  variablesSymbol.type = createAnonymousType(
-    undefined,
-    variablesSymbolTable,
-    emptyArray,
-    emptyArray,
-    undefined,
-    undefined,
+  const variablesSymbol = createPropertySymbolWithType(
+    "variables",
+    createAnonymousType(undefined, createSymbolTable(variables), emptyArray, emptyArray, undefined, undefined),
   );
 
-  const returnSymbol = createSymbol(4, "_return");
-  const returnSymbolTable = createSymbolTable(symbols);
-  returnSymbol.type = createAnonymousType(undefined, returnSymbolTable, emptyArray, emptyArray, undefined, undefined);
+  const resultSymbol = createPropertySymbolWithType(
+    "result",
+    createAnonymousType(undefined, createSymbolTable(symbols), emptyArray, emptyArray, undefined, undefined),
+  );
 
   const template = node.template;
-  args = [];
+  const args: Expression[] = [];
 
   if (ts.isNoSubstitutionTemplateLiteral(template)) {
     const arrayType = createTupleType([getLiteralType(template.text)], undefined, true);
-    const rawType = createTupleType([getLiteralType(template.rawText)], undefined, true);
-    const rawSymbol = createSymbol(4 /* Property */, "raw", 8 /* Readonly */);
-    rawSymbol.type = rawType;
-    const symbolTable = createSymbolTable([rawSymbol, valuesSymbol, variablesSymbol, returnSymbol]);
+
+    const rawSymbol = createPropertySymbolWithType(
+      "raw",
+      createTupleType([getLiteralType(template.rawText)], undefined, true),
+      true,
+    );
+
+    const symbolTable = createSymbolTable([rawSymbol, valuesSymbol, variablesSymbol, resultSymbol]);
     const objectType = createAnonymousType(undefined, symbolTable, emptyArray, emptyArray, undefined, undefined);
     const stringsType = getIntersectionType([arrayType, objectType]);
     args.push(createSyntheticExpression(template, stringsType));
@@ -186,15 +189,13 @@ export const getArgs = (
     }
 
     const arrayType = createTupleType(texts, undefined, true);
-    const rawType = createTupleType(rawTexts, undefined, true);
-    const rawSymbol = createSymbol(4 /* Property */, "raw", 8 /* Readonly */);
-    rawSymbol.type = rawType;
-    const symbolTable = createSymbolTable([rawSymbol, valuesSymbol, variablesSymbol, returnSymbol]);
+    const rawSymbol = createPropertySymbolWithType("raw", createTupleType(rawTexts, undefined, true), true);
+    const symbolTable = createSymbolTable([rawSymbol, valuesSymbol, variablesSymbol, resultSymbol]);
     const objectType = createAnonymousType(undefined, symbolTable, emptyArray, emptyArray, undefined, undefined);
     const stringsType = getIntersectionType([arrayType, objectType]);
     args.unshift(createSyntheticExpression(template, stringsType));
   }
 
-  argsCache.set(documentNode, args);
+  map.set(documentNode, args);
   return args;
 };

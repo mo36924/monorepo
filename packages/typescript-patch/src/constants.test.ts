@@ -2,13 +2,7 @@ import { readFile } from "fs/promises";
 import { createRequire } from "module";
 import { join } from "path";
 import { describe, expect, it } from "@jest/globals";
-import {
-  checker,
-  getEffectiveCallArguments,
-  getEffectiveCallArgumentsWithComment,
-  typescriptNames,
-  typescriptNamespace,
-} from "./constants";
+import { checker, getEffectiveCallArgumentsRegexp, typescriptNames, typescriptNamespace } from "./constants";
 
 describe("typescript-patch", () => {
   it("constants", async () => {
@@ -21,11 +15,7 @@ describe("typescript-patch", () => {
       expect(code.includes(typescriptNamespace)).toBeTruthy();
       expect(code.split(checker).length).toEqual(2);
 
-      expect(
-        code.split(
-          code.includes(getEffectiveCallArguments) ? getEffectiveCallArguments : getEffectiveCallArgumentsWithComment,
-        ).length,
-      ).toEqual(2);
+      expect(code.split(getEffectiveCallArgumentsRegexp).length).toEqual(2);
     }
   });
 });

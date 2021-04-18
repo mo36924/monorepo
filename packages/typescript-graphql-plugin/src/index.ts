@@ -1,32 +1,25 @@
-import {
-  isGraphqlTag,
-  query as _query,
-  source,
-  TypescriptWithGraphQLSchema,
-  watchSchema,
-} from "@mo36924/typescript-graphql";
+import { factory, isGraphqlTag, query as _query, source, watchSchema } from "@mo36924/typescript-graphql";
 import {
   getAutocompleteSuggestions,
   getHoverInformation,
   getTokenAtPosition,
 } from "graphql-language-service-interface";
 import { Position } from "graphql-language-service-utils";
-import type { default as ts, GetCompletionsAtPositionOptions, LanguageService } from "typescript/lib/tsserverlibrary";
+import type { GetCompletionsAtPositionOptions, LanguageService, server } from "typescript/lib/tsserverlibrary";
 import { CompletionItemKind } from "vscode-languageserver-types";
 import { diagnosticCategory } from "./diagnostic-category";
 import { diagnostics } from "./diagnostics";
 import { hover } from "./hover";
 import { sourceFile } from "./source-file";
 
-const init: ts.server.PluginModuleFactory = (mod) => {
-  const ts: TypescriptWithGraphQLSchema = mod.typescript;
-
+const init: server.PluginModuleFactory = ({ typescript: ts }) => {
   let schema = watchSchema((_schema) => {
     schema = _schema;
-    ts.graphqlSchema = schema;
+    taggedTemplateExpressionHook = factory(schema);
   });
 
-  ts.graphqlSchema = schema;
+  let taggedTemplateExpressionHook = factory(schema);
+  ts.taggedTemplateExpressionHooks.push((ts, node, checker) => taggedTemplateExpressionHook(ts, node, checker));
 
   return {
     create(info) {

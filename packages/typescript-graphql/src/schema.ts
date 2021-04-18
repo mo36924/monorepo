@@ -40,11 +40,11 @@ const updateSchemaSync = () => {
     const schema = buildSchemaWithUnknownType(gql);
     _gql = gql;
     _schema = schema;
-    return schema;
-  } catch {}
+  } catch {
+    _gql = "";
+    _schema = buildSchemaWithUnknownType(_gql);
+  }
 
-  _gql = "";
-  _schema = buildSchemaWithUnknownType(_gql);
   return _schema;
 };
 

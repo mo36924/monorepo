@@ -1,9 +1,6 @@
 export const typescriptNamespace = "var ts;";
 export const checker = "var checker = {";
-export const getEffectiveCallArguments =
-  "function getEffectiveCallArguments(node) {\n            if (node.kind === 205) {";
-export const getEffectiveCallArgumentsWithComment =
-  "function getEffectiveCallArguments(node) {\n            if (node.kind === 205 /* TaggedTemplateExpression */) {";
+export const getEffectiveCallArgumentsRegexp = /function getEffectiveCallArguments\(node\) \{\n            if \(node.kind === 205[\s\S]*?\n            \}/;
 export const typescriptNames = [
   "tsc.js",
   "tsserver.js",
@@ -12,3 +9,4 @@ export const typescriptNames = [
   "typescriptServices.js",
   "typingsInstaller.js",
 ];
+export const typescriptDeclarationNames = ["tsserverlibrary.d.ts", "typescript.d.ts", "typescriptServices.d.ts"];
