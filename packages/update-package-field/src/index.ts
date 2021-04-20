@@ -2,7 +2,7 @@ import { readdir, readFile, writeFile } from "fs/promises";
 import { basename, dirname, join, resolve } from "path";
 import babel from "@babel/core";
 import typescript from "@babel/plugin-syntax-typescript";
-import prettier from "prettier";
+import { format, resolveConfig } from "@mo36924/prettier";
 
 const { parseAsync, traverse, types } = babel;
 
@@ -17,7 +17,7 @@ export default async () => {
   const [packageJson, names, prettierOptions] = await Promise.all([
     readFile("package.json", "utf8"),
     readdir("packages"),
-    prettier.resolveConfig("package.json"),
+    resolveConfig("package.json"),
   ]);
 
   const devDependencies: { [pkg: string]: string } = Object.assign(
@@ -131,7 +131,7 @@ export default async () => {
           );
         }
 
-        const formattedCode = prettier.format(
+        const formattedCode = format(
           JSON.stringify({
             name: undefined,
             version: undefined,

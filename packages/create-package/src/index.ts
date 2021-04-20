@@ -1,11 +1,11 @@
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import prettier from "prettier";
+import { format, resolveConfig } from "@mo36924/prettier";
 
 async function write(path: string, code: string, overwrite: boolean) {
-  const config = await prettier.resolveConfig(path);
+  const config = await resolveConfig(path);
 
-  await writeFile(path, prettier.format(code, { ...config, filepath: path }), {
+  await writeFile(path, format(code, { ...config, filepath: path }), {
     flag: overwrite ? "w" : "wx",
   });
 }

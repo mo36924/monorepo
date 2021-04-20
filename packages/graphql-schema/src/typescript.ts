@@ -1,7 +1,7 @@
 import { codegen } from "@graphql-codegen/core";
 import * as typescriptPlugin from "@graphql-codegen/typescript";
+import { format, resolveConfig } from "@mo36924/prettier";
 import { parse } from "graphql";
-import { format, resolveConfig } from "prettier";
 
 export const typescript = async (schema: string) => {
   const scalars = {

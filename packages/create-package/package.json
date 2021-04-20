@@ -29,6 +29,6 @@
     }
   },
   "dependencies": {
-    "prettier": "^2.2.1"
+    "@mo36924/prettier": "^1.3.18"
   }
 }
