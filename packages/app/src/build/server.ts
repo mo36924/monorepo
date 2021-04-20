@@ -14,15 +14,15 @@ import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import _resolve from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
-// @ts-ignore
 import jsx from "acorn-jsx";
 import { rollup } from "rollup";
 import { terser } from "rollup-plugin-terser";
-import { module, nomodule } from "./client";
 import css from "./css";
 import favicon from "./favicon";
+import _module from "./module";
+import nomodule from "./nomodule";
 import rename from "./rename";
+import typescript from "./typescript-plugin";
 
 const server = async (config: Config) => {
   const bundle = await rollup({
@@ -37,11 +37,7 @@ const server = async (config: Config) => {
       replaceModule({ "pg-native": "module.exports = {};" }),
       _config(),
       cache(),
-      typescript({
-        sourceMap: true,
-        inlineSourceMap: false,
-        inlineSources: true,
-      }),
+      typescript(config),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
       graphqlSchema(),
@@ -79,13 +75,13 @@ const server = async (config: Config) => {
   });
 
   const output = await bundle.generate({
-    dir: config.dir,
+    dir: config.dirname,
     format: "module",
     sourcemap: true,
     compact: true,
     minifyInternalExports: true,
     preferConst: true,
-    entryFileNames: config.base,
+    entryFileNames: config.basename,
   });
 
   const entries = rename(output);
@@ -94,12 +90,17 @@ const server = async (config: Config) => {
 };
 
 export default async (config: Config) => {
-  const _favicon = await favicon();
-  const _module = await module();
-  const _nomodule = await nomodule();
+  const _favicon = await favicon(config);
+  const __module = await _module(config);
+  const _nomodule = await nomodule(config);
   const _server = await server(config);
-  const _css = await css([..._module, ..._nomodule, ..._server].map(([, data]) => ({ extension: "js", raw: data })));
-  const files = Object.fromEntries<string | Buffer>([_favicon, ..._module, ..._nomodule]);
+
+  const _css = await css(
+    config,
+    [...__module, ..._nomodule, ..._server].map(([, data]) => ({ extension: "js", raw: data })),
+  );
+
+  const files = Object.fromEntries<string | Buffer>([_favicon, ...__module, ..._nomodule]);
 
   const bundle = await rollup({
     input: config.server,
@@ -114,20 +115,16 @@ export default async (config: Config) => {
       _config({
         favicon: `/${_favicon[0]}`,
         css: `/${_css[0]}`,
-        module: `/${_module[0][0]}`,
+        module: `/${__module[0][0]}`,
         nomodule: `/${_nomodule[0][0]}`,
       }),
       cache({ files }),
-      typescript({
-        sourceMap: true,
-        inlineSourceMap: false,
-        inlineSources: true,
-      }),
+      typescript(config),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
       graphqlSchema(),
       alias({
-        entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
+        entries: [{ find: /^~\/(.*?)$/, replacement: config.rootDir.split(sep).join("/") + "/$1" }],
       }),
       _resolve({
         extensions: config.extensions.server,
@@ -160,13 +157,13 @@ export default async (config: Config) => {
   });
 
   await bundle.write({
-    dir: config.dir,
+    dir: config.dirname,
     format: "module",
     sourcemap: true,
     compact: true,
     minifyInternalExports: true,
     preferConst: true,
-    entryFileNames: config.base,
+    entryFileNames: config.basename,
   });
 
   await bundle.close();

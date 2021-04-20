@@ -2,12 +2,9 @@ import { createRequire } from "module";
 import { resolve } from "path";
 import process from "process";
 import type { ConfigAPI, default as babel, TransformOptions } from "@babel/core";
-// @ts-ignore
 import constant from "@babel/plugin-transform-react-constant-elements";
 import env, { Options as EnvOptions } from "@babel/preset-env";
-// @ts-ignore
 import react from "@babel/preset-react";
-// @ts-ignore
 import typescript from "@babel/preset-typescript";
 import commonjs, { Options as CommonjsOptions } from "@mo36924/babel-plugin-commonjs";
 import deadCodeElimination from "@mo36924/babel-plugin-dead-code-elimination";

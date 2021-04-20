@@ -1,11 +1,8 @@
 import process from "process";
 import type { ConfigAPI, default as babel, TransformOptions } from "@babel/core";
-// @ts-ignore
 import constant from "@babel/plugin-transform-react-constant-elements";
 import env, { Options as envOptions } from "@babel/preset-env";
-// @ts-ignore
 import react from "@babel/preset-react";
-// @ts-ignore
 import typescript from "@babel/preset-typescript";
 import resolve, { Options as resolveOptions } from "@mo36924/babel-plugin-resolve";
 

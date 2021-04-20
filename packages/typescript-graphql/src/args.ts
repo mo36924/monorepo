@@ -1,3 +1,4 @@
+import { memoize } from "@mo36924/memoize";
 import {
   DocumentNode,
   getNamedType,
@@ -20,7 +21,6 @@ import {
   Type,
   TypeChecker,
 } from "typescript";
-import { memoize } from "./memoize";
 import { getTypescriptType } from "./typescript-type";
 
 const cache = memoize((_schema: GraphQLSchema) => new WeakMap<DocumentNode, Expression[] | undefined>(), new WeakMap());

@@ -1,5 +1,5 @@
+import { memoize } from "@mo36924/memoize";
 import { GraphQLError, parse as _parse, Source } from "graphql";
-import { memoize } from "./memoize";
 
 export const parse = memoize((source: Source) => {
   try {

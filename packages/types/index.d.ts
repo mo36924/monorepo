@@ -1,4 +1,5 @@
+import "./src/global";
+import "./src/module";
 import "./extension";
 import "./graphql";
-import "./src/global";
 import "./inject";

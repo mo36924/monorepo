@@ -1,13 +1,15 @@
 import { readFile } from "fs/promises";
 import purgecss from "@fullhuman/postcss-purgecss";
-import * as config from "@mo36924/config";
-// @ts-ignore
+import type { Config } from "@mo36924/config";
 import cssnano from "cssnano-preset-advanced";
 import postcss from "postcss";
 import _import from "postcss-import";
 import hash from "./hash";
 
-export default async (content?: { extension: string; raw: string }[]): Promise<[path: string, data: string]> => {
+export default async (
+  config: Config,
+  content?: { extension: string; raw: string }[],
+): Promise<[path: string, data: string]> => {
   let css: string;
 
   try {
@@ -20,5 +22,5 @@ export default async (content?: { extension: string; raw: string }[]): Promise<[
     from: config.css,
   });
 
-  return [`${hash(css)}.js`, css];
+  return [`${hash(_css)}.css`, _css];
 };
