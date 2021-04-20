@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import type { Config } from "@mo36924/config";
 import { memoize } from "@mo36924/memoize";
-import { format, resolveConfig } from "prettier";
+import { format, resolveConfig } from "@mo36924/prettier";
 import type { Plugin } from "rollup";
 import ts from "typescript";
 
