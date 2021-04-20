@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/babel-preset-lib",
-  "version": "1.3.6",
+  "version": "1.3.17",
   "description": "babel-preset-lib",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -31,7 +31,7 @@
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "^7.13.0",
-    "@mo36924/babel-plugin-dead-code-elimination": "^1.3.6",
+    "@mo36924/babel-plugin-dead-code-elimination": "^1.3.17",
     "@mo36924/babel-plugin-resolve": "^1.3.6"
   }
 }
