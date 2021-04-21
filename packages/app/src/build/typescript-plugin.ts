@@ -59,10 +59,9 @@ export default memoize(
     const host: ts.CompilerHost = { ...ts.createCompilerHost(options), writeFile };
     const program = ts.createProgram({ options, rootNames: fileNames, configFileParsingDiagnostics: errors, host });
     const { diagnostics, emitSkipped } = program.emit();
-    const allDiagnostics = [...ts.getPreEmitDiagnostics(program), ...diagnostics, ...errors];
 
-    if (allDiagnostics.length) {
-      const message = ts.formatDiagnostics(allDiagnostics, formatDiagnosticsHost);
+    if (diagnostics.length) {
+      const message = ts.formatDiagnosticsWithColorAndContext(diagnostics, formatDiagnosticsHost);
       throw new Error(message);
     }
 

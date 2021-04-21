@@ -40,7 +40,7 @@ const server = async (config: Config) => {
       typescript(config),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
-      graphqlSchema(),
+      graphqlSchema(config),
       alias({
         entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
       }),
@@ -122,7 +122,7 @@ export default async (config: Config) => {
       typescript(config),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
-      graphqlSchema(),
+      graphqlSchema(config),
       alias({
         entries: [{ find: /^~\/(.*?)$/, replacement: config.rootDir.split(sep).join("/") + "/$1" }],
       }),

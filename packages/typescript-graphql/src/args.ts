@@ -12,11 +12,10 @@ import {
   visit,
   visitWithTypeInfo,
 } from "graphql";
-import {
+import type {
   default as typescript,
   Expression,
   Symbol,
-  SymbolFlags,
   TaggedTemplateExpression,
   Type,
   TypeChecker,
@@ -71,7 +70,7 @@ export const getArgs = (
   } = checker;
 
   const createPropertySymbolWithType = (name: string, type: Type, readonly?: boolean) => {
-    const symbol: Symbol & { type?: Type } = createSymbol(SymbolFlags.Property, name, readonly ? 8 : undefined);
+    const symbol: Symbol & { type?: Type } = createSymbol(ts.SymbolFlags.Property, name, readonly ? 8 : undefined);
     symbol.type = type;
     return symbol;
   };
@@ -90,7 +89,7 @@ export const getArgs = (
         const inputType = typeInfo.getInputType()!;
         const nullableType = getNullableType(inputType);
         const namedType = getNamedType(nullableType);
-        let type = getTypescriptType(checker, namedType);
+        let type = getTypescriptType(ts, checker, namedType);
 
         if (isListType(nullableType)) {
           type = createArrayType(type);
@@ -116,7 +115,7 @@ export const getArgs = (
 
           const outputType = typeInfo.getType()!;
           const namedType = getNamedType(outputType);
-          let type = getTypescriptType(checker, namedType);
+          let type = getTypescriptType(ts, checker, namedType);
 
           if (isNullableType(outputType)) {
             type = getUnionType([type, getNullType()]);
