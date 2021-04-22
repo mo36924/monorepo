@@ -23,6 +23,7 @@ import _module from "./module";
 import nomodule from "./nomodule";
 import rename from "./rename";
 import typescript from "./typescript-plugin";
+import warnings from "./warnings";
 
 const server = async (config: Config) => {
   const bundle = await rollup({
@@ -31,6 +32,7 @@ const server = async (config: Config) => {
     external: builtinModules,
     preserveEntrySignatures: false,
     context: "globalThis",
+    onwarn: warnings.add,
     plugins: [
       _static(),
       prebuild(["readable-stream", ["pg", "pg-pool"]]),
@@ -86,6 +88,7 @@ const server = async (config: Config) => {
 
   const entries = rename(output);
   await bundle.close();
+  warnings.flush();
   return entries;
 };
 
@@ -108,6 +111,7 @@ export default async (config: Config) => {
     external: builtinModules,
     preserveEntrySignatures: false,
     context: "globalThis",
+    onwarn: warnings.add,
     plugins: [
       _static(),
       prebuild(["readable-stream", ["pg", "pg-pool"]]),
@@ -167,4 +171,5 @@ export default async (config: Config) => {
   });
 
   await bundle.close();
+  warnings.flush();
 };

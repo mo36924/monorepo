@@ -75,6 +75,7 @@ export default async (config: Config) => {
     input: entries[0][0],
     preserveEntrySignatures: false,
     context: "self",
+    onwarn: warnings.add,
     plugins: [vfs(files), terser({ ecma: 5, safari10: true, compress: { passes: 10 } })],
   });
 
@@ -91,5 +92,6 @@ export default async (config: Config) => {
 
   const _entries = rename(_output);
   await _bundle.close();
+  warnings.flush();
   return _entries;
 };
