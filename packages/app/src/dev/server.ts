@@ -3,6 +3,7 @@ import { env } from "process";
 import { fileURLToPath, pathToFileURL } from "url";
 import { Worker } from "worker_threads";
 import type { Config } from "@mo36924/config";
+import { bold, green } from "colorette";
 import httpProxy from "http-proxy";
 import ts from "typescript";
 import { memoize } from "../util";
@@ -15,7 +16,6 @@ import typescript from "./typescript";
 
 export default async (config: Config) => {
   const serverInput = config.server;
-  const clientInput = config.client;
   const port = parseInt(env.PORT!, 10) || 3000;
   const workerPort = (port + 1).toFixed();
 
@@ -87,18 +87,10 @@ export default async (config: Config) => {
   }
 
   const proxy = httpProxy.createProxyServer({ target: `http://localhost:${workerPort}` });
-  const redirectHeaders = { location: pathToFileURL(clientInput).pathname };
 
   const httpServer = createServer(async (req, res) => {
     try {
       const url = new URL(req.url || "/", "file:///");
-      const pathname = url.pathname;
-
-      if (pathname === "/" || pathname === "/index.js") {
-        res.writeHead(302, redirectHeaders).end();
-        return;
-      }
-
       const data = await clientTransformer(url);
 
       if (data !== undefined) {
@@ -128,6 +120,7 @@ export default async (config: Config) => {
   });
 
   httpServer.listen(port);
+  console.log(green(`Server running at ${bold(`http://localhost:${port}`)}`));
 
   process.on("SIGINT", () => {
     httpServer.close((err) => {
