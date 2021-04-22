@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "fs";
 import { basename as _basename, dirname as _dirname, resolve as _resolve } from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { cosmiconfigSync } from "cosmiconfig";
 
 export type PartialConfig = {
@@ -59,6 +59,7 @@ const cosmiconfig = {
 const _extensions = [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs", ".json"];
 const pkg: { [key: string]: any } = {};
 const resolve = (path: string) => _resolve(_rootDir, path);
+const normalize = (path: string) => pathToFileURL(resolve(path)).pathname;
 
 try {
   Object.assign(pkg, JSON.parse(readFileSync(resolve("package.json"), "utf8")));
@@ -102,10 +103,10 @@ const config: Config = {
   main: resolve(_main),
   dirname: _dirname(_main),
   basename: _basename(_main),
-  favicon: resolve(cosmiconfig.favicon ?? "favicon.ico"),
-  css: resolve(cosmiconfig.css ?? "index.css"),
-  module: resolve(cosmiconfig.module ?? _client),
-  nomodule: resolve(cosmiconfig.nomodule ?? _client),
+  favicon: normalize(cosmiconfig.favicon ?? "favicon.ico"),
+  css: normalize(cosmiconfig.css ?? "index.css"),
+  module: normalize(cosmiconfig.module ?? _client),
+  nomodule: normalize(cosmiconfig.nomodule ?? _client),
   graphql: resolve(cosmiconfig.graphql ?? "index.gql"),
   page: {
     dir: resolve(cosmiconfig.page?.dir ?? "pages"),

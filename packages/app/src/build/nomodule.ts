@@ -19,7 +19,7 @@ import warnings from "./warnings";
 
 export default async (config: Config) => {
   const bundle = await rollup({
-    input: config.nomodule,
+    input: config.client,
     acornInjectPlugins: [jsx()],
     external: [],
     preserveEntrySignatures: false,

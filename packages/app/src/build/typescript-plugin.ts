@@ -1,55 +1,22 @@
 import { resolve } from "path";
 import type { Config } from "@mo36924/config";
 import { memoize } from "@mo36924/memoize";
-import { format, resolveConfig } from "@mo36924/prettier";
 import type { Plugin } from "rollup";
 import ts from "typescript";
 
 export default memoize(
   (config: Config): Plugin => {
-    const tsconfigPath = resolve(config.rootDir, "tsconfig.json");
-    const prettierConfig = resolveConfig.sync(tsconfigPath);
-
-    const tsconfigJson = format(
-      `{
-      "compilerOptions": {
-        "target": "ES2020",
-        "module": "ES2020",
-        "moduleResolution": "Node",
-        "resolveJsonModule": true,
-        "jsx": "preserve",
-        "jsxImportSource": "react",
-        "importsNotUsedAsValues": "error",
-        "baseUrl": ".",
-        "paths": {
-          "~/*": ["./*"]
-        },
-        "strict": true,
-        "esModuleInterop": true,
-        "noEmitOnError": true,
-        "importHelpers": true,
-        "sourceMap": true,
-        "inlineSourceMap": false,
-        "inlineSources": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "plugins": [{ "name": "@mo36924/typescript-graphql-plugin" }]
-      },
-      "exclude": ["dist"]
-    }`,
-      { ...prettierConfig, filepath: tsconfigPath },
-    );
-
-    ts.sys.writeFile(tsconfigPath, tsconfigJson);
+    const cwd = process.cwd();
+    const tsconfigPath = resolve("tsconfig.json");
 
     const formatDiagnosticsHost: ts.FormatDiagnosticsHost = {
-      getCurrentDirectory: () => config.rootDir,
+      getCurrentDirectory: () => cwd,
       getCanonicalFileName: (fileName) => fileName,
       getNewLine: () => ts.sys.newLine,
     };
 
     const configFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
-    const { options, fileNames, errors } = ts.parseJsonConfigFileContent(configFile.config, ts.sys, config.rootDir);
+    const { options, fileNames, errors } = ts.parseJsonConfigFileContent(configFile.config, ts.sys, cwd);
     const cache: { [path: string]: string } = Object.create(null);
 
     const writeFile: ts.WriteFileCallback = (fileName, data) => {
