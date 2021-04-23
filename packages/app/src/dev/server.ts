@@ -1,18 +1,42 @@
+import { FSWatcher, watch } from "fs";
+import { readFile } from "fs/promises";
 import { createServer } from "http";
+import { extname, resolve } from "path";
 import { env } from "process";
 import { fileURLToPath, pathToFileURL } from "url";
 import { Worker } from "worker_threads";
+import babel from "@babel/core";
+import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import type { Config } from "@mo36924/config";
-import { bold, green } from "colorette";
+import { bold, green, red } from "colorette";
 import httpProxy from "http-proxy";
 import ts from "typescript";
-import { memoize } from "../util";
-import cache from "./cache";
+import { formatDiagnosticsHost } from "../util";
+import css from "./css";
 import graphql from "./graphql";
 import client from "./javascript-client";
 import server from "./javascript-server";
 import json from "./json";
-import typescript from "./typescript";
+
+const contentType = (path: string) => {
+  switch (extname(path)) {
+    case ".ts":
+    case ".tsx":
+    case ".js":
+    case ".jsx":
+    case ".mjs":
+    case ".cjs":
+    case ".gql":
+    case ".graphql":
+      return "application/javascript; charset=utf-8";
+    case ".json":
+      return "application/json; charset=utf-8";
+    case ".css":
+      return "text/css; charset=utf-8";
+    default:
+      return "text/plain; charset=utf-8";
+  }
+};
 
 export default async (config: Config) => {
   const serverInput = config.server;
@@ -20,56 +44,77 @@ export default async (config: Config) => {
   const workerPort = (port + 1).toFixed();
 
   const [
+    cssTransformer,
     graphqlTransformer,
     javascriptServerTransformer,
     javascriptClientTransformer,
     jsonTransformer,
-  ] = await Promise.all([graphql(), server(config), client(config), json(), typescript()]);
+  ] = await Promise.all([css(), graphql(), server(config), client(config), json()]);
 
-  const graphqlTransformerWithCache = memoize(graphqlTransformer, cache.graphql);
-  const javascriptServerTransformerWithCache = memoize(javascriptServerTransformer, cache.server);
-  const javascriptClientTransformerWithCache = memoize(javascriptClientTransformer, cache.client);
-  const jsonTransformerWithCache = memoize(jsonTransformer, cache.json);
+  const serverTransformers = [graphqlTransformer, javascriptServerTransformer, jsonTransformer];
+  const clientTransformers = [cssTransformer, graphqlTransformer, javascriptClientTransformer, jsonTransformer];
+  const cachePath = resolve("node_modules/.cache/dev-server.json");
+  const serverCache: { [path: string]: string } = Object.create(null);
+  const clientCache: { [path: string]: string } = Object.create(null);
+  const typescriptCache: { [path: string]: string } = Object.create(null);
+  const watches = new Map<string, FSWatcher>();
+  const tsconfigPath = resolve("tsconfig.json");
+  const tsBuildInfoPath = resolve("tsconfig.tsbuildinfo");
+  let tsBuildInfo: string | undefined;
 
-  const serverTransformers = [
-    graphqlTransformerWithCache,
-    javascriptServerTransformerWithCache,
-    jsonTransformerWithCache,
-  ];
+  const watcher = (path: string) => {
+    if (!watches.has(path)) {
+      try {
+        const watcher = watch(path, () => {
+          delete serverCache[path];
+          delete clientCache[path];
+          delete typescriptCache[path];
+        });
 
-  const clientTransformers = [
-    graphqlTransformerWithCache,
-    javascriptClientTransformerWithCache,
-    jsonTransformerWithCache,
-  ];
-
-  const serverTransformer = async (url: string | URL) => {
-    try {
-      const path = fileURLToPath(url);
-
-      for (const transformer of serverTransformers) {
-        const data = await transformer(path);
-
-        if (data !== undefined) {
-          return data;
-        }
-      }
-    } catch {}
+        watches.set(path, watcher);
+      } catch {}
+    }
   };
 
-  const clientTransformer = async (url: string | URL) => {
-    try {
-      const path = fileURLToPath(url);
+  try {
+    const data = await readFile(cachePath, "utf8");
+    const cache = JSON.parse(data);
+    Object.assign(serverCache, cache?.serverCache);
+    Object.assign(clientCache, cache?.clientCache);
+    tsBuildInfo = cache?.tsBuildInfo;
+  } catch {}
 
-      for (const transformer of clientTransformers) {
-        const data = await transformer(path);
-
-        if (data !== undefined) {
-          return data;
+  const host = ts.createWatchCompilerHost(
+    tsconfigPath,
+    { incremental: true, tsBuildInfoFile: tsBuildInfoPath, sourceMap: false, inlineSourceMap: true },
+    {
+      ...ts.sys,
+      readFile(path, encoding) {
+        if (path === tsBuildInfoPath) {
+          return tsBuildInfo;
         }
-      }
-    } catch {}
-  };
+
+        return ts.sys.readFile(path, encoding);
+      },
+      writeFile(path, data) {
+        if (path === tsBuildInfoPath) {
+          tsBuildInfo = data;
+          return;
+        }
+
+        path = path.replace(/\.js(x)?$/, ".ts$1");
+        typescriptCache[path] = data;
+      },
+    },
+    ts.createEmitAndSemanticDiagnosticsBuilderProgram,
+    (diagnostic) => ts.sys.write(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatDiagnosticsHost)),
+    (diagnostic, _newLine, _options, errorCount) => {
+      ts.sys.write(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatDiagnosticsHost));
+      process.exitCode = errorCount || 1;
+    },
+  );
+
+  const program = ts.createWatchProgram(host);
 
   if (ts.sys.fileExists(serverInput)) {
     const url = new URL(`data:text/javascript,import ${JSON.stringify(pathToFileURL(serverInput))};`);
@@ -81,22 +126,58 @@ export default async (config: Config) => {
     });
 
     worker.on("message", async (url: string) => {
-      const data = (await serverTransformer(url)) ?? "";
-      worker.postMessage([url, data]);
+      const path = fileURLToPath(url);
+      watcher(path);
+
+      try {
+        if (path in serverCache) {
+          worker.postMessage([url, serverCache[path]]);
+          return;
+        }
+
+        const data = await readFile(path, "utf8");
+
+        for (const transformer of serverTransformers) {
+          const _data = await transformer(path, data);
+
+          if (_data != null) {
+            serverCache[path] = _data;
+            worker.postMessage([url, _data]);
+            return;
+          }
+        }
+      } catch {}
+
+      worker.postMessage([url, ""]);
+      return;
     });
   }
 
   const proxy = httpProxy.createProxyServer({ target: `http://localhost:${workerPort}` });
 
   const httpServer = createServer(async (req, res) => {
-    try {
-      const url = new URL(req.url || "/", "file:///");
-      const data = await clientTransformer(url);
+    const url = `file://${req.url || "/"}`;
+    const path = fileURLToPath(url);
+    watcher(path);
 
-      if (data !== undefined) {
-        res.setHeader("content-type", "application/javascript; charset=utf-8");
-        res.end(data);
+    try {
+      if (path in clientCache) {
+        res.setHeader("content-type", contentType(path));
+        res.end(clientCache[path]);
         return;
+      }
+
+      const data = await readFile(path, "utf8");
+
+      for (const transformer of clientTransformers) {
+        const _data = await transformer(path, data);
+
+        if (_data != null) {
+          clientCache[path] = _data;
+          res.setHeader("content-type", contentType(path));
+          res.end(_data);
+          return;
+        }
       }
 
       await new Promise<void>((resolve, reject) => {
@@ -125,7 +206,7 @@ export default async (config: Config) => {
   process.on("SIGINT", () => {
     httpServer.close((err) => {
       if (err) {
-        console.error(String(err));
+        console.error(red(String(err)));
         process.exit(1);
       } else {
         process.exit(0);
@@ -133,5 +214,21 @@ export default async (config: Config) => {
     });
 
     setImmediate(() => httpServer.emit("close"));
+  });
+
+  process.on("exit", () => {
+    try {
+      ts.sys.writeFile(
+        cachePath,
+        JSON.stringify({
+          serverCache: serverCache,
+          clientCache: clientCache,
+          typescriptCache: typescriptCache,
+          tsBuildInfo: tsBuildInfo,
+        }),
+      );
+
+      program.close();
+    } catch {}
   });
 };

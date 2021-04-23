@@ -1,14 +1,12 @@
-import { readFile } from "fs/promises";
 import reserved from "reserved-words";
 import ts from "typescript";
 import { formatDiagnosticsHost } from "../util";
 
-export default async () => async (path: string) => {
+export default async () => async (path: string, data: string) => {
   if (!/\.json$/.test(path)) {
     return;
   }
 
-  let data = await readFile(path, "utf8");
   const diagnostics: ts.Diagnostic[] = [];
   const obj = ts.convertToObject(ts.parseJsonText(path, data), diagnostics);
 
