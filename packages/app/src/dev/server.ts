@@ -5,8 +5,6 @@ import { extname, resolve } from "path";
 import { env } from "process";
 import { fileURLToPath, pathToFileURL } from "url";
 import { Worker } from "worker_threads";
-import babel from "@babel/core";
-import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import type { Config } from "@mo36924/config";
 import { bold, green, red } from "colorette";
 import httpProxy from "http-proxy";
@@ -127,21 +125,22 @@ export default async (config: Config) => {
 
     worker.on("message", async (url: string) => {
       const path = fileURLToPath(url);
-      watcher(path);
+
+      if (path in serverCache) {
+        watcher(path);
+        worker.postMessage([url, serverCache[path]]);
+        return;
+      }
 
       try {
-        if (path in serverCache) {
-          worker.postMessage([url, serverCache[path]]);
-          return;
-        }
-
-        const data = await readFile(path, "utf8");
+        const data = typescriptCache[path] ?? (await readFile(path, "utf8"));
 
         for (const transformer of serverTransformers) {
           const _data = await transformer(path, data);
 
           if (_data != null) {
             serverCache[path] = _data;
+            watcher(path);
             worker.postMessage([url, _data]);
             return;
           }
@@ -158,28 +157,31 @@ export default async (config: Config) => {
   const httpServer = createServer(async (req, res) => {
     const url = `file://${req.url || "/"}`;
     const path = fileURLToPath(url);
-    watcher(path);
+
+    if (path in clientCache) {
+      watcher(path);
+      res.setHeader("content-type", contentType(path));
+      res.end(clientCache[path]);
+      return;
+    }
 
     try {
-      if (path in clientCache) {
-        res.setHeader("content-type", contentType(path));
-        res.end(clientCache[path]);
-        return;
-      }
-
-      const data = await readFile(path, "utf8");
+      const data = typescriptCache[path] ?? (await readFile(path, "utf8"));
 
       for (const transformer of clientTransformers) {
         const _data = await transformer(path, data);
 
         if (_data != null) {
           clientCache[path] = _data;
+          watcher(path);
           res.setHeader("content-type", contentType(path));
           res.end(_data);
           return;
         }
       }
+    } catch {}
 
+    try {
       await new Promise<void>((resolve, reject) => {
         proxy.web(req, res, undefined, (err) => {
           if (err) {
