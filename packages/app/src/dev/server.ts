@@ -66,7 +66,6 @@ export default async (config: Config) => {
         const watcher = watch(path, () => {
           delete serverCache[path];
           delete clientCache[path];
-          delete typescriptCache[path];
         });
 
         watches.set(path, watcher);
@@ -101,6 +100,8 @@ export default async (config: Config) => {
         }
 
         path = path.replace(/\.js(x)?$/, ".ts$1");
+        delete serverCache[path];
+        delete clientCache[path];
         typescriptCache[path] = data;
       },
     },

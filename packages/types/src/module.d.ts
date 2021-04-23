@@ -9,3 +9,4 @@ declare module "preact-render-to-string/jsx" {
   export { default, render } from "preact-render-to-string/dist/jsx";
 }
 declare module "rollup/dist/shared/loadConfigFile.js";
+declare module "tailwindcss";

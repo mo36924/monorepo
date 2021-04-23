@@ -167,6 +167,7 @@ export default async (options?: Options) => {
       export const errorPages = {
         ${errorPages.join()}
       };
+      export const match = pageMatch(staticPages, dynamicPages);
     `;
 
     code = await format(code, file);
