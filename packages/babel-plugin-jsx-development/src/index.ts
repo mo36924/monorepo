@@ -6,7 +6,7 @@ type State = PluginPass & { displayName: string };
 
 const cwd = process.cwd();
 
-export default ({ types: t, template }: typeof babel): PluginObj<State> => {
+export default ({ types: t }: typeof babel): PluginObj<State> => {
   return {
     pre() {
       this.displayName = pascalCase(relative(cwd, this.filename.replace(/\.(t|j)sx$/, "")));
@@ -14,16 +14,8 @@ export default ({ types: t, template }: typeof babel): PluginObj<State> => {
     visitor: {
       Program: {
         exit(path, state) {
-          if (state.filename.endsWith("/node_modules/react-dom/index.js")) {
-            path.unshiftContainer(
-              "body",
-              template.statements.ast(`
-                import _ReactRefreshRuntime from "react-refresh/runtime";
-                _ReactRefreshRuntime.injectIntoGlobalHook(globalThis);
-                globalThis.$RefreshReg$ = () => {};
-                globalThis.$RefreshSig$ = () => (type) => type;
-              `),
-            );
+          if (!state.filename.includes("/node_modules/")) {
+            path.unshiftContainer("body", t.importDeclaration([], t.stringLiteral("@mo36924/react-refresh-runtime")));
           }
         },
       },

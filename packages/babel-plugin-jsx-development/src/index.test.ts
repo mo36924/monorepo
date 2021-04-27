@@ -17,6 +17,7 @@ describe("babel-plugin-jsx-development", () => {
     const result = transform("export default () => <div />");
 
     expect(result).toMatchInlineSnapshot(`
+      import "@mo36924/react-refresh-runtime";
       import { jsx as _jsx } from "preact/jsx-runtime";
 
       function Index() {
