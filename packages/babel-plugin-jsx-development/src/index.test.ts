@@ -17,16 +17,15 @@ describe("babel-plugin-jsx-development", () => {
     const result = transform("export default () => <div />");
 
     expect(result).toMatchInlineSnapshot(`
-      import "@mo36924/react-refresh-runtime";
       import { jsx as _jsx } from "preact/jsx-runtime";
 
-      const _Component = function () {
+      function Index() {
         return _jsx("div", {});
-      };
+      }
 
-      _Component.displayName ??= "index.jsx";
-      _Component.url ??= import.meta.url;
-      export default _Component;
+      Index.displayName ??= "Index";
+      Index.url ??= import.meta.url;
+      export default Index;
     `);
   });
 });

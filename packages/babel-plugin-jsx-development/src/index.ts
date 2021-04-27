@@ -1,20 +1,29 @@
 import { relative } from "path";
 import type { default as babel, PluginObj, PluginPass } from "@babel/core";
+import { pascalCase } from "change-case";
 
-type State = PluginPass & { displayName: string; hasJsx: boolean };
+type State = PluginPass & { displayName: string };
 
 const cwd = process.cwd();
 
-export default ({ types: t }: typeof babel): PluginObj<State> => {
+export default ({ types: t, template }: typeof babel): PluginObj<State> => {
   return {
     pre() {
-      this.displayName = relative(cwd, this.filename);
+      this.displayName = pascalCase(relative(cwd, this.filename.replace(/\.(t|j)sx$/, "")));
     },
     visitor: {
       Program: {
         exit(path, state) {
-          if (state.hasJsx) {
-            path.unshiftContainer("body", t.importDeclaration([], t.stringLiteral("@mo36924/react-refresh-runtime")));
+          if (state.filename.endsWith("/node_modules/react-dom/index.js")) {
+            path.unshiftContainer(
+              "body",
+              template.statements.ast(`
+                import _ReactRefreshRuntime from "react-refresh/runtime";
+                _ReactRefreshRuntime.injectIntoGlobalHook(globalThis);
+                globalThis.$RefreshReg$ = () => {};
+                globalThis.$RefreshSig$ = () => (type) => type;
+              `),
+            );
           }
         },
       },
@@ -24,11 +33,15 @@ export default ({ types: t }: typeof babel): PluginObj<State> => {
           scope,
         } = path;
 
-        if (!/\.(t|j)sx$/.test(state.displayName) || !t.isArrowFunctionExpression(declaration)) {
+        if (
+          !/\.(t|j)sx$/.test(state.filename) ||
+          !t.isArrowFunctionExpression(declaration) ||
+          scope.hasBinding(state.displayName)
+        ) {
           return;
         }
 
-        const uid = scope.generateUid("Component");
+        const uid = state.displayName;
         const { params, generator, async } = declaration;
         let body = declaration.body;
 
@@ -37,9 +50,7 @@ export default ({ types: t }: typeof babel): PluginObj<State> => {
         }
 
         const [nodePath] = path.replaceWithMultiple([
-          t.variableDeclaration("const", [
-            t.variableDeclarator(t.identifier(uid), t.functionExpression(null, params, body, generator, async)),
-          ]),
+          t.functionDeclaration(t.identifier(uid), params, body, generator, async),
           t.expressionStatement(
             t.assignmentExpression(
               "??=",
@@ -58,7 +69,6 @@ export default ({ types: t }: typeof babel): PluginObj<State> => {
         ]);
 
         scope.registerDeclaration(nodePath);
-        state.hasJsx = true;
       },
     },
   };
