@@ -1,7 +1,7 @@
 import { relative } from "path";
 import type { default as babel, PluginObj, PluginPass } from "@babel/core";
 
-type State = PluginPass & { displayName: string };
+type State = PluginPass & { displayName: string; hasJsx: boolean };
 
 const cwd = process.cwd();
 
@@ -11,6 +11,13 @@ export default ({ types: t }: typeof babel): PluginObj<State> => {
       this.displayName = relative(cwd, this.filename);
     },
     visitor: {
+      Program: {
+        exit(path, state) {
+          if (state.hasJsx) {
+            path.unshiftContainer("body", t.importDeclaration([], t.stringLiteral("@mo36924/react-refresh-runtime")));
+          }
+        },
+      },
       ExportDefaultDeclaration(path, state) {
         const {
           node: { declaration },
@@ -51,6 +58,7 @@ export default ({ types: t }: typeof babel): PluginObj<State> => {
         ]);
 
         scope.registerDeclaration(nodePath);
+        state.hasJsx = true;
       },
     },
   };

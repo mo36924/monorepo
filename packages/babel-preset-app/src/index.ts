@@ -14,6 +14,7 @@ import jsxDev from "@mo36924/babel-plugin-jsx-development";
 import replace, { Options as ReplaceOptions } from "@mo36924/babel-plugin-replace";
 import _resolve, { Options as ResolveOptions } from "@mo36924/babel-plugin-resolve";
 import subpath from "@mo36924/babel-plugin-resolve-subpath";
+import reactRefresh from "react-refresh/babel";
 
 const _require = createRequire(resolve("index.js"));
 
@@ -239,6 +240,7 @@ export default (_api: Api, options: Options): TransformOptions => {
           },
         } as InjectOptions,
       ],
+      [reactRefresh, __DEV__ ? {} : false],
       [jsxDev, __PROD__ ? false : {}],
       [constant, __PROD__ ? {} : false],
     ],

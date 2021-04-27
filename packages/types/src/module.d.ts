@@ -8,5 +8,7 @@ declare module "cssnano-preset-advanced";
 declare module "preact-render-to-string/jsx" {
   export { default, render } from "preact-render-to-string/dist/jsx";
 }
+declare module "react-refresh/babel";
+declare module "react-refresh/runtime";
 declare module "rollup/dist/shared/loadConfigFile.js";
 declare module "tailwindcss";
