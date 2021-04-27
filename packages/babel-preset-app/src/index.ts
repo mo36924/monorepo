@@ -240,9 +240,15 @@ export default (_api: Api, options: Options): TransformOptions => {
           },
         } as InjectOptions,
       ],
-      [reactRefresh, __DEV__ ? {} : false],
+      [reactRefresh, false],
       [jsxDev, __PROD__ ? false : {}],
       [constant, __PROD__ ? {} : false],
+    ],
+    overrides: [
+      {
+        test: /\.(j|t)sx$/,
+        plugins: [[reactRefresh, __DEV__ ? {} : false]],
+      },
     ],
   };
 };
