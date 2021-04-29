@@ -11,7 +11,12 @@ type GetSource = (url: string, context: { format: string }, defaultGetSource: Ge
 let i = 0;
 const messages: { [url: string]: (data: string) => void } = Object.create(null);
 
-parentPort?.on("message", ([url, data]: [string, string]) => {
+parentPort?.on("message", (value: string | [string, string]) => {
+  if (typeof value === "string") {
+    return;
+  }
+
+  const [url, data] = value;
   messages[url](data);
   delete messages[url];
 });

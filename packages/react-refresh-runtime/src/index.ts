@@ -1,42 +1,16 @@
-import runtime from "react-refresh/runtime";
+import { parentPort } from "worker_threads";
+import { pathnames } from "./refresh";
 
-let timeoutId: any = null;
-const pathnames = new Set<string>();
+let i = 0;
 
-runtime.injectIntoGlobalHook(globalThis);
-
-(globalThis as any).$RefreshReg$ = (type: any) => {
-  if (typeof type?.url !== "string") {
+parentPort?.on("message", (url: any) => {
+  if (typeof url !== "string") {
     return;
   }
 
-  let pathname: string;
+  const _url = new URL(`?${i++}`, url);
 
-  try {
-    pathname = new URL(type.url).pathname;
-  } catch {
-    return;
+  if (pathnames.has(_url.pathname)) {
+    import(_url.href);
   }
-
-  pathnames.add(pathname);
-  runtime.register(type, pathname);
-
-  timeoutId ??= setTimeout(() => {
-    timeoutId = null;
-    runtime.performReactRefresh();
-  }, 30);
-};
-
-(globalThis as any).$RefreshSig$ = runtime.createSignatureFunctionForTransform;
-
-if (typeof EventSource === "function") {
-  const sse = new EventSource("/sse");
-
-  sse.onmessage = (e) => {
-    const pathname = JSON.parse(e.data);
-
-    if (pathnames.has(pathname)) {
-      import(pathname);
-    }
-  };
-}
+});

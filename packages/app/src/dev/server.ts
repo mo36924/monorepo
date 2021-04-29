@@ -105,7 +105,7 @@ export default async (config: Config) => {
         delete serverCache[path];
         delete clientCache[path];
         typescriptCache[path] = data;
-        emitter.emit("data", path);
+        emitter.emit("data", pathToFileURL(path).href);
       },
     },
     ts.createEmitAndSemanticDiagnosticsBuilderProgram,
@@ -154,6 +154,10 @@ export default async (config: Config) => {
       worker.postMessage([url, ""]);
       return;
     });
+
+    emitter.on("data", (url: string) => {
+      worker.postMessage(url);
+    });
   }
 
   const proxy = httpProxy.createProxyServer({ target: `http://localhost:${workerPort}` });
@@ -168,14 +172,14 @@ export default async (config: Config) => {
 
       res.write("\n");
 
-      emitter.on("data", (path) => {
-        res.write(`data: ${JSON.stringify(pathToFileURL(path).pathname)}\n\n`);
+      emitter.on("data", (url: string) => {
+        res.write(`data: ${JSON.stringify(url)}\n\n`);
       });
 
       return;
     }
 
-    const url = `file://${req.url || "/"}`;
+    const url = new URL(req.url || "/", "file:///");
     const path = fileURLToPath(url);
 
     if (path in clientCache) {
