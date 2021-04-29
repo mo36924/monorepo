@@ -20,9 +20,9 @@ describe("babel-plugin-jsx-development", () => {
       import "@mo36924/react-refresh-runtime";
       import { jsx as _jsx } from "preact/jsx-runtime";
 
-      function Index() {
+      const Index = function () {
         return _jsx("div", {});
-      }
+      };
 
       Index.displayName ??= "Index";
       Index.url ??= import.meta.url;

@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 import { FSWatcher, watch } from "fs";
 import { readFile } from "fs/promises";
 import { createServer } from "http";
@@ -40,6 +41,7 @@ export default async (config: Config) => {
   const serverInput = config.server;
   const port = parseInt(env.PORT!, 10) || 3000;
   const workerPort = (port + 1).toFixed();
+  const emitter = new EventEmitter();
 
   const [
     cssTransformer,
@@ -103,6 +105,7 @@ export default async (config: Config) => {
         delete serverCache[path];
         delete clientCache[path];
         typescriptCache[path] = data;
+        emitter.emit("data", path);
       },
     },
     ts.createEmitAndSemanticDiagnosticsBuilderProgram,
@@ -156,6 +159,22 @@ export default async (config: Config) => {
   const proxy = httpProxy.createProxyServer({ target: `http://localhost:${workerPort}` });
 
   const httpServer = createServer(async (req, res) => {
+    if (req.url === "/sse") {
+      res.writeHead(200, {
+        "content-type": "text/event-stream",
+        "cache-control": "no-cache",
+        connection: "keep-alive",
+      });
+
+      res.write("\n");
+
+      emitter.on("data", (path) => {
+        res.write(`data: ${JSON.stringify(pathToFileURL(path).pathname)}\n\n`);
+      });
+
+      return;
+    }
+
     const url = `file://${req.url || "/"}`;
     const path = fileURLToPath(url);
 

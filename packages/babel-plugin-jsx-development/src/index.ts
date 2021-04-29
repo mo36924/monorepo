@@ -20,43 +20,55 @@ export default ({ types: t }: typeof babel): PluginObj<State> => {
         },
       },
       ExportDefaultDeclaration(path, state) {
-        const {
-          node: { declaration },
-          scope,
-        } = path;
-
-        if (
-          !/\.(t|j)sx$/.test(state.filename) ||
-          !t.isArrowFunctionExpression(declaration) ||
-          scope.hasBinding(state.displayName)
-        ) {
+        if (!/\.(t|j)sx$/.test(state.filename)) {
           return;
         }
 
-        const uid = state.displayName;
-        const { params, generator, async } = declaration;
-        let body = declaration.body;
+        const declaration = path.node.declaration;
 
-        if (t.isExpression(body)) {
-          body = t.blockStatement([t.returnStatement(body)]);
+        if (t.isIdentifier(declaration)) {
+          path.insertBefore([
+            t.expressionStatement(
+              t.assignmentExpression(
+                "??=",
+                t.memberExpression(t.identifier(declaration.name), t.identifier("displayName")),
+                t.stringLiteral(state.displayName),
+              ),
+            ),
+            t.expressionStatement(
+              t.assignmentExpression(
+                "??=",
+                t.memberExpression(t.identifier(declaration.name), t.identifier("url")),
+                t.memberExpression(t.metaProperty(t.identifier("import"), t.identifier("meta")), t.identifier("url")),
+              ),
+            ),
+          ]);
+
+          return;
+        }
+
+        let expression = declaration;
+
+        if (t.isArrowFunctionExpression(expression)) {
+          const { params, generator, async } = expression;
+          let body = expression.body;
+
+          if (t.isExpression(body)) {
+            body = t.blockStatement([t.returnStatement(body)]);
+          }
+
+          expression = t.functionExpression(null, params, body, generator, async);
+        }
+
+        let uid = /\W/.test(state.displayName) ? "Component" : state.displayName;
+        const scope = path.scope;
+
+        while (scope.hasBinding(uid)) {
+          uid += "_";
         }
 
         const [nodePath] = path.replaceWithMultiple([
-          t.functionDeclaration(t.identifier(uid), params, body, generator, async),
-          t.expressionStatement(
-            t.assignmentExpression(
-              "??=",
-              t.memberExpression(t.identifier(uid), t.identifier("displayName")),
-              t.stringLiteral(state.displayName),
-            ),
-          ),
-          t.expressionStatement(
-            t.assignmentExpression(
-              "??=",
-              t.memberExpression(t.identifier(uid), t.identifier("url")),
-              t.memberExpression(t.metaProperty(t.identifier("import"), t.identifier("meta")), t.identifier("url")),
-            ),
-          ),
+          t.variableDeclaration("const", [t.variableDeclarator(t.identifier(uid), expression as any)]),
           t.exportDefaultDeclaration(t.identifier(uid)),
         ]);
 
