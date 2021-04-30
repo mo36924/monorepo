@@ -5,6 +5,7 @@ import * as jsxRuntime from "react/jsx-runtime";
 
 let i = 0;
 const typeMap = new Map<string, any>();
+const sleep = (ms: number = 1000) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 const warpper = (jsx: any) => (type: any, ...args: any[]) => {
   if (typeof type !== "function" || typeof type.url !== "string") {
@@ -30,6 +31,7 @@ const warpper = (jsx: any) => (type: any, ...args: any[]) => {
       return;
     }
 
+    await sleep();
     const { default: type } = await import(`${pathToFileURL(path).href}?${i++}`);
 
     if (typeof type === "function" && typeof type.url === "string" && path === fileURLToPath(type.url)) {
