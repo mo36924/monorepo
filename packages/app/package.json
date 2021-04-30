@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/app",
-  "version": "1.3.36",
+  "version": "1.3.37",
   "description": "app",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -31,11 +31,11 @@
   "dependencies": {
     "@babel/core": "^7.13.14",
     "@fullhuman/postcss-purgecss": "^4.0.3",
-    "@mo36924/babel-preset-app": "^1.3.36",
+    "@mo36924/babel-preset-app": "^1.3.37",
     "@mo36924/base64url": "^1.3.0",
     "@mo36924/components": "^1.3.28",
     "@mo36924/config": "^1.3.28",
-    "@mo36924/dev-server": "^1.3.36",
+    "@mo36924/dev-server": "^1.3.37",
     "@mo36924/graphql-schema": "^1.3.19",
     "@mo36924/graphql-schema-middleware": "^1.3.29",
     "@mo36924/http-server": "^1.3.29",
