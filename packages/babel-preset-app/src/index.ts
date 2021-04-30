@@ -153,9 +153,11 @@ export default (_api: Api, options: Options): TransformOptions => {
                       react: "preact/compat",
                       "react-dom": "preact/compat",
                     }
-                  : {
+                  : __SERVER__
+                  ? {
                       "react/jsx-dev-runtime": "@mo36924/jsx-dev-runtime",
-                    },
+                    }
+                  : {},
               extensions: __SERVER__
                 ? [
                     ".server.tsx",
