@@ -1,6 +1,6 @@
 import { watch } from "fs";
 import { fileURLToPath, pathToFileURL } from "url";
-import jsx from "react/jsx-dev-runtime";
+import * as jsx from "react/jsx-dev-runtime";
 
 let i = 0;
 const typeMap = new Map<string, any>();
