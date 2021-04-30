@@ -3,17 +3,12 @@ import type { Config } from "@mo36924/config";
 import { memoize } from "@mo36924/memoize";
 import type { Plugin } from "rollup";
 import ts from "typescript";
+import { formatDiagnosticsHost } from "../util";
 
 export default memoize(
-  (config: Config): Plugin => {
+  (_config: Config): Plugin => {
     const cwd = process.cwd();
     const tsconfigPath = resolve("tsconfig.json");
-
-    const formatDiagnosticsHost: ts.FormatDiagnosticsHost = {
-      getCurrentDirectory: () => cwd,
-      getCanonicalFileName: (fileName) => fileName,
-      getNewLine: () => ts.sys.newLine,
-    };
 
     const configFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
     const { options, fileNames, errors } = ts.parseJsonConfigFileContent(configFile.config, ts.sys, cwd);

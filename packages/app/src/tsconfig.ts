@@ -1,12 +1,11 @@
-import { writeFile } from "fs/promises";
 import { resolve } from "path";
-import { format, resolveConfig } from "@mo36924/prettier";
+import { writeWithFormat } from "./util";
 
 export default async () => {
   const tsconfigPath = resolve("tsconfig.json");
-  const prettierConfig = resolveConfig.sync(tsconfigPath);
 
-  const tsconfigJson = format(
+  await writeWithFormat(
+    tsconfigPath,
     `{
       "compilerOptions": {
         "target": "ES2020",
@@ -33,8 +32,5 @@ export default async () => {
       },
       "exclude": ["dist"]
     }`,
-    { ...prettierConfig, filepath: tsconfigPath },
   );
-
-  await writeFile(tsconfigPath, tsconfigJson);
 };

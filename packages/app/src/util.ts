@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname } from "path";
+import { format, resolveConfig } from "@mo36924/prettier";
 import ts from "typescript";
 
 export const read = async (path: string) => {
@@ -13,6 +14,14 @@ export const write = async (path: string, data: string) => {
   try {
     await mkdir(dirname(path));
     await writeFile(path, data);
+  } catch {}
+};
+
+export const writeWithFormat = async (path: string, data: string) => {
+  try {
+    const config = await resolveConfig(path);
+    const _data = format(data, { ...config, filepath: path });
+    await write(path, _data);
   } catch {}
 };
 
