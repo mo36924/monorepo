@@ -1,26 +1,24 @@
 import { watch } from "fs";
 import { fileURLToPath, pathToFileURL } from "url";
-import * as jsx from "react/jsx-dev-runtime";
+import * as jsxDevRuntime from "react/jsx-dev-runtime";
+import * as jsxRuntime from "react/jsx-runtime";
 
 let i = 0;
 const typeMap = new Map<string, any>();
 
-export const Fragment = (jsx as any).Fragment;
-const _jsxDEV = (jsx as any).jsxDEV;
-
-const jsxDEV = function (type: any, ...args: any[]) {
+const warpper = (jsx: any) => (type: any, ...args: any[]) => {
   if (typeof type !== "function" || typeof type.url !== "string") {
-    return _jsxDEV(type, ...args);
+    return jsx(type, ...args);
   }
 
   const path = fileURLToPath(type.url);
 
   if (!path.endsWith(".tsx")) {
-    return _jsxDEV(type, ...args);
+    return jsx(type, ...args);
   }
 
   if (typeMap.has(path)) {
-    return _jsxDEV(typeMap.get(path), ...args);
+    return jsx(typeMap.get(path), ...args);
   }
 
   typeMap.set(path, type);
@@ -39,7 +37,10 @@ const jsxDEV = function (type: any, ...args: any[]) {
     }
   });
 
-  return _jsxDEV(type, ...args);
+  return jsx(type, ...args);
 };
 
-export { jsxDEV as jsx, jsxDEV as jsxs, jsxDEV };
+export const Fragment = (jsxRuntime as any).Fragment;
+export const jsx = warpper((jsxRuntime as any).jsx);
+export const jsxs = warpper((jsxRuntime as any).jsxs);
+export const jsxDEV = warpper((jsxDevRuntime as any).jsxDEV);
