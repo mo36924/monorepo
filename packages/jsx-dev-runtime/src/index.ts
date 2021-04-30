@@ -8,7 +8,7 @@ const typeMap = new Map<string, any>();
 export const Fragment = (jsx as any).Fragment;
 const _jsxDEV = (jsx as any).jsxDEV;
 
-export const jsxDEV = function (type: any, ...args: any[]) {
+const jsxDEV = function (type: any, ...args: any[]) {
   if (typeof type !== "function" || typeof type.url !== "string") {
     return _jsxDEV(type, ...args);
   }
@@ -41,3 +41,5 @@ export const jsxDEV = function (type: any, ...args: any[]) {
 
   return _jsxDEV(type, ...args);
 };
+
+export { jsxDEV as jsx, jsxDEV as jsxs, jsxDEV };

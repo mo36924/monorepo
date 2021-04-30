@@ -31,6 +31,15 @@ const getFileSource = (url: string) =>
 export const url = import.meta.url;
 
 export const resolve: Resolve = async (specifier, context, defaultResolve) => {
+  if (
+    specifier === "react/jsx-dev-runtime" ||
+    specifier === "react/jsx-dev-runtime.js" ||
+    specifier === "react/jsx-runtime" ||
+    specifier === "react/jsx-runtime.js"
+  ) {
+    return defaultResolve("@mo36924/jsx-dev-runtime", context, defaultResolve);
+  }
+
   return defaultResolve(specifier, context, defaultResolve);
 };
 
