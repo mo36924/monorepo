@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/babel-preset-app",
-  "version": "1.3.38",
+  "version": "1.3.39",
   "description": "babel-preset-app",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -39,7 +39,7 @@
     "@mo36924/babel-plugin-replace": "^1.3.6",
     "@mo36924/babel-plugin-resolve": "^1.3.6",
     "@mo36924/babel-plugin-resolve-subpath": "^1.3.9",
-    "@mo36924/jsx-dev-runtime": "^1.3.38",
+    "@mo36924/jsx-dev-runtime": "^1.3.39",
     "core-js": "^3.10.0",
     "react-refresh": "^0.10.0"
   }
