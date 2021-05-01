@@ -10,7 +10,7 @@ export type UseQuery = {
   <T extends GraphQLArgs & GraphQLTypeArgs>(
     args: T extends { $variables: { [key: string]: any } } ? GraphQLArgs<{ variables: T["$variables"] }> : GraphQLArgs,
   ): UseQueryResult<T extends { $result: any } ? T["$result"] : { [key: string]: any }>;
-  <T extends TemplateStringsArray & GraphQLTypeArgs>(
+  <T extends readonly string[] & GraphQLTypeArgs>(
     strings: T,
     ...values: T extends { $values: any } ? T["$values"] : never
   ): UseQueryResult<T extends { $result: any } ? T["$result"] : never>;
