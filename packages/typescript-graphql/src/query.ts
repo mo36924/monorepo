@@ -1,4 +1,3 @@
-import { encode } from "@mo36924/base52";
 import type { GraphQLSchema } from "graphql";
 import type typescript from "typescript";
 import type { TaggedTemplateExpression } from "typescript/lib/tsserverlibrary";
@@ -30,7 +29,7 @@ export const query = (ts: typeof typescript, schema: GraphQLSchema, node: Tagged
       const literal = templateSpan.literal;
       const literalWidth = literal.getWidth();
       const expressionWidth = templateSpanWidth - literalWidth;
-      const variableName = `$${encode(i)}`;
+      const variableName = `$_${i}`;
       const variable = variableName.padStart(expressionWidth + 2).padEnd(expressionWidth + 3);
       const templateWidth = literalWidth - (ts.isTemplateTail(literal) ? 2 : 3);
       const template = literal.text.padStart(templateWidth);

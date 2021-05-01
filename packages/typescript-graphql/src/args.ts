@@ -149,15 +149,15 @@ export const getArgs = (
     }),
   );
 
-  const valuesSymbol = createPropertySymbolWithType("values", createTupleType(values, undefined));
+  const valuesSymbol = createPropertySymbolWithType("$values", createTupleType(values, undefined));
 
   const variablesSymbol = createPropertySymbolWithType(
-    "variables",
+    "$variables",
     createAnonymousType(undefined, createSymbolTable(variables), emptyArray, emptyArray, undefined, undefined),
   );
 
   const resultSymbol = createPropertySymbolWithType(
-    "result",
+    "$result",
     createAnonymousType(undefined, createSymbolTable(symbols), emptyArray, emptyArray, undefined, undefined),
   );
 
