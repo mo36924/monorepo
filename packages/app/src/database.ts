@@ -1,23 +1,7 @@
-import { exec } from "child_process";
-import { promisify } from "util";
 import type { Config } from "@mo36924/config";
 import { mysql, postgres } from "@mo36924/graphql-schema";
-import sleep from "@mo36924/sleep";
-
-const execAsync = promisify(exec);
-
-const retry = async <T>(fn: () => T | Promise<T>): Promise<T> => {
-  for (let i = 0; i < 10; i++) {
-    try {
-      const result = await fn();
-      return result;
-    } catch {
-      sleep(1000);
-    }
-  }
-
-  throw new Error("Error establishing a database connection");
-};
+import exec from "@mo36924/promise-exec";
+import retry from "@mo36924/retry";
 
 export default async (config: Config) => {
   const database = config.databaseDevelopment;
@@ -29,10 +13,10 @@ export default async (config: Config) => {
   if (database.name === "mysql") {
     const { main } = database;
     const { database: _database, user, password, port } = main;
-    await execAsync(`docker rm -f ${_database}`);
+    await exec(`docker rm -fv ${_database}`);
 
-    await execAsync(
-      `docker run --name ${_database} -e MYSQL_ROOT_PASSWORD=${password} -e MYSQL_DATABASE=${_database} -e MYSQL_USER=${user} -e MYSQL_PASSWORD=${password} -p ${port}:${port} -d mysql`,
+    await exec(
+      `docker run --name ${_database} -e MYSQL_ROOT_PASSWORD=${password} -e MYSQL_DATABASE=${_database} -e MYSQL_USER=${user} -e MYSQL_PASSWORD=${password} -p ${port}:3306 -d mysql`,
     );
 
     return async (schema: string) => {
@@ -40,14 +24,16 @@ export default async (config: Config) => {
       const { escapeId } = await import("@mo36924/mysql-escape");
       const escapedDatabase = escapeId(_database);
 
-      const client = await retry(() =>
-        createConnection({
+      const client = await retry(async () => {
+        const client = await createConnection({
           ...main,
           multipleStatements: true,
-        }),
-      );
+        });
 
-      await client.connect();
+        await client.connect();
+        return client;
+      });
+
       await client.query(`drop database if exists ${escapedDatabase};`);
       await client.query(`create database ${escapedDatabase};`);
       await client.query(`use ${escapedDatabase};`);
@@ -72,10 +58,10 @@ export default async (config: Config) => {
   } else {
     const { main } = database;
     const { database: _database, password, user, port } = main;
-    await execAsync(`docker rm -f ${_database}`);
+    await exec(`docker rm -fv ${_database}`);
 
-    await execAsync(
-      `docker run --name ${_database} -e POSTGRES_PASSWORD=${password} -e POSTGRES_USER=${user} -e POSTGRES_DB=${_database} -p ${port}:${port} -d postgres`,
+    await exec(
+      `docker run --name ${_database} -e POSTGRES_PASSWORD=${password} -e POSTGRES_USER=${user} -e POSTGRES_DB=${_database} -p ${port}:5432 -d postgres`,
     );
 
     return async (schema: string) => {
@@ -86,15 +72,16 @@ export default async (config: Config) => {
       const { escapeId } = await import("@mo36924/postgres-escape");
       const escapedDatabase = escapeId(_database);
 
-      let client = await retry(
-        () =>
-          new Client({
-            ...main,
-            database: "postgres",
-          }),
-      );
+      let client = await retry(async () => {
+        const client = new Client({
+          ...main,
+          database: "postgres",
+        });
 
-      await client.connect();
+        await client.connect();
+        return client;
+      });
+
       await client.query(`drop database if exists ${escapedDatabase} with (force);`);
       await client.query(`create database ${escapedDatabase};`);
       await client.end();

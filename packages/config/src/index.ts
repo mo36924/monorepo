@@ -221,6 +221,7 @@ const config: Config = {
   rootDir: cosmiconfig.rootDir,
 };
 
+export default config;
 export const {
   watch,
   client,

@@ -136,7 +136,8 @@
       "jest-snapshot-serializer-graphql",
       "jest-snapshot-serializer-preact",
       "jest-snapshot-serializer-raw"
-    ]
+    ],
+    "testTimeout": 60000
   },
   "devDependencies": {
     "@babel/core": "^7.13.14",
