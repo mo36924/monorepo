@@ -1,4 +1,5 @@
 import { components } from "./components";
+import "./refresh";
 
 if (typeof EventSource === "function") {
   const sse = new EventSource("/sse");

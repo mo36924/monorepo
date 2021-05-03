@@ -1,5 +1,6 @@
 import { parentPort } from "worker_threads";
 import { components } from "./components";
+import "./refresh";
 
 let i = 0;
 
