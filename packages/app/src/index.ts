@@ -1,7 +1,7 @@
 import type { Config, PartialConfig } from "@mo36924/config";
 import * as config from "@mo36924/config";
 import pageGenerator from "@mo36924/page-generator";
-import graphqlTypeGenerator from "./graphql-type-generator";
+import graphql from "./graphql";
 import tsconfig from "./tsconfig";
 
 export default async (partialConfig: PartialConfig = {}) => {
@@ -9,7 +9,7 @@ export default async (partialConfig: PartialConfig = {}) => {
   const watch = _config.watch;
   process.env.NODE_ENV = watch ? "development" : "production";
   await tsconfig();
-  await graphqlTypeGenerator(config);
+  await graphql(config);
   await pageGenerator({ ...config.page, watch });
   const mod = watch ? await import("./dev") : await import("./build");
   await mod.default(_config);

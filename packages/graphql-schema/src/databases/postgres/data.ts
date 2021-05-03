@@ -1,5 +1,6 @@
-import { createObject, getTypes, Types } from "@mo36924/graphql-schema";
-import { escapeId, escape } from "@mo36924/postgres-escape";
+import { escape, escapeId } from "@mo36924/postgres-escape";
+import { getTypes, Types } from "../../types";
+import { createObject } from "../../utils";
 
 export const data = (schema: string) => {
   const { Query, Mutation, ...types } = getTypes(schema);

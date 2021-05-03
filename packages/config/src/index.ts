@@ -3,6 +3,48 @@ import { basename as _basename, dirname as _dirname, resolve as _resolve } from 
 import { fileURLToPath, pathToFileURL } from "url";
 import { cosmiconfigSync } from "cosmiconfig";
 
+type DatabaseConfig =
+  | {
+      name: "mysql";
+      main?: {
+        host: string;
+        port: number;
+        user: string;
+        password: string;
+        database: string;
+        [key: string]: any;
+      };
+      replica?: {
+        host: string;
+        port: number;
+        user: string;
+        password: string;
+        database: string;
+        [key: string]: any;
+      }[];
+    }
+  | {
+      name: "postgres";
+      main?: {
+        host: string;
+        port: number;
+        user: string;
+        password: string;
+        database: string;
+        [key: string]: any;
+      };
+      replica?: {
+        host: string;
+        port: number;
+        user: string;
+        password: string;
+        database: string;
+        [key: string]: any;
+      }[];
+    };
+
+type DatabaseDevelopmentConfig = DatabaseConfig & { reset?: boolean };
+
 export type PartialConfig = {
   watch?: boolean;
   client?: string;
@@ -21,11 +63,8 @@ export type PartialConfig = {
     include?: string[];
     exclude?: string[];
   };
-  database?: {
-    name?: string;
-    main?: any;
-    replica?: any;
-  };
+  database?: DatabaseConfig;
+  databaseDevelopment?: DatabaseDevelopmentConfig;
   extensions?: {
     client?: string[];
     server?: string[];
@@ -75,12 +114,67 @@ const extensionsServer =
     ? cosmiconfig.extensions.server
     : [..._extensions.map((extension) => `.server${extension}`), ..._extensions, ".node"];
 
-const databaseMain = cosmiconfig.database?.main ?? {
-  host: "127.0.0.1",
-  database: "postgres",
-  user: "postgres",
-  password: "postgres",
-};
+const cosmiconfigDatabase = cosmiconfig.database ?? { name: "postgres" };
+const cosmiconfigDatabaseDevelopment = cosmiconfig.databaseDevelopment ?? { name: "postgres" };
+const reset = cosmiconfigDatabaseDevelopment.reset ?? true;
+let configDatabase: Config["database"];
+let configDatabaseDevelopment: Config["databaseDevelopment"];
+
+if (cosmiconfigDatabase.name === "mysql") {
+  const name = cosmiconfigDatabase.name;
+
+  const main = cosmiconfigDatabase.main ?? {
+    host: "127.0.0.1",
+    port: 3306,
+    user: "production",
+    password: "production",
+    database: "production",
+  };
+
+  const replica = cosmiconfigDatabase.replica ?? [main];
+  configDatabase = { name, main, replica };
+} else {
+  const name = cosmiconfigDatabase.name;
+
+  const main = cosmiconfigDatabase.main ?? {
+    host: "127.0.0.1",
+    port: 5432,
+    user: "production",
+    password: "production",
+    database: "production",
+  };
+
+  const replica = cosmiconfigDatabase.replica ?? [main];
+  configDatabase = { name, main, replica };
+}
+
+if (cosmiconfigDatabaseDevelopment.name === "mysql") {
+  const name = cosmiconfigDatabaseDevelopment.name;
+
+  const main = cosmiconfigDatabaseDevelopment.main ?? {
+    host: "127.0.0.1",
+    port: 3306,
+    user: "development",
+    password: "development",
+    database: "development",
+  };
+
+  const replica = cosmiconfigDatabaseDevelopment.replica ?? [main];
+  configDatabaseDevelopment = { name, main, replica, reset };
+} else {
+  const name = cosmiconfigDatabaseDevelopment.name;
+
+  const main = cosmiconfigDatabaseDevelopment.main ?? {
+    host: "127.0.0.1",
+    port: 5432,
+    user: "development",
+    password: "development",
+    database: "development",
+  };
+
+  const replica = cosmiconfigDatabaseDevelopment.replica ?? [main];
+  configDatabaseDevelopment = { name, main, replica, reset };
+}
 
 const _watch = cosmiconfig?.watch ?? process.env.NODE_ENV !== "production";
 
@@ -114,11 +208,8 @@ const config: Config = {
     include: cosmiconfig.page?.include ?? ["**/*.tsx"],
     exclude: cosmiconfig.page?.exclude ?? ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
   },
-  database: {
-    name: cosmiconfig.database?.name ?? "postgres",
-    main: databaseMain,
-    replica: cosmiconfig.database?.replica ?? databaseMain,
-  },
+  database: configDatabase,
+  databaseDevelopment: configDatabaseDevelopment,
   extensions: {
     client: extensionsClient,
     server: extensionsServer,
@@ -144,6 +235,7 @@ export const {
   graphql,
   page,
   database,
+  databaseDevelopment,
   extensions,
   inject,
   filepath,

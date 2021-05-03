@@ -1,43 +1,18 @@
-import { watch } from "fs";
-import { fileURLToPath, pathToFileURL } from "url";
+import { components } from "@mo36924/react-refresh-runtime";
 import * as jsxDevRuntime from "react/jsx-dev-runtime";
 import * as jsxRuntime from "react/jsx-runtime";
 
-let i = 0;
-const typeMap = new Map<string, any>();
-const sleep = (ms: number = 1000) => new Promise<void>((resolve) => setTimeout(resolve, ms));
-
 const warpper = (jsx: any) => (type: any, ...args: any[]) => {
-  if (typeof type !== "function" || typeof type.url !== "string") {
-    return jsx(type, ...args);
+  if (typeof type === "function" && typeof type.url === "string") {
+    try {
+      const pathname = new URL(type.url).pathname;
+      const _type = components.get(pathname);
+
+      if (_type) {
+        type = _type;
+      }
+    } catch {}
   }
-
-  const path = fileURLToPath(type.url);
-
-  if (!path.endsWith(".tsx")) {
-    return jsx(type, ...args);
-  }
-
-  if (typeMap.has(path)) {
-    return jsx(typeMap.get(path), ...args);
-  }
-
-  typeMap.set(path, type);
-
-  const watcher = watch(path, async (event) => {
-    if (event === "rename") {
-      typeMap.delete(path);
-      watcher.close();
-      return;
-    }
-
-    await sleep();
-    const { default: type } = await import(`${pathToFileURL(path).href}?${i++}`);
-
-    if (typeof type === "function" && typeof type.url === "string" && path === fileURLToPath(type.url)) {
-      typeMap.set(path, type);
-    }
-  });
 
   return jsx(type, ...args);
 };

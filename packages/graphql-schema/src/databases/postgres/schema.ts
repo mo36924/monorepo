@@ -1,5 +1,6 @@
-import { createObject, getTypes } from "@mo36924/graphql-schema";
 import { escapeId } from "@mo36924/postgres-escape";
+import { getTypes } from "../../types";
+import { createObject } from "../../utils";
 
 const dbTypes = createObject<{ [key: string]: string }>({
   UUID: "uuid",
@@ -25,7 +26,6 @@ export const schema = (schema: string) => {
     for (const [fieldName, field] of Object.entries(fields)) {
       const {
         type: fieldTypeName,
-        list,
         nullable,
         scalar,
         directives: { ref: refDirective, unique: uniqueDirective },

@@ -31,7 +31,7 @@ describe("graphql-schema", () => {
     expect(raw(typescriptDeclarationSource)).toMatchInlineSnapshot(`
       export type {};
       declare global {
-        declare namespace GraphQL {
+        namespace GraphQL {
           type ID = string;
           type String = string;
           type Boolean = boolean;

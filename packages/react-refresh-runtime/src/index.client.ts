@@ -1,4 +1,4 @@
-import { pathnames } from "./refresh";
+import { components } from "./components";
 
 if (typeof EventSource === "function") {
   const sse = new EventSource("/sse");
@@ -7,8 +7,10 @@ if (typeof EventSource === "function") {
   sse.onmessage = (e) => {
     const pathname = new URL(JSON.parse(e.data)).pathname;
 
-    if (pathnames.has(pathname)) {
+    if (components.has(pathname)) {
       import(`${pathname}?${i++}`);
     }
   };
 }
+
+export { components };

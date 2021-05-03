@@ -26,6 +26,7 @@
     }
   },
   "dependencies": {
+    "@mo36924/react-refresh-runtime": "^1.3.34",
     "react": "^17.0.2"
   }
 }

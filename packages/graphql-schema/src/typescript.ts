@@ -14,7 +14,7 @@ export const typescript = async (schema: string) => {
     Date: "globalThis.Date",
   };
 
-  let typescriptDeclarationSource = await codegen({
+  let declaration = await codegen({
     filename: "graphql.d.ts",
     schema: parse(schema),
     plugins: [
@@ -35,8 +35,8 @@ export const typescript = async (schema: string) => {
     .map(([graphqlType, typescriptType]) => `type ${graphqlType} = ${typescriptType};`)
     .join("")}`;
 
-  typescriptDeclarationSource = `export type {}; declare global { declare namespace GraphQL { ${scalarTypes} ${typescriptDeclarationSource} } }`;
+  declaration = `export type {}; declare global { namespace GraphQL { ${scalarTypes} ${declaration} } }`;
   const config = await resolveConfig("index.d.ts");
-  typescriptDeclarationSource = format(typescriptDeclarationSource, { ...config, filepath: "index.d.ts" });
-  return typescriptDeclarationSource;
+  declaration = format(declaration, { ...config, filepath: "index.d.ts" });
+  return declaration;
 };

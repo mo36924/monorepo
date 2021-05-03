@@ -1,6 +1,6 @@
 import { expect, it } from "@jest/globals";
-import { schema } from "@mo36924/graphql-schema";
 import { raw } from "jest-snapshot-serializer-raw";
+import { schema } from "../../schema";
 import { data } from "./data";
 
 it("postgres-data", () => {

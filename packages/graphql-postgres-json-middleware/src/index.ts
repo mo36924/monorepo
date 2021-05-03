@@ -4,11 +4,11 @@ import type { MiddlewareFactory } from "@mo36924/http-server";
 import { getOperationAST } from "graphql";
 import pg, { PoolConfig } from "pg";
 
-export type Options = Omit<graphqlMiddlewareOptions, "execute"> & { main: PoolConfig; replica?: PoolConfig };
+export type Options = Omit<graphqlMiddlewareOptions, "execute"> & { main: PoolConfig; replica: PoolConfig[] };
 
 export default (options: Options): MiddlewareFactory => async (server) => {
   const main = new pg.Pool(options.main);
-  const replica = new pg.Pool(options.replica ?? options.main);
+  const replica = new pg.Pool(options.replica[Math.floor(Math.random() * options.replica.length)]);
 
   const middleware = await graphqlMiddleware({
     ...options,

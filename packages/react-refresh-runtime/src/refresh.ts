@@ -1,8 +1,7 @@
 import runtime from "react-refresh/runtime";
+import { components } from "./components";
 
 let timeoutId: any = null;
-
-export const pathnames = new Set<string>();
 runtime.injectIntoGlobalHook(globalThis);
 
 (globalThis as any).$RefreshReg$ = (type: any) => {
@@ -18,7 +17,7 @@ runtime.injectIntoGlobalHook(globalThis);
     return;
   }
 
-  pathnames.add(pathname);
+  components.set(pathname, type);
   runtime.register(type, pathname);
 
   timeoutId ??= setTimeout(() => {

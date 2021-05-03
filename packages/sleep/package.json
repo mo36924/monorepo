@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/graphql-database-schema-generator",
-  "version": "1.3.19",
-  "description": "graphql-database-schema-generator",
+  "name": "@mo36924/sleep",
+  "version": "1.0.0",
+  "description": "sleep",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/graphql-database-schema-generator"
+    "directory": "packages/sleep"
   },
   "publishConfig": {
     "access": "public"
@@ -24,8 +24,5 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
-  },
-  "dependencies": {
-    "@mo36924/graphql-postgres-schema": "^1.3.19"
   }
 }

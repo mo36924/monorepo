@@ -1,5 +1,5 @@
 import { parentPort } from "worker_threads";
-import { pathnames } from "./refresh";
+import { components } from "./components";
 
 let i = 0;
 
@@ -10,7 +10,9 @@ parentPort?.on("message", (url: any) => {
 
   const _url = new URL(`?${i++}`, url);
 
-  if (pathnames.has(_url.pathname)) {
+  if (components.has(_url.pathname)) {
     import(_url.href);
   }
 });
+
+export { components };
