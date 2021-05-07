@@ -9,7 +9,7 @@ if (workerData?.devServerUrl) {
   let i = 0;
 
   get(`${workerData.devServerUrl}/sse`, async (res) => {
-    for await (const [line] of on(createInterface(res), "line") as AsyncIterableIterator<string>) {
+    for await (const [line] of on(createInterface(res), "line") as AsyncIterableIterator<[string]>) {
       if (!line.startsWith("data: ")) {
         continue;
       }
