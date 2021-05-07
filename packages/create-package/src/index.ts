@@ -17,6 +17,12 @@ export default async () => {
     return;
   }
 
+  let base: { [key: string]: any } = {};
+
+  try {
+    base = JSON.parse(await readFile("package.json", "utf8"));
+  } catch {}
+
   const dir = join("packages", name);
   await mkdir(join(dir, "src"), { recursive: true });
   let pkg: { [key: string]: any } = {};
@@ -26,15 +32,15 @@ export default async () => {
   } catch {}
 
   const _pkg: { [key: string]: any } = {
-    name: `@mo36924/${name}`,
-    author: "mo36924 <mo36924@users.noreply.github.com>",
-    homepage: "https://github.com/mo36924/monorepo#readme",
-    bugs: {
+    name: `${base.name?.split("/")[0] || "@mo36924"}/${name}`,
+    author: base.author ?? "mo36924 <mo36924@users.noreply.github.com>",
+    homepage: base.homepage ?? "https://github.com/mo36924/monorepo#readme",
+    bugs: base.bugs ?? {
       url: "https://github.com/mo36924/monorepo/issues",
     },
     repository: {
-      type: "git",
-      url: "git+https://github.com/mo36924/monorepo.git",
+      type: base.repository?.type ?? "git",
+      url: base.repository?.url ?? "git+https://github.com/mo36924/monorepo.git",
       directory: `packages/${name}`,
     },
     publishConfig: {

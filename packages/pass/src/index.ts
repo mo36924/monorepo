@@ -2,7 +2,10 @@ import { createServer as _createServer, IncomingMessage, ServerResponse } from "
 import { types } from "util";
 
 export type Middleware = () => void;
-export type Context = { request: IncomingMessage; response: ServerResponse };
+export interface Context {
+  request: IncomingMessage;
+  response: ServerResponse;
+}
 
 const { isPromise } = types;
 let _context: Context;
