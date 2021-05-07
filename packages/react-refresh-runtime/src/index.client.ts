@@ -9,7 +9,7 @@ if (typeof EventSource === "function") {
     const pathname = new URL(JSON.parse(e.data)).pathname;
 
     if (components.has(pathname)) {
-      import(`${pathname}?${i++}`);
+      import(`${pathname}?${i++}`).catch(() => {});
     }
   };
 }
