@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/rollup-plugin-cache",
-  "version": "1.3.48",
+  "version": "1.3.49",
   "description": "rollup-plugin-cache",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@gfx/zopfli": "^1.0.15",
     "@mo36924/base64url": "^1.3.46",
-    "@mo36924/cache-middleware": "^1.3.48",
+    "@mo36924/cache-middleware": "^1.3.49",
     "fast-glob": "^3.2.5",
     "mime-types": "^2.1.29",
     "rollup": "^2.44.0"
