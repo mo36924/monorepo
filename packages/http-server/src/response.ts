@@ -17,7 +17,7 @@ export class Response extends ServerResponse {
       let type: string | false = this.request.types[0];
 
       if (!type || type.includes("*")) {
-        type = lookup(this.request.ext);
+        type = lookup(this.request.extname);
       }
 
       if (type) {

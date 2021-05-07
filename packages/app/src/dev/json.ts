@@ -1,27 +1,41 @@
+import { readFile } from "fs/promises";
+import { fileURLToPath } from "url";
+import type { MiddlewareFactory } from "@mo36924/http-server";
 import reserved from "reserved-words";
 import ts from "typescript";
 import { formatDiagnosticsHost } from "../util";
+import type { Cache } from "./cache";
 
-export default async () => async (path: string, data: string) => {
-  if (!/\.json$/.test(path)) {
+export default ({ cache }: { cache: Cache }): MiddlewareFactory => () => async (req, res) => {
+  if (req.extname !== ".json") {
     return;
   }
 
+  const path = fileURLToPath(new URL(req._url, "file:///"));
+
+  if (path in cache.json.script) {
+    await res.send(cache.json.script[path], "js");
+    return;
+  }
+
+  const data = await readFile(path, "utf8");
+
   const diagnostics: ts.Diagnostic[] = [];
   const obj = ts.convertToObject(ts.parseJsonText(path, data), diagnostics);
+  let json = "";
 
   if (diagnostics.length) {
-    data = `throw new SyntaxError(${JSON.stringify(
+    json = `throw new SyntaxError(${JSON.stringify(
       ts.formatDiagnosticsWithColorAndContext(diagnostics, formatDiagnosticsHost),
     )});`;
   } else if (obj && typeof obj === "object" && !Array.isArray(obj)) {
-    data = `${Object.entries<any>(obj)
+    json = `${Object.entries<any>(obj)
       .filter(([key]) => /^[A-Za-z_$][A-Za-z_$0-9]*$/.test(key) && !reserved.check(key, 6, true))
       .map(([key, value]) => `export const ${key} = ${JSON.stringify(value, null, 2)};\n`)
       .join("")}export default ${JSON.stringify(obj, null, 2)};`;
   } else {
-    data = `export default ${JSON.stringify(obj, null, 2)};`;
+    json = `export default ${JSON.stringify(obj, null, 2)};`;
   }
 
-  return data;
+  await res.send(json, "js");
 };

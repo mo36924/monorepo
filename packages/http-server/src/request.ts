@@ -1,5 +1,5 @@
 import { IncomingMessage } from "http";
-import { ParsedPath, posix } from "path";
+import { basename, extname } from "path";
 import base64url from "@mo36924/base64url";
 import accepts, { Accepts } from "accepts";
 import { parse as parseCookie } from "cookie";
@@ -19,32 +19,32 @@ export type SessionStore = {
   (key: string, value: string): Promise<void>;
 };
 
-const { parse: parsePath } = posix;
-
 export const sid = () => base64url(v4(null, Buffer.alloc(16)).toString("base64"));
 
 export class Request extends IncomingMessage {
   response!: Response;
   port!: string;
-  _host!: string | null;
-  _origin!: string | null;
-  _path!: string | null;
-  _href!: string | null;
-  __url!: URL | null;
-  _parsedPath!: ParsedPath | null;
-  _accepts!: Accepts | null;
-  _type!: { [type: string]: string | false } | null;
-  _types!: string[] | null;
-  _encoding!: { [encoding: string]: string | false } | null;
-  _encodings!: string[] | null;
-  _charset!: { [charset: string]: string | false } | null;
-  _charsets!: string[] | null;
-  _language!: { [language: string]: string | false } | null;
-  _languages!: string[] | null;
-  _cookie!: Cookie | null;
-  _sessionStore!: Session;
-  ___session!: string;
-  _session!: Promise<Session> | null;
+  private _host!: string | null;
+  private _origin!: string | null;
+  private __url!: string | null;
+  private _href!: string | null;
+  private $$url!: URL | null;
+  private _basename!: string | null;
+  private _extname!: string | null;
+  private _userAgent!: string | null;
+  private _accepts!: Accepts | null;
+  private _type!: { [type: string]: string | false } | null;
+  private _types!: string[] | null;
+  private _encoding!: { [encoding: string]: string | false } | null;
+  private _encodings!: string[] | null;
+  private _charset!: { [charset: string]: string | false } | null;
+  private _charsets!: string[] | null;
+  private _language!: { [language: string]: string | false } | null;
+  private _languages!: string[] | null;
+  private _cookie!: Cookie | null;
+  private _sessionStore!: Session;
+  private ___session!: string;
+  private _session!: Promise<Session> | null;
   get protocol() {
     return this.headers["x-forwarded-proto"] === "https" ? "https:" : "http:";
   }
@@ -57,47 +57,42 @@ export class Request extends IncomingMessage {
   get origin() {
     return (this._origin ||= `${this.protocol}//${this.host}`);
   }
-  get path() {
-    return (this._path ||= this.url || "/");
+  get _url() {
+    return (this.__url ||= this.url || "/");
   }
   get href() {
-    return (this._href ||= `${this.origin}${this.path}`);
+    return (this._href ||= `${this.origin}${this._url}`);
   }
-  get _url() {
-    return (this.__url ||= new URL(this.href));
+  get $url() {
+    return (this.$$url ||= new URL(this.href));
   }
   get pathname() {
-    return this._url.pathname;
+    return this.$url.pathname;
   }
   get search() {
-    return this._url.search;
+    return this.$url.search;
   }
   get searchParams() {
-    return this._url.searchParams;
+    return this.$url.searchParams;
   }
-  get parsedPath() {
-    return (this._parsedPath ||= parsePath(this.pathname));
+  get basename() {
+    return (this._basename ??= basename(this.pathname));
   }
-  get dir() {
-    return this.parsedPath.dir;
-  }
-  get base() {
-    return this.parsedPath.base;
-  }
-  get name() {
-    return this.parsedPath.name;
-  }
-  get ext() {
-    return this.parsedPath.ext;
+  get extname() {
+    return (this._extname ??= extname(this.basename));
   }
   get userAgent() {
-    return this.headers["user-agent"] || "";
+    return (this._userAgent ??= typeof this.headers["user-agent"] === "string" ? this.headers["user-agent"] : "");
   }
   get accepts() {
     return (this._accepts ||= accepts(this as any));
   }
-  type(type: string) {
-    return ((this._type ||= Object.create(null))[type] ??= this.accepts.type(type));
+  type(type: string): string | false;
+  type(types: string[]): string | false;
+  type(type: string | string[]) {
+    return ((this._type ||= Object.create(null))[typeof type === "string" ? type : type.join()] ??= this.accepts.type(
+      type as any,
+    ));
   }
   get types(): string[] {
     return (this._types ||= this.accepts.types() as any);
@@ -167,24 +162,27 @@ export class Request extends IncomingMessage {
   }
 }
 
-Request.prototype.response = null as any;
-Request.prototype.port = "";
-Request.prototype._host = null;
-Request.prototype._origin = null;
-Request.prototype._path = null;
-Request.prototype._href = null;
-Request.prototype.__url = null;
-Request.prototype._parsedPath = null;
-Request.prototype._accepts = null;
-Request.prototype._type = null;
-Request.prototype._types = null;
-Request.prototype._encoding = null;
-Request.prototype._encodings = null;
-Request.prototype._charset = null;
-Request.prototype._charsets = null;
-Request.prototype._language = null;
-Request.prototype._languages = null;
-Request.prototype._cookie = null;
-Request.prototype._sessionStore = Object.create(null);
-Request.prototype.___session = "{}";
-Request.prototype._session = null;
+const prototype: any = Request.prototype;
+prototype.response = null;
+prototype.port = "";
+prototype._host = null;
+prototype._origin = null;
+prototype.__url = null;
+prototype._href = null;
+prototype.$$url = null;
+prototype._basename = null;
+prototype._extname = null;
+prototype._userAgent = null;
+prototype._accepts = null;
+prototype._type = null;
+prototype._types = null;
+prototype._encoding = null;
+prototype._encodings = null;
+prototype._charset = null;
+prototype._charsets = null;
+prototype._language = null;
+prototype._languages = null;
+prototype._cookie = null;
+prototype._sessionStore = Object.create(null);
+prototype.___session = "{}";
+prototype._session = null;

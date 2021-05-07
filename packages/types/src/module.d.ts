@@ -4,7 +4,8 @@ declare module "@babel/preset-react";
 declare module "@babel/preset-typescript";
 declare module "acorn-jsx";
 declare module "babel-plugin-minify-dead-code-elimination";
-declare module "cssnano-preset-advanced";
+declare module "cssnano";
+declare module "postcss-import";
 declare module "preact-render-to-string/jsx" {
   export { default, render } from "preact-render-to-string/dist/jsx";
 }

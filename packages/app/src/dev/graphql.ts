@@ -1,17 +1,26 @@
+import { readFile } from "fs/promises";
+import { fileURLToPath } from "url";
+import type { MiddlewareFactory } from "@mo36924/http-server";
 import { parse } from "graphql";
+import type { Cache } from "./cache";
 
-export default async () => async (path: string, data: string) => {
-  if (!/\.(gql|graphql)$/.test(path)) {
+export default ({ cache }: { cache: Cache }): MiddlewareFactory => () => async (req, res) => {
+  if (req.extname !== ".gql" && req.extname !== ".graphql") {
     return;
   }
 
-  const documentNode = parse(data, { noLocation: true });
-  const documentNodeJson = JSON.stringify({ ...documentNode, path });
+  const path = fileURLToPath(new URL(req._url, "file:///"));
 
-  const documentNodeString = documentNodeJson.includes("'")
-    ? JSON.stringify(documentNodeJson)
-    : `'${documentNodeJson}'`;
+  if (path in cache.graphql.script) {
+    await res.send(cache.graphql.script[path], "js");
+    return;
+  }
 
-  data = `export default JSON.parse(${documentNodeString});`;
-  return data;
+  const data = await readFile(path, "utf8");
+  const ast = parse(data, { noLocation: true });
+  const json = JSON.stringify({ ...ast, path }, null, 2);
+  const value = json.includes("'") ? JSON.stringify(json) : `'${json}'`;
+  const result = `export default JSON.parse(${value});`;
+  cache.graphql.script[path] = result;
+  await res.send(result, "js");
 };

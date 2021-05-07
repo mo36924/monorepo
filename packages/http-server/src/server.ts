@@ -126,17 +126,21 @@ export class Server {
   };
   close = async () => {
     await new Promise<void>((resolve, reject) => {
-      if (!this.server) {
+      const server = this.server;
+
+      if (!server) {
         resolve();
       }
 
-      this.server.close((err) => {
+      server.close((err) => {
         if (err) {
           reject(err);
         } else {
           resolve();
         }
       });
+
+      setImmediate(() => server.emit("close"));
     });
   };
 }

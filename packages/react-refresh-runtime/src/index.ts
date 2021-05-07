@@ -1,19 +1,24 @@
-import { parentPort } from "worker_threads";
+import { on } from "events";
+import { get } from "http";
+import { createInterface } from "readline";
+import { workerData } from "worker_threads";
 import { components } from "./components";
 import "./refresh";
 
-let i = 0;
+if (workerData?.devServerUrl) {
+  let i = 0;
 
-parentPort?.on("message", (url: any) => {
-  if (typeof url !== "string") {
-    return;
-  }
+  get(`${workerData.devServerUrl}/sse`, async (res) => {
+    for await (const line of on(createInterface(res), "line") as AsyncIterableIterator<string>) {
+      if (line.startsWith("data: ")) {
+        const url = new URL(`?${i++}`, line.slice(6));
 
-  const _url = new URL(`?${i++}`, url);
-
-  if (components.has(_url.pathname)) {
-    import(_url.href);
-  }
-});
+        if (components.has(url.pathname)) {
+          import(url.href).catch(() => {});
+        }
+      }
+    }
+  });
+}
 
 export { components };

@@ -10,7 +10,7 @@ export default (match: Match): MiddlewareFactory => () => async (request, respon
     return;
   }
 
-  const page = match(request._url);
+  const page = match(request.$url);
 
   if (!page) {
     return;

@@ -1,4 +1,6 @@
-import { parentPort } from "worker_threads";
+import { once } from "events";
+import { get, IncomingMessage } from "http";
+import { workerData } from "worker_threads";
 
 type Resolve = (
   specifier: string,
@@ -6,32 +8,19 @@ type Resolve = (
   defaultResolve: Resolve,
 ) => Promise<{ url: string }>;
 type GetFormat = (url: string, context: { format: string }, defaultGetSource: GetFormat) => Promise<{ format: string }>;
-type GetSource = (url: string, context: { format: string }, defaultGetSource: GetSource) => Promise<{ source: string }>;
+type GetSource = (
+  url: string,
+  context: { format: string },
+  defaultGetSource: GetSource,
+) => Promise<{ source: string | Uint8Array }>;
 
-let i = 0;
-const messages: { [url: string]: (data: string) => void } = Object.create(null);
-
-parentPort?.on("message", (value: string | [string, string]) => {
-  if (typeof value === "string") {
-    return;
-  }
-
-  const [url, data] = value;
-  messages[url](data);
-  delete messages[url];
-});
-
-const getFileSource = (url: string) =>
-  new Promise<string>((resolve) => {
-    url = new URL(`?${i++}`, url).href;
-    messages[url] = resolve;
-    parentPort!.postMessage(url);
-  });
+const devServerUrl: "http://127.0.0.1:${devServerPort}" | null | undefined = workerData?.devServerUrl;
 
 export const url = import.meta.url;
 
 export const resolve: Resolve = async (specifier, context, defaultResolve) => {
   if (
+    devServerUrl &&
     !context.parentURL?.includes("@mo36924/jsx-dev-runtime") &&
     (specifier === "react/jsx-dev-runtime" ||
       specifier === "react/jsx-dev-runtime.js" ||
@@ -45,7 +34,7 @@ export const resolve: Resolve = async (specifier, context, defaultResolve) => {
 };
 
 export const getFormat: GetFormat = async (url, context, defaultGetFormat) => {
-  if (url.startsWith("file:///") && !url.includes("/node_modules/")) {
+  if (devServerUrl && url.startsWith("file:///") && !url.includes("/node_modules/")) {
     return { format: "module" };
   }
 
@@ -53,8 +42,16 @@ export const getFormat: GetFormat = async (url, context, defaultGetFormat) => {
 };
 
 export const getSource: GetSource = async (url, context, defaultGetSource) => {
-  if (url.startsWith("file:///") && !url.includes("/node_modules/")) {
-    return { source: await getFileSource(url) };
+  if (devServerUrl && url.startsWith("file:///") && !url.includes("/node_modules/")) {
+    const [res]: IncomingMessage[] = await once(get(devServerUrl + url.slice(7)), "response");
+    const data: Buffer[] = [];
+
+    for await (const chunk of res) {
+      data.push(chunk);
+    }
+
+    const buffer = Buffer.concat(data);
+    return { source: buffer };
   }
 
   return defaultGetSource(url, context, defaultGetSource);

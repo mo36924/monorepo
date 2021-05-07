@@ -29,13 +29,12 @@ export default async (options?: Options) => {
   await Promise.all([mkdir(dir, { recursive: true }), mkdir(dirname(file), { recursive: true })]);
 
   const watcher = watch(include, { cwd: dir, ignored: exclude });
-  watcher.on("add", generateDefaultFile);
-  watcher.on("change", generateDefaultFile);
-
   await once(watcher, "ready");
   await generate();
 
   if (watchMode) {
+    watcher.on("add", generateDefaultFile);
+    watcher.on("change", generateDefaultFile);
     watcher.on("add", generate);
     watcher.on("unlink", generate);
     watcher.on("unlinkDir", generate);

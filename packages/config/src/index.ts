@@ -46,6 +46,9 @@ type DatabaseConfig =
 type DatabaseDevelopmentConfig = DatabaseConfig & { reset?: boolean };
 
 export type PartialConfig = {
+  env?: { [key: string]: string | undefined };
+  port?: number;
+  devServerPort?: number;
   watch?: boolean;
   client?: string;
   server?: string;
@@ -70,7 +73,7 @@ export type PartialConfig = {
     server?: string[];
   };
   inject?: {
-    [name: string]: [source: string] | [source: string, name?: string] | null;
+    [name: string]: [source: string] | [source: string, name?: string];
   };
   filepath?: string | null;
   rootDir?: string;
@@ -94,6 +97,10 @@ const cosmiconfig = {
   filepath: result?.filepath ?? null,
   rootDir: _rootDir,
 };
+
+export const env = Object.assign(process.env, cosmiconfig.env);
+export const port = parseInt(env.PORT!, 10) || cosmiconfig.port || 3000;
+export const devServerPort = parseInt(env.DEV_SERVER_PORT!, 10) || cosmiconfig.devServerPort || port + 1;
 
 const _extensions = [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs", ".json"];
 const pkg: { [key: string]: any } = {};
@@ -176,7 +183,7 @@ if (cosmiconfigDatabaseDevelopment.name === "mysql") {
   configDatabaseDevelopment = { name, main, replica, reset };
 }
 
-const _watch = cosmiconfig?.watch ?? process.env.NODE_ENV !== "production";
+const _watch = cosmiconfig?.watch ?? env.NODE_ENV !== "production";
 
 const _client =
   cosmiconfig.client ??
@@ -191,6 +198,9 @@ const _server =
 const _main = resolve(pkg.main ?? "dist/index.js");
 
 const config: Config = {
+  env,
+  port,
+  devServerPort,
   watch: _watch,
   client: resolve(_client),
   server: resolve(_server),
