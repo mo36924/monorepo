@@ -26,7 +26,7 @@ export type Cache = {
 const cacheObject = (): CacheObject => Object.create(null);
 
 export default async (): Promise<Cache> => {
-  const cachePath = resolve("node_modules/.cache/dev-server.json");
+  const cachePath = resolve("node_modules/.cache/app.json");
 
   const cache = {
     css: {

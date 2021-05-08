@@ -13,7 +13,7 @@ export default (): MiddlewareFactory => () => (req, res) => {
     res.write("\n");
 
     watcher.onchange((absolutePath) => {
-      res.write(`data: ${JSON.stringify(pathToFileURL(absolutePath).href)}\n\n`);
+      res.write(`data: ${pathToFileURL(absolutePath).href}\n\n`);
     });
 
     return true;

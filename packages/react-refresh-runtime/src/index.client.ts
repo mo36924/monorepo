@@ -6,7 +6,7 @@ if (typeof EventSource === "function") {
   let i = 0;
 
   sse.onmessage = (e) => {
-    const pathname = new URL(JSON.parse(e.data)).pathname;
+    const pathname = new URL(e.data).pathname;
 
     if (components.has(pathname)) {
       import(`${pathname}?${i++}`).catch(() => {});
