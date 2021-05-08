@@ -17,81 +17,78 @@ import rename from "./rename";
 import typescript from "./typescript-plugin";
 import warnings from "./warnings";
 
+const cwd = process.cwd();
+
 export default async (config: Config) => {
-  const bundle = await rollup({
-    input: config.client,
-    acornInjectPlugins: [jsx()],
-    external: [],
-    preserveEntrySignatures: false,
-    context: "self",
-    onwarn: warnings.add,
-    plugins: [
-      typescript(config),
-      json({ compact: true, namedExports: true, preferConst: true }),
-      graphql(),
-      alias({
-        entries: [{ find: /^~\/(.*?)$/, replacement: config.rootDir.split(sep).join("/") + "/$1" }],
-      }),
-      _resolve({
-        extensions: config.extensions.client,
-        browser: true,
-        exportConditions: ["browser", "import", "require"],
-        mainFields: ["browser", "module", "main"],
-        preferBuiltins: false,
-      }),
-      commonjs({ extensions: [".js", ".cjs"], ignoreGlobal: true, sourceMap: false }),
-      typescriptTranspileModule({ target: ts.ScriptTarget.ES5, downlevelIteration: true }),
-      babel({
-        extensions: [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs"],
-        babelrc: false,
-        configFile: false,
-        compact: false,
-        exclude: [/\/node_modules\/(core-js|tslib)\//],
-        babelHelpers: "bundled",
-        sourceMaps: false,
-        presets: [[app, { target: "client", env: "production", nomodule: true } as AppOptions]],
-      }),
-      terser({ ecma: 5, safari10: true, module: true, compress: { passes: 10 } }),
-    ],
-  });
-
-  const output = await bundle.generate({
-    dir: config.dirname,
-    format: "module",
-    sourcemap: false,
-    compact: true,
-    minifyInternalExports: true,
-    preferConst: true,
-    entryFileNames: "[name]-[hash]-nomodule.js",
-    chunkFileNames: "[name]-[hash]-nomodule.js",
-  });
-
-  const entries = rename(output);
-  const files = Object.fromEntries(entries);
-  await bundle.close();
-  warnings.flush();
-
-  const _bundle = await rollup({
-    input: entries[0][0],
-    preserveEntrySignatures: false,
-    context: "self",
-    onwarn: warnings.add,
-    plugins: [vfs(files), terser({ ecma: 5, safari10: true, compress: { passes: 10 } })],
-  });
-
-  const _output = await _bundle.generate({
-    dir: config.dirname,
-    format: "system",
-    sourcemap: false,
-    compact: true,
-    minifyInternalExports: true,
-    preferConst: true,
-    entryFileNames: "[name].js",
-    chunkFileNames: "[name].js",
-  });
-
-  const _entries = rename(_output);
-  await _bundle.close();
-  warnings.flush();
-  return _entries;
+  // const bundle = await rollup({
+  //   input: config.client,
+  //   acornInjectPlugins: [jsx()],
+  //   external: [],
+  //   preserveEntrySignatures: false,
+  //   context: "self",
+  //   onwarn: warnings.add,
+  //   plugins: [
+  //     typescript(config),
+  //     json({ compact: true, namedExports: true, preferConst: true }),
+  //     graphql(),
+  //     alias({
+  //       entries: [{ find: /^~\/(.*?)$/, replacement: cwd.split(sep).join("/") + "/$1" }],
+  //     }),
+  //     _resolve({
+  //       extensions: config.clientExtensions,
+  //       browser: true,
+  //       exportConditions: ["browser", "import", "require"],
+  //       mainFields: ["browser", "module", "main"],
+  //       preferBuiltins: false,
+  //     }),
+  //     commonjs({ extensions: [".js", ".cjs"], ignoreGlobal: true, sourceMap: false }),
+  //     typescriptTranspileModule({ target: ts.ScriptTarget.ES5, downlevelIteration: true }),
+  //     babel({
+  //       extensions: [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs"],
+  //       babelrc: false,
+  //       configFile: false,
+  //       compact: false,
+  //       exclude: [/\/node_modules\/(core-js|tslib)\//],
+  //       babelHelpers: "bundled",
+  //       sourceMaps: false,
+  //       presets: [[app, { target: "client", env: "production", nomodule: true } as AppOptions]],
+  //     }),
+  //     terser({ ecma: 5, safari10: true, module: true, compress: { passes: 10 } }),
+  //   ],
+  // });
+  // const output = await bundle.generate({
+  //   dir: config.dirname,
+  //   format: "module",
+  //   sourcemap: false,
+  //   compact: true,
+  //   minifyInternalExports: true,
+  //   preferConst: true,
+  //   entryFileNames: "[name]-[hash]-nomodule.js",
+  //   chunkFileNames: "[name]-[hash]-nomodule.js",
+  // });
+  // const entries = rename(output);
+  // const files = Object.fromEntries(entries);
+  // await bundle.close();
+  // warnings.flush();
+  // const _bundle = await rollup({
+  //   input: entries[0][0],
+  //   preserveEntrySignatures: false,
+  //   context: "self",
+  //   onwarn: warnings.add,
+  //   plugins: [vfs(files), terser({ ecma: 5, safari10: true, compress: { passes: 10 } })],
+  // });
+  // const _output = await _bundle.generate({
+  //   dir: config.dirname,
+  //   format: "system",
+  //   sourcemap: false,
+  //   compact: true,
+  //   minifyInternalExports: true,
+  //   preferConst: true,
+  //   entryFileNames: "[name].js",
+  //   chunkFileNames: "[name].js",
+  // });
+  // const _entries = rename(_output);
+  // await _bundle.close();
+  // warnings.flush();
+  // return _entries;
 };

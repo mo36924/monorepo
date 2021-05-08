@@ -1,6 +1,7 @@
-import { readdirSync, readFileSync } from "fs";
-import { basename as _basename, dirname as _dirname, resolve as _resolve } from "path";
-import { fileURLToPath, pathToFileURL } from "url";
+import { readdirSync } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import type { Options as InjectOptions } from "@mo36924/babel-plugin-inject";
 import { cosmiconfigSync } from "cosmiconfig";
 
 type DatabaseConfig =
@@ -46,21 +47,22 @@ type DatabaseConfig =
 type DatabaseDevelopmentConfig = DatabaseConfig & { reset?: boolean };
 
 export type PartialConfig = {
-  env?: { [key: string]: string | undefined };
+  watch?: boolean;
+  mode?: "development" | "production";
   port?: number;
   devServerPort?: number;
-  watch?: boolean;
   client?: string;
   server?: string;
+  clientExtensions?: string[];
+  serverExtensions?: string[];
+  clientInject?: InjectOptions["declarations"];
+  serverInject?: InjectOptions["declarations"];
   main?: string;
   dirname?: string;
   basename?: string;
-  favicon?: string;
-  css?: string;
-  module?: string;
-  nomodule?: string;
   graphql?: string;
   page?: {
+    watch?: boolean;
     dir?: string;
     file?: string;
     include?: string[];
@@ -68,15 +70,6 @@ export type PartialConfig = {
   };
   database?: DatabaseConfig;
   databaseDevelopment?: DatabaseDevelopmentConfig;
-  extensions?: {
-    client?: string[];
-    server?: string[];
-  };
-  inject?: {
-    [name: string]: [source: string] | [source: string, name?: string];
-  };
-  filepath?: string | null;
-  rootDir?: string;
 };
 
 type DeepRequired<T> = Required<
@@ -86,169 +79,189 @@ type DeepRequired<T> = Required<
 >;
 
 export type Config = DeepRequired<PartialConfig>;
+const filename = fileURLToPath(import.meta.url);
+const rootDir = path.resolve(filename, "..", "..", "..", "..", "..");
+const moduleName = "app";
+const extensions = [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs", ".json"];
+const resolve = (...paths: string[]) => path.resolve(rootDir, ...paths);
 
-const _filename = fileURLToPath(import.meta.url);
-const _rootDir = _resolve(_filename, "..", "..", "..", "..", "..");
-const rootBasenames = readdirSync(_rootDir);
-const result = cosmiconfigSync("app", { stopDir: _rootDir }).search(_rootDir);
+const createObject = (...sources: InjectOptions["declarations"][]): Required<InjectOptions>["declarations"] =>
+  Object.assign(Object.fromEntries(Object.entries(Object.assign({}, ...sources)).filter((entry) => entry[1])));
 
-const cosmiconfig = {
-  ...(result?.config as PartialConfig),
-  filepath: result?.filepath ?? null,
-  rootDir: _rootDir,
-};
-
-export const env = Object.assign(process.env, cosmiconfig.env);
-export const port = parseInt(env.PORT!, 10) || cosmiconfig.port || 3000;
-export const devServerPort = parseInt(env.DEV_SERVER_PORT!, 10) || cosmiconfig.devServerPort || port + 1;
-
-const _extensions = [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs", ".json"];
-const pkg: { [key: string]: any } = {};
-const resolve = (path: string) => _resolve(_rootDir, path);
-const normalize = (path: string) => pathToFileURL(resolve(path)).pathname;
+const basenames: string[] = [];
 
 try {
-  Object.assign(pkg, JSON.parse(readFileSync(resolve("package.json"), "utf8")));
+  basenames.push(...readdirSync(resolve(moduleName)));
 } catch {}
 
-const extensionsClient =
-  cosmiconfig.extensions && Array.isArray(cosmiconfig.extensions.client)
-    ? cosmiconfig.extensions.client
-    : [..._extensions.map((extension) => `.client${extension}`), ..._extensions];
+const result = cosmiconfigSync(moduleName).search(rootDir);
+const config: PartialConfig = result?.config ?? {};
 
-const extensionsServer =
-  cosmiconfig.extensions && Array.isArray(cosmiconfig.extensions.server)
-    ? cosmiconfig.extensions.server
-    : [..._extensions.map((extension) => `.server${extension}`), ..._extensions, ".node"];
+export const watch = (process.env.NODE_ENV ?? config.mode) !== "production";
+export const mode = watch ? "development" : "production";
+export const port = parseInt(process.env.PORT!, 10) || config.port || 3000;
+export const devServerPort = parseInt(process.env.DEV_SERVER_PORT!, 10) || config.devServerPort || port + 1;
+export const clientExtensions = config.clientExtensions ?? [
+  ...extensions.map((extension) => `.client${extension}`),
+  ...extensions,
+];
+export const serverExtensions = config.serverExtensions ?? [
+  ...extensions.map((extension) => `.server${extension}`),
+  ...extensions,
+];
+export const client = config.client
+  ? resolve(config.client)
+  : resolve(
+      moduleName,
+      clientExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
+        "index.client.ts",
+    );
+export const server = config.server
+  ? resolve(config.server)
+  : resolve(
+      moduleName,
+      serverExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
+        "index.ts",
+    );
 
-const cosmiconfigDatabase = cosmiconfig.database ?? { name: "postgres" };
-const cosmiconfigDatabaseDevelopment = cosmiconfig.databaseDevelopment ?? { name: "postgres" };
-const reset = cosmiconfigDatabaseDevelopment.reset ?? true;
-let configDatabase: Config["database"];
-let configDatabaseDevelopment: Config["databaseDevelopment"];
-
-if (cosmiconfigDatabase.name === "mysql") {
-  const name = cosmiconfigDatabase.name;
-
-  const main = cosmiconfigDatabase.main ?? {
-    host: "127.0.0.1",
-    port: 3306,
-    user: "production",
-    password: "production",
-    database: "production",
-  };
-
-  const replica = cosmiconfigDatabase.replica ?? [main];
-  configDatabase = { name, main, replica };
-} else {
-  const name = cosmiconfigDatabase.name;
-
-  const main = cosmiconfigDatabase.main ?? {
-    host: "127.0.0.1",
-    port: 5432,
-    user: "production",
-    password: "production",
-    database: "production",
-  };
-
-  const replica = cosmiconfigDatabase.replica ?? [main];
-  configDatabase = { name, main, replica };
-}
-
-if (cosmiconfigDatabaseDevelopment.name === "mysql") {
-  const name = cosmiconfigDatabaseDevelopment.name;
-
-  const main = cosmiconfigDatabaseDevelopment.main ?? {
-    host: "127.0.0.1",
-    port: 3306,
-    user: "development",
-    password: "development",
-    database: "development",
-  };
-
-  const replica = cosmiconfigDatabaseDevelopment.replica ?? [main];
-  configDatabaseDevelopment = { name, main, replica, reset };
-} else {
-  const name = cosmiconfigDatabaseDevelopment.name;
-
-  const main = cosmiconfigDatabaseDevelopment.main ?? {
-    host: "127.0.0.1",
-    port: 5432,
-    user: "development",
-    password: "development",
-    database: "development",
-  };
-
-  const replica = cosmiconfigDatabaseDevelopment.replica ?? [main];
-  configDatabaseDevelopment = { name, main, replica, reset };
-}
-
-const _watch = cosmiconfig?.watch ?? env.NODE_ENV !== "production";
-
-const _client =
-  cosmiconfig.client ??
-  extensionsClient.filter((extname) => `index${extname}`).find((basename) => rootBasenames.includes(basename)) ??
-  "index.client.ts";
-
-const _server =
-  cosmiconfig.client ??
-  extensionsServer.filter((extname) => `index${extname}`).find((basename) => rootBasenames.includes(basename)) ??
-  "index.ts";
-
-const _main = resolve(pkg.main ?? "dist/index.js");
-
-const config: Config = {
-  env,
-  port,
-  devServerPort,
-  watch: _watch,
-  client: resolve(_client),
-  server: resolve(_server),
-  main: resolve(_main),
-  dirname: _dirname(_main),
-  basename: _basename(_main),
-  favicon: normalize(cosmiconfig.favicon ?? "favicon.ico"),
-  css: normalize(cosmiconfig.css ?? "index.css"),
-  module: normalize(cosmiconfig.module ?? _client),
-  nomodule: normalize(cosmiconfig.nomodule ?? _client),
-  graphql: resolve(cosmiconfig.graphql ?? "index.gql"),
-  page: {
-    dir: resolve(cosmiconfig.page?.dir ?? "pages"),
-    file: resolve(cosmiconfig.page?.file ?? "lib/pages.ts"),
-    include: cosmiconfig.page?.include ?? ["**/*.tsx"],
-    exclude: cosmiconfig.page?.exclude ?? ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
-  },
-  database: configDatabase,
-  databaseDevelopment: configDatabaseDevelopment,
-  extensions: {
-    client: extensionsClient,
-    server: extensionsServer,
-  },
-  inject: {
-    ...cosmiconfig.inject,
-  },
-  filepath: cosmiconfig.filepath,
-  rootDir: cosmiconfig.rootDir,
+const inject: InjectOptions["declarations"] = {
+  Body: ["@mo36924/components", "Body"],
+  Head: ["@mo36924/components", "Head"],
+  Html: ["@mo36924/components", "Html"],
+  Title: ["@mo36924/components", "Title"],
+  useQuery: ["@mo36924/graphql-react", "useQuery"],
+  hydrate: ["@mo36924/hydrate", "default"],
+  pageMatch: ["@mo36924/page-match", "default"],
+  pages: ["@mo36924/pages", "default"],
+  Children: ["react", "Children"],
+  Component: ["react", "Component"],
+  Fragment: ["react", "Fragment"],
+  PureComponent: ["react", "PureComponent"],
+  StrictMode: ["react", "StrictMode"],
+  Suspense: ["react", "Suspense"],
+  cloneElement: ["react", "cloneElement"],
+  createContext: ["react", "createContext"],
+  createElement: ["react", "createElement"],
+  createFactory: ["react", "createFactory"],
+  createRef: ["react", "createRef"],
+  forwardRef: ["react", "forwardRef"],
+  isValidElement: ["react", "isValidElement"],
+  lazy: ["react", "lazy"],
+  memo: ["react", "memo"],
+  useCallback: ["react", "useCallback"],
+  useContext: ["react", "useContext"],
+  useDebugValue: ["react", "useDebugValue"],
+  useEffect: ["react", "useEffect"],
+  useImperativeHandle: ["react", "useImperativeHandle"],
+  useLayoutEffect: ["react", "useLayoutEffect"],
+  useMemo: ["react", "useMemo"],
+  useReducer: ["react", "useReducer"],
+  useRef: ["react", "useRef"],
+  useState: ["react", "useState"],
+  createPortal: ["react-dom", "createPortal"],
+  findDOMNode: ["react-dom", "findDOMNode"],
+  render: ["react-dom", "render"],
+  unmountComponentAtNode: ["react-dom", "unmountComponentAtNode"],
+  renderToStaticMarkup: ["react-dom/server", "renderToStaticMarkup"],
+  renderToString: ["react-dom/server", "renderToString"],
 };
 
-export default config;
-export const {
+export const clientInject = createObject(inject, config.clientInject);
+export const serverInject = createObject(inject, config.serverInject);
+export const main = "./dist/index.js";
+export const dirname = path.dirname(main);
+export const basename = path.basename(main);
+export const graphql = resolve(config.graphql ?? "./graphql/index.gql");
+export const page: Config["page"] = {
   watch,
+  dir: resolve(config.page?.dir ?? "pages"),
+  file: resolve(config.page?.file ?? `${moduleName}/pages.ts`),
+  include: config.page?.include ?? ["**/*.tsx"],
+  exclude: config.page?.exclude ?? ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
+};
+
+const configDatabase = config.database ?? { name: "postgres" };
+const configDatabaseDevelopment = config.databaseDevelopment ?? { name: "postgres" };
+const reset = configDatabaseDevelopment.reset ?? true;
+
+let _database: Config["database"];
+let _databaseDevelopment: Config["databaseDevelopment"];
+
+if (configDatabase.name === "mysql") {
+  const name = configDatabase.name;
+
+  const main = configDatabase.main ?? {
+    host: "127.0.0.1",
+    port: 3306,
+    user: "production",
+    password: "production",
+    database: "production",
+  };
+
+  const replica = configDatabase.replica ?? [main];
+  _database = { name, main, replica };
+} else {
+  const name = configDatabase.name;
+
+  const main = configDatabase.main ?? {
+    host: "127.0.0.1",
+    port: 5432,
+    user: "production",
+    password: "production",
+    database: "production",
+  };
+
+  const replica = configDatabase.replica ?? [main];
+  _database = { name, main, replica };
+}
+
+if (configDatabaseDevelopment.name === "mysql") {
+  const name = configDatabaseDevelopment.name;
+
+  const main = configDatabaseDevelopment.main ?? {
+    host: "127.0.0.1",
+    port: 3306,
+    user: "development",
+    password: "development",
+    database: "development",
+  };
+
+  const replica = configDatabaseDevelopment.replica ?? [main];
+  _databaseDevelopment = { name, main, replica, reset };
+} else {
+  const name = configDatabaseDevelopment.name;
+
+  const main = configDatabaseDevelopment.main ?? {
+    host: "127.0.0.1",
+    port: 5432,
+    user: "development",
+    password: "development",
+    database: "development",
+  };
+
+  const replica = configDatabaseDevelopment.replica ?? [main];
+  _databaseDevelopment = { name, main, replica, reset };
+}
+
+export const database = _database;
+export const databaseDevelopment = _databaseDevelopment;
+
+export default {
+  watch,
+  mode,
+  port,
+  devServerPort,
   client,
   server,
+  clientExtensions,
+  serverExtensions,
+  clientInject,
+  serverInject,
   main,
   dirname,
   basename,
-  favicon,
-  css,
-  module,
-  nomodule,
   graphql,
   page,
   database,
   databaseDevelopment,
-  extensions,
-  inject,
-  filepath,
-  rootDir,
-} = config;
+} as Config;

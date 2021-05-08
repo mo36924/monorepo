@@ -3,6 +3,7 @@ import { resolve } from "path";
 import { fileURLToPath } from "url";
 import { transformAsync } from "@babel/core";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
+import type { Config } from "@mo36924/config";
 import type { MiddlewareFactory } from "@mo36924/http-server";
 import ts from "typescript";
 import { formatDiagnosticsHost } from "../util";
@@ -10,9 +11,9 @@ import type { Cache } from "./cache";
 
 const extensions = [".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx"];
 
-type Options = { cache: Cache } & Pick<AppOptions, "inject">;
+type Options = { cache: Cache } & Pick<Config, "clientInject" | "serverInject">;
 
-export default ({ cache, inject }: Options): MiddlewareFactory => () => {
+export default ({ cache, clientInject, serverInject }: Options): MiddlewareFactory => () => {
   const tsconfigPath = resolve("tsconfig.json");
   const tsBuildInfoPath = resolve("tsconfig.tsbuildinfo");
 
@@ -60,7 +61,9 @@ export default ({ cache, inject }: Options): MiddlewareFactory => () => {
     }
 
     const path = fileURLToPath(new URL(req._url, "file:///"));
-    const target = req.userAgent ? "client" : "server";
+    const isClient = !!req.userAgent;
+    const target = isClient ? "client" : "server";
+    const inject = isClient ? clientInject : serverInject;
     const javascriptCache = cache.javascript[target];
 
     if (path in javascriptCache) {

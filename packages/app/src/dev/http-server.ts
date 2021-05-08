@@ -10,18 +10,20 @@ import css from "./css";
 import graphql from "./graphql";
 import javascript from "./javascript";
 import json from "./json";
+import pathname from "./pathname";
 import sse from "./sse";
 
-export default async ({ server, inject, port, devServerPort }: Config) => {
+export default async ({ server, clientInject, serverInject, port, devServerPort }: Config) => {
   const cache = await createCache();
   const httpServer = createServer();
 
   httpServer.use(
     sse(),
+    pathname(),
     css({ cache }),
     graphql({ cache }),
     json({ cache }),
-    javascript({ cache, inject }),
+    javascript({ cache, clientInject, serverInject }),
     proxy({ target: `http://localhost:${port}}` }),
   );
 

@@ -18,12 +18,13 @@ import jsx from "acorn-jsx";
 import { rollup } from "rollup";
 import { terser } from "rollup-plugin-terser";
 import css from "./css";
-import favicon from "./favicon";
 import _module from "./module";
 import nomodule from "./nomodule";
 import rename from "./rename";
 import typescript from "./typescript-plugin";
 import warnings from "./warnings";
+
+const cwd = process.cwd();
 
 const server = async (config: Config) => {
   const bundle = await rollup({
@@ -47,7 +48,7 @@ const server = async (config: Config) => {
         entries: [{ find: /^~\/(.*?)$/, replacement: process.cwd().split(sep).join("/") + "/$1" }],
       }),
       _resolve({
-        extensions: config.extensions.server,
+        extensions: config.serverExtensions,
         browser: false,
         exportConditions: ["import", "require"],
         mainFields: ["module", "main"],
@@ -93,17 +94,16 @@ const server = async (config: Config) => {
 };
 
 export default async (config: Config) => {
-  const _favicon = await favicon(config);
   const __module = await _module(config);
   const _nomodule = await nomodule(config);
   const _server = await server(config);
 
   const _css = await css(
     config,
-    [...__module, ..._nomodule, ..._server].map(([, data]) => ({ extension: "js", raw: data })),
+    [..._server].map(([, data]) => ({ extension: "js", raw: data })),
   );
 
-  const files = Object.fromEntries<string | Buffer>([_favicon, ...__module, ..._nomodule]);
+  const files = Object.fromEntries<string | Buffer>([]);
 
   const bundle = await rollup({
     input: config.server,
@@ -116,22 +116,21 @@ export default async (config: Config) => {
       _static(),
       prebuild(["readable-stream", ["pg", "pg-pool"]]),
       replaceModule({ "pg-native": "module.exports = {};" }),
-      _config({
-        favicon: `/${_favicon[0]}`,
-        css: `/${_css[0]}`,
-        module: `/${__module[0][0]}`,
-        nomodule: `/${_nomodule[0][0]}`,
-      }),
+      // _config({
+      //   css: `/${_css[0]}`,
+      //   module: `/${__module[0][0]}`,
+      //   nomodule: `/${_nomodule[0][0]}`,
+      // }),
       cache({ files }),
       typescript(config),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
       graphqlSchema(config),
       alias({
-        entries: [{ find: /^~\/(.*?)$/, replacement: config.rootDir.split(sep).join("/") + "/$1" }],
+        entries: [{ find: /^~\/(.*?)$/, replacement: cwd.split(sep).join("/") + "/$1" }],
       }),
       _resolve({
-        extensions: config.extensions.server,
+        extensions: config.serverExtensions,
         browser: false,
         exportConditions: ["import", "require"],
         mainFields: ["module", "main"],

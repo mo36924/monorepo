@@ -12,7 +12,7 @@ export default async (
   content?: { extension: string; raw: string }[],
 ): Promise<[path: string, data: string]> => {
   let css: string;
-  const path = fileURLToPath(`file://${config.css}`);
+  const path = fileURLToPath(`file://aaa`);
 
   try {
     css = await readFile(path, "utf8");

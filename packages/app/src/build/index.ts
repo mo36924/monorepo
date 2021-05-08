@@ -1,6 +1,6 @@
 import type { Config } from "@mo36924/config";
-import server from "./server";
+import rollup from "./rollup";
 
 export default async (config: Config) => {
-  await server(config);
+  await rollup(config);
 };

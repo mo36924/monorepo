@@ -4,7 +4,7 @@ import hash from "./hash";
 
 export default async (config: Config): Promise<[path: string, data: Buffer]> => {
   try {
-    const data = await readFile(`file://${config.favicon}`);
+    const data = await readFile(`file://aaa`);
     return [`${hash(data)}.ico`, data];
   } catch {
     return ["favicon.ico", Buffer.from([])];
