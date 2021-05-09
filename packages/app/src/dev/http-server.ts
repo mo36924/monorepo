@@ -24,7 +24,7 @@ export default async ({ main, clientInject, serverInject, port, devServerPort }:
     graphql({ cache }),
     json({ cache }),
     javascript({ cache, clientInject, serverInject }),
-    proxy({ target: `http://127.0.0.1:${port}}` }),
+    proxy({ target: `http://127.0.0.1:${port}` }),
   );
 
   await httpServer.listen(devServerPort);
