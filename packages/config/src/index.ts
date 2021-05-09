@@ -53,8 +53,7 @@ export type PartialConfig = {
   devServerPort?: number;
   clientExtensions?: string[];
   serverExtensions?: string[];
-  clientInject?: InjectOptions["declarations"];
-  serverInject?: InjectOptions["declarations"];
+  inject?: InjectOptions["declarations"];
   main?: string;
   dirname?: string;
   basename?: string;
@@ -107,51 +106,51 @@ export const serverExtensions = config.serverExtensions ?? [
   ...extensions.map((extension) => `.server${extension}`),
   ...extensions,
 ];
-
-const inject: InjectOptions["declarations"] = {
-  Body: ["@mo36924/components", "Body"],
-  Head: ["@mo36924/components", "Head"],
-  Html: ["@mo36924/components", "Html"],
-  Title: ["@mo36924/components", "Title"],
-  useQuery: ["@mo36924/graphql-react", "useQuery"],
-  hydrate: ["@mo36924/hydrate", "default"],
-  pageMatch: ["@mo36924/page-match", "default"],
-  pages: ["@mo36924/pages", "default"],
-  Children: ["react", "Children"],
-  Component: ["react", "Component"],
-  Fragment: ["react", "Fragment"],
-  PureComponent: ["react", "PureComponent"],
-  StrictMode: ["react", "StrictMode"],
-  Suspense: ["react", "Suspense"],
-  cloneElement: ["react", "cloneElement"],
-  createContext: ["react", "createContext"],
-  createElement: ["react", "createElement"],
-  createFactory: ["react", "createFactory"],
-  createRef: ["react", "createRef"],
-  forwardRef: ["react", "forwardRef"],
-  isValidElement: ["react", "isValidElement"],
-  lazy: ["react", "lazy"],
-  memo: ["react", "memo"],
-  useCallback: ["react", "useCallback"],
-  useContext: ["react", "useContext"],
-  useDebugValue: ["react", "useDebugValue"],
-  useEffect: ["react", "useEffect"],
-  useImperativeHandle: ["react", "useImperativeHandle"],
-  useLayoutEffect: ["react", "useLayoutEffect"],
-  useMemo: ["react", "useMemo"],
-  useReducer: ["react", "useReducer"],
-  useRef: ["react", "useRef"],
-  useState: ["react", "useState"],
-  createPortal: ["react-dom", "createPortal"],
-  findDOMNode: ["react-dom", "findDOMNode"],
-  render: ["react-dom", "render"],
-  unmountComponentAtNode: ["react-dom", "unmountComponentAtNode"],
-  renderToStaticMarkup: ["react-dom/server", "renderToStaticMarkup"],
-  renderToString: ["react-dom/server", "renderToString"],
-};
-
-export const clientInject = createObject(inject, config.clientInject);
-export const serverInject = createObject(inject, config.serverInject);
+export const inject: InjectOptions["declarations"] = createObject(
+  {
+    Body: ["@mo36924/components", "Body"],
+    Head: ["@mo36924/components", "Head"],
+    Html: ["@mo36924/components", "Html"],
+    Script: ["@mo36924/components", "Script"],
+    Title: ["@mo36924/components", "Title"],
+    useQuery: ["@mo36924/graphql-react", "useQuery"],
+    hydrate: ["@mo36924/hydrate", "default"],
+    pageMatch: ["@mo36924/page-match", "default"],
+    pages: ["@mo36924/pages", "default"],
+    Children: ["react", "Children"],
+    Component: ["react", "Component"],
+    Fragment: ["react", "Fragment"],
+    PureComponent: ["react", "PureComponent"],
+    StrictMode: ["react", "StrictMode"],
+    Suspense: ["react", "Suspense"],
+    cloneElement: ["react", "cloneElement"],
+    createContext: ["react", "createContext"],
+    createElement: ["react", "createElement"],
+    createFactory: ["react", "createFactory"],
+    createRef: ["react", "createRef"],
+    forwardRef: ["react", "forwardRef"],
+    isValidElement: ["react", "isValidElement"],
+    lazy: ["react", "lazy"],
+    memo: ["react", "memo"],
+    useCallback: ["react", "useCallback"],
+    useContext: ["react", "useContext"],
+    useDebugValue: ["react", "useDebugValue"],
+    useEffect: ["react", "useEffect"],
+    useImperativeHandle: ["react", "useImperativeHandle"],
+    useLayoutEffect: ["react", "useLayoutEffect"],
+    useMemo: ["react", "useMemo"],
+    useReducer: ["react", "useReducer"],
+    useRef: ["react", "useRef"],
+    useState: ["react", "useState"],
+    createPortal: ["react-dom", "createPortal"],
+    findDOMNode: ["react-dom", "findDOMNode"],
+    render: ["react-dom", "render"],
+    unmountComponentAtNode: ["react-dom", "unmountComponentAtNode"],
+    renderToStaticMarkup: ["react-dom/server", "renderToStaticMarkup"],
+    renderToString: ["react-dom/server", "renderToString"],
+  },
+  config.inject,
+);
 export const main = config.main
   ? resolve(config.main)
   : resolve(
@@ -169,11 +168,9 @@ export const page: Config["page"] = {
   include: config.page?.include ?? ["**/*.tsx"],
   exclude: config.page?.exclude ?? ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
-
 const configDatabase = config.database ?? { name: "postgres" };
 const configDatabaseDevelopment = config.databaseDevelopment ?? { name: "postgres" };
 const reset = configDatabaseDevelopment.reset ?? true;
-
 let _database: Config["database"];
 let _databaseDevelopment: Config["databaseDevelopment"];
 
@@ -235,7 +232,6 @@ if (configDatabaseDevelopment.name === "mysql") {
 
 export const database = _database;
 export const databaseDevelopment = _databaseDevelopment;
-
 export default {
   watch,
   mode,
@@ -243,8 +239,7 @@ export default {
   devServerPort,
   clientExtensions,
   serverExtensions,
-  clientInject,
-  serverInject,
+  inject,
   main,
   dirname,
   basename,

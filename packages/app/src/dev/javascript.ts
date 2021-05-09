@@ -11,9 +11,9 @@ import type { Cache } from "./cache";
 
 const extensions = [".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx"];
 
-type Options = { cache: Cache } & Pick<Config, "clientInject" | "serverInject">;
+type Options = { cache: Cache } & Pick<Config, "inject">;
 
-export default ({ cache, clientInject, serverInject }: Options): MiddlewareFactory => () => {
+export default ({ cache, inject }: Options): MiddlewareFactory => () => {
   const tsconfigPath = resolve("tsconfig.json");
   const tsBuildInfoPath = resolve("tsconfig.tsbuildinfo");
 
@@ -63,7 +63,6 @@ export default ({ cache, clientInject, serverInject }: Options): MiddlewareFacto
     const path = fileURLToPath(new URL(req._url, "file:///"));
     const isClient = !!req.userAgent;
     const target = isClient ? "client" : "server";
-    const inject = isClient ? clientInject : serverInject;
     const javascriptCache = cache.javascript[target];
 
     if (path in javascriptCache) {

@@ -13,7 +13,7 @@ import json from "./json";
 import pathname from "./pathname";
 import sse from "./sse";
 
-export default async ({ main, clientInject, serverInject, port, devServerPort }: Config) => {
+export default async ({ main, inject, port, devServerPort }: Config) => {
   const cache = await createCache();
   const httpServer = createServer();
 
@@ -23,7 +23,7 @@ export default async ({ main, clientInject, serverInject, port, devServerPort }:
     css({ cache }),
     graphql({ cache }),
     json({ cache }),
-    javascript({ cache, clientInject, serverInject }),
+    javascript({ cache, inject }),
     proxy({ target: `http://127.0.0.1:${port}` }),
   );
 
