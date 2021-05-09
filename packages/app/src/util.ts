@@ -12,9 +12,13 @@ export const read = async (path: string) => {
 
 export const write = async (path: string, data: string) => {
   try {
-    await mkdir(dirname(path));
     await writeFile(path, data);
-  } catch {}
+  } catch {
+    try {
+      await mkdir(dirname(path));
+      await writeFile(path, data);
+    } catch {}
+  }
 };
 
 export const writeWithFormat = async (path: string, data: string) => {

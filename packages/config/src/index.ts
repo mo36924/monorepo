@@ -2,6 +2,7 @@ import { readdirSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import type { Options as InjectOptions } from "@mo36924/babel-plugin-inject";
+import type { Options as PageGeneratorOptions } from "@mo36924/page-generator";
 import { cosmiconfigSync } from "cosmiconfig";
 
 type DatabaseConfig =
@@ -58,13 +59,7 @@ export type PartialConfig = {
   dirname?: string;
   basename?: string;
   graphql?: string;
-  page?: {
-    watch?: boolean;
-    dir?: string;
-    file?: string;
-    include?: string[];
-    exclude?: string[];
-  };
+  page?: PageGeneratorOptions;
   database?: DatabaseConfig;
   databaseDevelopment?: DatabaseDevelopmentConfig;
 };
@@ -165,6 +160,7 @@ export const page: Config["page"] = {
   watch,
   dir: resolve(config.page?.dir ?? "pages"),
   file: resolve(config.page?.file ?? `${moduleName}/pages.ts`),
+  template: resolve(config.page?.template ?? `${moduleName}/pages.template.ts`),
   include: config.page?.include ?? ["**/*.tsx"],
   exclude: config.page?.exclude ?? ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };

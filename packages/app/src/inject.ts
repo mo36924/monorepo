@@ -21,6 +21,6 @@ export default async (config: Config) => {
     globalType += `const ${identifier}: typeof _${identifier};`;
   }
 
-  const type = `${importType}declare global{${globalType}}`;
+  const type = `${importType}\n\ndeclare global{${globalType}}`;
   await writeWithFormat("types/inject.d.ts", type);
 };

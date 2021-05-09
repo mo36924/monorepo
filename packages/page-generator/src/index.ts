@@ -8,6 +8,7 @@ export type Options = {
   watch?: boolean;
   dir?: string;
   file?: string;
+  template?: string;
   include?: string[];
   exclude?: string[];
 };
@@ -16,18 +17,33 @@ const defaultOptions: Required<Options> = {
   watch: process.env.NODE_ENV !== "production",
   dir: "pages",
   file: "lib/pages.ts",
+  template: "lib/pages.template.ts",
   include: ["**/*.tsx"],
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
 
+const defaultTemplate = `
+import type { PromisePageModule } from "@mo36924/page";
+
+export const staticPages = {
+  /*staticPages*/
+};
+export const dynamicPages = [
+  /*dynamicPages*/
+];
+export const errorPages = {
+  /*errorPages*/
+};
+export const match = pageMatch(staticPages, dynamicPages);
+`;
+
 export default async (options?: Options) => {
-  const { watch: watchMode, dir, file, include, exclude } = {
+  const { watch: watchMode, dir, file, template, include, exclude } = {
     ...defaultOptions,
     ...options,
   };
 
   await Promise.all([mkdir(dir, { recursive: true }), mkdir(dirname(file), { recursive: true })]);
-
   const watcher = watch(include, { cwd: dir, ignored: exclude });
   await once(watcher, "ready");
   await generate();
@@ -156,18 +172,16 @@ export default async (options?: Options) => {
       }
     }
 
-    let code = `
-      export const staticPages = {
-        ${staticPages.join()}
-      };
-      export const dynamicPages = [
-        ${dynamicPages.join()}
-      ];
-      export const errorPages = {
-        ${errorPages.join()}
-      };
-      export const match = pageMatch(staticPages, dynamicPages);
-    `;
+    let code = defaultTemplate;
+
+    try {
+      code = await readFile(template, "utf8");
+    } catch {}
+
+    code = code
+      .replace("/*staticPages*/", staticPages.join())
+      .replace("/*dynamicPages*/", dynamicPages.join())
+      .replace("/*errorPages*/", errorPages.join());
 
     code = await format(code, file);
     await writeFileAsync(file, code);
