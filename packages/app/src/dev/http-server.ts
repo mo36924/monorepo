@@ -4,7 +4,6 @@ import { Worker } from "worker_threads";
 import type { Config } from "@mo36924/config";
 import proxy from "@mo36924/http-proxy";
 import { createServer } from "@mo36924/http-server";
-import redirect from "@mo36924/redirect-middleware";
 import { bold, green, red } from "colorette";
 import createCache from "./cache";
 import css from "./css";
@@ -21,7 +20,6 @@ export default async ({ main, clientInject, serverInject, port, devServerPort }:
   httpServer.use(
     sse(),
     pathname(),
-    redirect({ "/": pathToFileURL(main).pathname }),
     css({ cache }),
     graphql({ cache }),
     json({ cache }),
@@ -35,7 +33,9 @@ export default async ({ main, clientInject, serverInject, port, devServerPort }:
   const { filename } = await import("./loader");
 
   const exec = () => {
-    const worker = new Worker(main, {
+    const url = new URL(`data:text/javascript,import(${JSON.stringify(pathToFileURL(main))});`);
+
+    const worker = new Worker(url, {
       execArgv: ["--experimental-loader", filename],
       env: { ...process.env, PORT: `${port}` },
       workerData: { devServerUrl },

@@ -60,7 +60,7 @@ export class Server {
             result = await result;
           }
 
-          if (result) {
+          if (result || response.writableEnded) {
             return;
           }
         }

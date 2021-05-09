@@ -46,7 +46,6 @@
     "@mo36924/postgres-escape": "^1.3.46",
     "@mo36924/prettier": "^1.3.46",
     "@mo36924/promise-exec": "^1.3.48",
-    "@mo36924/redirect-middleware": "^1.3.55",
     "@mo36924/retry": "^1.3.48",
     "@mo36924/rollup-plugin-cache": "^1.3.55",
     "@mo36924/rollup-plugin-commonjs-prebuild": "^1.3.48",
