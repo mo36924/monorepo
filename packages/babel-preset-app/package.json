@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/babel-preset-app",
-  "version": "1.3.54",
+  "version": "1.3.59",
   "description": "babel-preset-app",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -34,7 +34,7 @@
     "@mo36924/babel-plugin-commonjs": "^1.3.46",
     "@mo36924/babel-plugin-dead-code-elimination": "^1.3.46",
     "@mo36924/babel-plugin-iife-unwrap": "^1.3.46",
-    "@mo36924/babel-plugin-inject": "^1.3.46",
+    "@mo36924/babel-plugin-inject": "^1.3.59",
     "@mo36924/babel-plugin-jsx-development": "^1.3.54",
     "@mo36924/babel-plugin-replace": "^1.3.46",
     "@mo36924/babel-plugin-resolve": "^1.3.46",
