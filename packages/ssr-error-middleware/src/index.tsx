@@ -40,6 +40,5 @@ export default (errorPages: { [statusCode: string]: () => PromisePageModule<any>
 
     await prepass(element);
     await response.send("<!DOCTYPE html>" + renderToString(element));
-    return true;
   };
 };

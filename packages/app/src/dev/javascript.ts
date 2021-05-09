@@ -67,7 +67,7 @@ export default ({ cache, clientInject, serverInject }: Options): MiddlewareFacto
     const javascriptCache = cache.javascript[target];
 
     if (path in javascriptCache) {
-      await res.send(javascriptCache[path], "js");
+      await res.type("js").send(javascriptCache[path]);
       return;
     }
 
@@ -95,6 +95,6 @@ export default ({ cache, clientInject, serverInject }: Options): MiddlewareFacto
       "base64",
     )}`;
 
-    await res.send(code, "js");
+    await res.type("js").send(code);
   };
 };

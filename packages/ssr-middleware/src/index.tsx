@@ -26,5 +26,4 @@ export default (match: Match): MiddlewareFactory => () => async (request, respon
 
   await prepass(element);
   await response.send("<!DOCTYPE html>" + renderToString(element));
-  return true;
 };

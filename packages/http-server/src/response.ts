@@ -11,28 +11,6 @@ const gzip = promisify(gzipCompress);
 
 export class Response extends ServerResponse {
   request!: Request;
-  _type!: string | null;
-  get type() {
-    if (this._type === null) {
-      let type: string | false = this.request.types[0];
-
-      if (!type || type.includes("*")) {
-        type = lookup(this.request.extname);
-      }
-
-      if (type) {
-        type = contentType(type);
-      }
-
-      if (!type) {
-        type = "text/plain; charset=utf-8";
-      }
-
-      this._type = type;
-    }
-
-    return this._type;
-  }
   redirect(url: string): void;
   redirect(statusCode: number, url: string): void;
   redirect(statusCode: any, url?: any) {
@@ -49,10 +27,49 @@ export class Response extends ServerResponse {
     this.setHeader("location", encodeUrl(url));
     this.end();
   }
-  set type(value: string) {
-    this._type = contentType(value) || null;
+  type(value?: string | null) {
+    switch (value) {
+      case null:
+      case "":
+        this.removeHeader("content-type");
+        break;
+      case undefined:
+        if (!this.hasHeader("content-type")) {
+          let type: string | false = this.request.types[0];
+
+          if (!type || type.includes("*")) {
+            type = lookup(this.request.extname);
+          }
+
+          if (type) {
+            type = contentType(type);
+          }
+
+          if (!type) {
+            type = "text/plain; charset=utf-8";
+          }
+
+          if (type) {
+            this.setHeader("content-type", type);
+          }
+        }
+
+        break;
+      default:
+        if (typeof value === "string") {
+          const type = contentType(value);
+
+          if (type) {
+            this.setHeader("content-type", type);
+          }
+        }
+
+        break;
+    }
+
+    return this;
   }
-  async send(data: string | Buffer, type?: string) {
+  async send(data: string | Buffer) {
     if (typeof data === "string") {
       data = Buffer.from(data, "utf8");
     }
@@ -77,7 +94,7 @@ export class Response extends ServerResponse {
       this.setHeader("content-encoding", "gzip");
     }
 
-    this.setHeader("content-type", (type && contentType(type)) || this.type);
+    this.type();
     this.setHeader("content-length", data.length.toString());
     this.end(data);
   }
@@ -87,4 +104,3 @@ export class Response extends ServerResponse {
 }
 
 Response.prototype.request = null as any;
-Response.prototype._type = null;

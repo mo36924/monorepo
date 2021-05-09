@@ -14,7 +14,7 @@ export default ({ cache }: { cache: Cache }): MiddlewareFactory => () => async (
   const path = fileURLToPath(new URL(req._url, "file:///"));
 
   if (path in cache.json.script) {
-    await res.send(cache.json.script[path], "js");
+    await res.type("js").send(cache.json.script[path]);
     return;
   }
 
@@ -37,5 +37,5 @@ export default ({ cache }: { cache: Cache }): MiddlewareFactory => () => async (
     json = `export default ${JSON.stringify(obj, null, 2)};`;
   }
 
-  await res.send(json, "js");
+  await res.type("js").send(json);
 };

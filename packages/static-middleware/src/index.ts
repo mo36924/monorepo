@@ -17,6 +17,5 @@ export default (): MiddlewareFactory => () => {
     }
 
     await response.send(data);
-    return true;
   };
 };

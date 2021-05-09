@@ -12,7 +12,7 @@ export default ({ cache }: { cache: Cache }): MiddlewareFactory => () => async (
   const path = fileURLToPath(new URL(req._url, "file:///"));
 
   if (path in cache.graphql.script) {
-    await res.send(cache.graphql.script[path], "js");
+    await res.type("js").send(cache.graphql.script[path]);
     return;
   }
 
@@ -22,5 +22,5 @@ export default ({ cache }: { cache: Cache }): MiddlewareFactory => () => async (
   const value = json.includes("'") ? JSON.stringify(json) : `'${json}'`;
   const result = `export default JSON.parse(${value});`;
   cache.graphql.script[path] = result;
-  await res.send(result, "js");
+  await res.type("js").send(result);
 };
