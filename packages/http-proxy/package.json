@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/http-proxy",
-  "version": "1.3.56",
+  "version": "1.3.58",
   "description": "http-proxy",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -26,7 +26,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/http-server": "^1.3.56",
+    "@mo36924/http-server": "^1.3.58",
     "http-proxy": "^1.18.1"
   }
 }
