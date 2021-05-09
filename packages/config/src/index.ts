@@ -51,8 +51,6 @@ export type PartialConfig = {
   mode?: "development" | "production";
   port?: number;
   devServerPort?: number;
-  client?: string;
-  server?: string;
   clientExtensions?: string[];
   serverExtensions?: string[];
   clientInject?: InjectOptions["declarations"];
@@ -109,20 +107,6 @@ export const serverExtensions = config.serverExtensions ?? [
   ...extensions.map((extension) => `.server${extension}`),
   ...extensions,
 ];
-export const client = config.client
-  ? resolve(config.client)
-  : resolve(
-      moduleName,
-      clientExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
-        "index.client.ts",
-    );
-export const server = config.server
-  ? resolve(config.server)
-  : resolve(
-      moduleName,
-      serverExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
-        "index.ts",
-    );
 
 const inject: InjectOptions["declarations"] = {
   Body: ["@mo36924/components", "Body"],
@@ -168,7 +152,13 @@ const inject: InjectOptions["declarations"] = {
 
 export const clientInject = createObject(inject, config.clientInject);
 export const serverInject = createObject(inject, config.serverInject);
-export const main = "./dist/index.js";
+export const main = config.main
+  ? resolve(config.main)
+  : resolve(
+      moduleName,
+      serverExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
+        "index.ts",
+    );
 export const dirname = path.dirname(main);
 export const basename = path.basename(main);
 export const graphql = resolve(config.graphql ?? "./graphql/index.gql");
@@ -251,8 +241,6 @@ export default {
   mode,
   port,
   devServerPort,
-  client,
-  server,
   clientExtensions,
   serverExtensions,
   clientInject,

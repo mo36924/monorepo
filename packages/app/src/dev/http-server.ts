@@ -1,10 +1,11 @@
+import { unwatchFile, watchFile } from "fs";
 import { pathToFileURL } from "url";
 import { Worker } from "worker_threads";
 import type { Config } from "@mo36924/config";
 import proxy from "@mo36924/http-proxy";
 import { createServer } from "@mo36924/http-server";
+import redirect from "@mo36924/redirect-middleware";
 import { bold, green, red } from "colorette";
-import ts from "typescript";
 import createCache from "./cache";
 import css from "./css";
 import graphql from "./graphql";
@@ -13,34 +14,48 @@ import json from "./json";
 import pathname from "./pathname";
 import sse from "./sse";
 
-export default async ({ server, clientInject, serverInject, port, devServerPort }: Config) => {
+export default async ({ main, clientInject, serverInject, port, devServerPort }: Config) => {
   const cache = await createCache();
   const httpServer = createServer();
 
   httpServer.use(
     sse(),
     pathname(),
+    redirect({ "/": pathToFileURL(main).pathname }),
     css({ cache }),
     graphql({ cache }),
     json({ cache }),
     javascript({ cache, clientInject, serverInject }),
-    proxy({ target: `http://localhost:${port}}` }),
+    proxy({ target: `http://127.0.0.1:${port}}` }),
   );
 
   await httpServer.listen(devServerPort);
   const devServerUrl = `http://127.0.0.1:${devServerPort}`;
   console.log(green(`Server running at ${bold(devServerUrl)}`));
+  const { filename } = await import("./loader");
 
-  if (ts.sys.fileExists(server)) {
-    const url = new URL(`data:text/javascript,import ${JSON.stringify(pathToFileURL(server))};`);
-    const loader = await import("./loader");
-
-    new Worker(url, {
-      execArgv: ["--experimental-loader", new URL(loader.url).href],
+  const exec = () => {
+    const worker = new Worker(main, {
+      execArgv: ["--experimental-loader", filename],
       env: { ...process.env, PORT: `${port}` },
       workerData: { devServerUrl },
     });
-  }
+
+    worker.on("error", (err) => {
+      console.error(err);
+    });
+
+    worker.on("exit", () => {
+      watchFile(main, (stats) => {
+        if (stats.isFile()) {
+          unwatchFile(main);
+          exec();
+        }
+      });
+    });
+  };
+
+  exec();
 
   process.on("SIGINT", async () => {
     try {

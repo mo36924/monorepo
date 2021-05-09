@@ -28,7 +28,7 @@ const cwd = process.cwd();
 
 const server = async (config: Config) => {
   const bundle = await rollup({
-    input: config.server,
+    input: config.main,
     acornInjectPlugins: [jsx()],
     external: builtinModules,
     preserveEntrySignatures: false,
@@ -106,7 +106,7 @@ export default async (config: Config) => {
   const files = Object.fromEntries<string | Buffer>([]);
 
   const bundle = await rollup({
-    input: config.server,
+    input: config.main,
     acornInjectPlugins: [jsx()],
     external: builtinModules,
     preserveEntrySignatures: false,
