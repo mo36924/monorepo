@@ -1,5 +1,7 @@
-import type { PropsWithChildren } from "react";
+import type { ScriptProps } from "./Script.client";
 
-export const Script = ({ children, ...props }: PropsWithChildren<JSX.IntrinsicElements["script"]>) => (
-  <script {...props}></script>
-);
+export type { ScriptProps };
+
+export const Script = ({ children = "", ...props }: ScriptProps) => {
+  return <script {...props} dangerouslySetInnerHTML={{ __html: children }} />;
+};

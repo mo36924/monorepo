@@ -1,5 +1,1 @@
-import type { PropsWithChildren } from "react";
-
-export const Head = ({ children, ...props }: PropsWithChildren<JSX.IntrinsicElements["head"]>) => (
-  <head {...props}>{children}</head>
-);
+export const Head = ({ children, ...props }: JSX.IntrinsicElements["head"]) => <head {...props}>{children}</head>;
