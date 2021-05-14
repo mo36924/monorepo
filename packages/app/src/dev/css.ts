@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
-import { fileURLToPath } from "url";
 import type { MiddlewareFactory } from "@mo36924/http-server";
+import forms from "@tailwindcss/forms";
 import postcss, { AcceptedPlugin } from "postcss";
 import postcssImport from "postcss-import";
 import loadConfig from "postcss-load-config";
@@ -14,28 +14,27 @@ export default ({ cache }: { cache: Cache }): MiddlewareFactory => async () => {
     const config = await loadConfig();
     plugins.push(...config.plugins);
   } catch {
-    plugins.push(postcssImport(), tailwindcss());
+    plugins.push(postcssImport(), tailwindcss({ plugins: [forms] }));
   }
 
-  return async (req, res) => {
-    if (req.extname !== ".css") {
+  return async ({ path, pathname, extname, headers }, res) => {
+    if (!path || extname !== ".css") {
       return;
     }
 
-    const path = fileURLToPath(new URL(req._url, "file:///"));
-
-    if (req.headers["sec-fetch-dest"] === "script") {
-      // TODO
-    }
-
-    if (path in cache.css.style) {
-      await res.send(cache.css.style[path]);
+    if (headers["sec-fetch-dest"] !== "style") {
+      await res.type("js").send(`export default ${JSON.stringify(pathname)};`);
       return;
     }
 
-    const data = readFile(path, "utf8");
-    const { css } = await postcss(...plugins).process(data, { from: path });
-    cache.css.style[path] = css;
-    await res.send(css);
+    let css = cache.css.style[path];
+
+    if (css == null) {
+      const data = await readFile(path, "utf8");
+      const { css: _css } = await postcss(...plugins).process(data, { from: path });
+      css = cache.css.style[path] = _css;
+    }
+
+    await res.type("css").send(css);
   };
 };

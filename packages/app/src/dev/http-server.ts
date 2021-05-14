@@ -10,16 +10,14 @@ import css from "./css";
 import graphql from "./graphql";
 import javascript from "./javascript";
 import json from "./json";
-import pathname from "./pathname";
 import sse from "./sse";
 
-export default async ({ main, inject, port, devServerPort }: Config) => {
+export default async ({ server, inject, port, devServerPort }: Config) => {
   const cache = await createCache();
   const httpServer = createServer();
 
   httpServer.use(
     sse(),
-    pathname(),
     css({ cache }),
     graphql({ cache }),
     json({ cache }),
@@ -33,7 +31,7 @@ export default async ({ main, inject, port, devServerPort }: Config) => {
   const { filename } = await import("./loader");
 
   const exec = () => {
-    const url = new URL(`data:text/javascript,import(${JSON.stringify(pathToFileURL(main))});`);
+    const url = new URL(`data:text/javascript,import(${JSON.stringify(pathToFileURL(server))});`);
 
     const worker = new Worker(url, {
       execArgv: ["--experimental-loader", filename],
@@ -46,9 +44,9 @@ export default async ({ main, inject, port, devServerPort }: Config) => {
     });
 
     worker.on("exit", () => {
-      watchFile(main, (stats) => {
+      watchFile(server, (stats) => {
         if (stats.isFile()) {
-          unwatchFile(main);
+          unwatchFile(server);
           exec();
         }
       });

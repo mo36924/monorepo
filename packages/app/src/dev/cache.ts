@@ -8,7 +8,6 @@ type CacheObject = { [url: string]: string };
 export type Cache = {
   css: {
     style: CacheObject;
-    script: CacheObject;
   };
   graphql: {
     script: CacheObject;
@@ -28,10 +27,9 @@ const cacheObject = (): CacheObject => Object.create(null);
 export default async (): Promise<Cache> => {
   const cachePath = resolve("node_modules/.cache/app.json");
 
-  const cache = {
+  const cache: Cache = {
     css: {
       style: cacheObject(),
-      script: cacheObject(),
     },
     graphql: {
       script: cacheObject(),
@@ -90,7 +88,6 @@ export default async (): Promise<Cache> => {
   }
 
   watcher.onchange((absolutePath) => {
-    delete cache.css.script[absolutePath];
     delete cache.css.style[absolutePath];
     delete cache.graphql.script[absolutePath];
     delete cache.javascript.client[absolutePath];

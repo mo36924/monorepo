@@ -1,6 +1,5 @@
 import { readFile } from "fs/promises";
 import { resolve } from "path";
-import { fileURLToPath } from "url";
 import { transformAsync } from "@babel/core";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import type { Config } from "@mo36924/config";
@@ -55,45 +54,44 @@ export default ({ cache, inject }: Options): MiddlewareFactory => () => {
     } catch {}
   });
 
-  return async (req, res) => {
-    if (!extensions.includes(req.extname)) {
+  return async ({ path, extname, userAgent }, res) => {
+    if (!path || !extensions.includes(extname)) {
       return;
     }
 
-    const path = fileURLToPath(new URL(req._url, "file:///"));
-    const isClient = !!req.userAgent;
+    const isClient = !!userAgent;
     const target = isClient ? "client" : "server";
     const javascriptCache = cache.javascript[target];
+    let javascript = javascriptCache[path];
 
-    if (path in javascriptCache) {
-      await res.type("js").send(javascriptCache[path]);
-      return;
+    if (javascript == null) {
+      const data = cache.typescript[path] ?? (await readFile(path, "utf8"));
+
+      const result = await transformAsync(data, {
+        filename: path,
+        configFile: false,
+        babelrc: false,
+        compact: false,
+        sourceMaps: true,
+        presets: [[app, { target, env: "development", inject } as AppOptions]],
+      });
+
+      let code = result!.code!;
+      const map = result!.map!;
+
+      if (!map.sourcesContent) {
+        map.sourcesContent = await Promise.all(
+          map.sources.map((source) => readFile(resolve(path, "..", source), "utf8")),
+        );
+      }
+
+      code += `\n//# sourceMappingURL=data:application/json;base64,${Buffer.from(JSON.stringify(map), "utf8").toString(
+        "base64",
+      )}`;
+
+      javascript = javascriptCache[path] = code;
     }
 
-    const data = cache.typescript[path] ?? (await readFile(path, "utf8"));
-
-    const result = await transformAsync(data, {
-      filename: path,
-      configFile: false,
-      babelrc: false,
-      compact: false,
-      sourceMaps: true,
-      presets: [[app, { target, env: "development", inject } as AppOptions]],
-    });
-
-    let code = result!.code!;
-    const map = result!.map!;
-
-    if (!map.sourcesContent) {
-      map.sourcesContent = await Promise.all(
-        map.sources.map((source) => readFile(resolve(path, "..", source), "utf8")),
-      );
-    }
-
-    code += `\n//# sourceMappingURL=data:application/json;base64,${Buffer.from(JSON.stringify(map), "utf8").toString(
-      "base64",
-    )}`;
-
-    await res.type("js").send(code);
+    await res.type("js").send(javascript);
   };
 };

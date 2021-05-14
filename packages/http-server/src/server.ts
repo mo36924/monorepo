@@ -1,5 +1,6 @@
 import { createServer as createHttpServer, Server as HttpServer, ServerOptions } from "http";
 import { types } from "util";
+import cacheMiddleware from "@mo36924/cache-middleware";
 import httpError, { HttpError } from "http-errors";
 import { Request } from "./request";
 import { Response } from "./response";
@@ -37,7 +38,7 @@ export class Server {
   Request: typeof Request;
   Response: typeof Response;
   server!: HttpServer;
-  middlewareFactories: MiddlewareFactory[] = [];
+  middlewareFactories: MiddlewareFactory[] = [cacheMiddleware()];
   middlewares: Middleware[] = [];
   errorMiddlewareFactories: ErrorMiddlewareFactory[] = [];
   errorMiddlewares: ErrorMiddleware[] = [];

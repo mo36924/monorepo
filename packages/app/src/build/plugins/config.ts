@@ -1,18 +1,10 @@
-import * as config from "@mo36924/config";
+import type { Config } from "@mo36924/config";
+import { dataToEsm } from "@rollup/pluginutils";
 import type { Plugin, ResolvedId } from "rollup";
 
-export type Options = Partial<typeof config>;
-
-export default (options: Options = {}): Plugin => {
-  const _options = Object.assign(Object.create(null), options);
+export default (config: Partial<Config>): Plugin => {
   const configModule = "@mo36924/config";
-
-  const configModuleCode = Object.entries(config)
-    .map(([key, value]) => `export const ${key} = ${JSON.stringify(_options[key] ?? value)};\n`)
-    .join("");
-
   let resolvedId: ResolvedId | null = null;
-
   return {
     name: "config",
     async buildStart() {
@@ -25,7 +17,7 @@ export default (options: Options = {}): Plugin => {
     },
     load(id) {
       if (id === resolvedId?.id) {
-        return configModuleCode;
+        return dataToEsm(config, { compact: true, namedExports: true, objectShorthand: true, preferConst: true });
       }
     },
   };

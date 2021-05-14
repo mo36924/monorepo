@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/rollup-plugin-config",
-  "version": "1.3.61",
-  "description": "rollup-plugin-config",
+  "name": "@mo36924/create-object",
+  "version": "1.0.0",
+  "description": "create-object",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/rollup-plugin-config"
+    "directory": "packages/create-object"
   },
   "publishConfig": {
     "access": "public"
@@ -24,9 +24,5 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
-  },
-  "dependencies": {
-    "@mo36924/config": "^1.3.61",
-    "rollup": "^2.44.0"
   }
 }

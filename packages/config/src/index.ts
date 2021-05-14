@@ -1,7 +1,8 @@
-import { readdirSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import type { Options as InjectOptions } from "@mo36924/babel-plugin-inject";
+import createObject from "@mo36924/create-object";
 import type { Options as PageGeneratorOptions } from "@mo36924/page-generator";
 import { cosmiconfigSync } from "cosmiconfig";
 
@@ -52,12 +53,18 @@ export type PartialConfig = {
   mode?: "development" | "production";
   port?: number;
   devServerPort?: number;
+  client?: string;
+  clientUrl?: string;
+  server?: string;
   clientExtensions?: string[];
   serverExtensions?: string[];
+  prebuild?: (string | string[])[];
+  replaceModule?: { [name: string]: string };
   inject?: InjectOptions["declarations"];
-  main?: string;
-  dirname?: string;
-  basename?: string;
+  css?: string;
+  cssUrl?: string;
+  icon?: string;
+  iconUrl?: string;
   graphql?: string;
   page?: PageGeneratorOptions;
   database?: DatabaseConfig;
@@ -76,10 +83,7 @@ const rootDir = path.resolve(filename, "..", "..", "..", "..", "..");
 const moduleName = "app";
 const extensions = [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs", ".json"];
 const resolve = (...paths: string[]) => path.resolve(rootDir, ...paths);
-
-const createObject = (...sources: InjectOptions["declarations"][]): Required<InjectOptions>["declarations"] =>
-  Object.assign(Object.fromEntries(Object.entries(Object.assign({}, ...sources)).filter((entry) => entry[1])));
-
+const pathname = (path: string) => pathToFileURL(path).pathname;
 const basenames: string[] = [];
 
 try {
@@ -101,7 +105,24 @@ export const serverExtensions = config.serverExtensions ?? [
   ...extensions.map((extension) => `.server${extension}`),
   ...extensions,
 ];
-export const inject: InjectOptions["declarations"] = createObject(
+export const client = config.client
+  ? resolve(config.client)
+  : resolve(
+      moduleName,
+      clientExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
+        "index.ts",
+    );
+export const clientUrl = pathname(client);
+export const server = config.server
+  ? resolve(config.server)
+  : resolve(
+      moduleName,
+      serverExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
+        "index.ts",
+    );
+export const prebuild = config.prebuild ?? ["readable-stream", ["pg", "pg-pool"]];
+export const replaceModule = createObject(config.replaceModule ?? { "pg-native": "module.exports = {};" });
+export const inject: Config["inject"] = createObject(
   {
     Body: ["@mo36924/components", "Body"],
     Head: ["@mo36924/components", "Head"],
@@ -110,6 +131,16 @@ export const inject: InjectOptions["declarations"] = createObject(
     Script: ["@mo36924/components", "Script"],
     Style: ["@mo36924/components", "Style"],
     Title: ["@mo36924/components", "Title"],
+    Dialog: ["@headlessui/react", "Dialog"],
+    Disclosure: ["@headlessui/react", "Disclosure"],
+    FocusTrap: ["@headlessui/react", "FocusTrap"],
+    Listbox: ["@headlessui/react", "Listbox"],
+    Menu: ["@headlessui/react", "Menu"],
+    Popover: ["@headlessui/react", "Popover"],
+    Portal: ["@headlessui/react", "Portal"],
+    RadioGroup: ["@headlessui/react", "RadioGroup"],
+    Switch: ["@headlessui/react", "Switch"],
+    Transition: ["@headlessui/react", "Transition"],
     useQuery: ["@mo36924/graphql-react", "useQuery"],
     hydrate: ["@mo36924/hydrate", "default"],
     pageMatch: ["@mo36924/page-match", "default"],
@@ -148,15 +179,10 @@ export const inject: InjectOptions["declarations"] = createObject(
   },
   config.inject,
 );
-export const main = config.main
-  ? resolve(config.main)
-  : resolve(
-      moduleName,
-      serverExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
-        "index.ts",
-    );
-export const dirname = path.dirname(main);
-export const basename = path.basename(main);
+export const css = config.css ? resolve(config.css) : resolve(moduleName, "index.css");
+export const cssUrl = existsSync(css) ? pathname(css) : "";
+export const icon = config.icon ? resolve(config.icon) : resolve(moduleName, "favicon.ico");
+export const iconUrl = existsSync(icon) ? pathname(icon) : "data:,";
 export const graphql = resolve(config.graphql ?? "./graphql/index.gql");
 export const page: Config["page"] = {
   watch,
@@ -169,8 +195,8 @@ export const page: Config["page"] = {
 const configDatabase = config.database ?? { name: "postgres" };
 const configDatabaseDevelopment = config.databaseDevelopment ?? { name: "postgres" };
 const reset = configDatabaseDevelopment.reset ?? true;
-let _database: Config["database"];
-let _databaseDevelopment: Config["databaseDevelopment"];
+let database: Config["database"];
+let databaseDevelopment: Config["databaseDevelopment"];
 
 if (configDatabase.name === "mysql") {
   const name = configDatabase.name;
@@ -184,7 +210,7 @@ if (configDatabase.name === "mysql") {
   };
 
   const replica = configDatabase.replica ?? [main];
-  _database = { name, main, replica };
+  database = { name, main, replica };
 } else {
   const name = configDatabase.name;
 
@@ -197,7 +223,7 @@ if (configDatabase.name === "mysql") {
   };
 
   const replica = configDatabase.replica ?? [main];
-  _database = { name, main, replica };
+  database = { name, main, replica };
 }
 
 if (configDatabaseDevelopment.name === "mysql") {
@@ -212,7 +238,7 @@ if (configDatabaseDevelopment.name === "mysql") {
   };
 
   const replica = configDatabaseDevelopment.replica ?? [main];
-  _databaseDevelopment = { name, main, replica, reset };
+  databaseDevelopment = { name, main, replica, reset };
 } else {
   const name = configDatabaseDevelopment.name;
 
@@ -225,24 +251,7 @@ if (configDatabaseDevelopment.name === "mysql") {
   };
 
   const replica = configDatabaseDevelopment.replica ?? [main];
-  _databaseDevelopment = { name, main, replica, reset };
+  databaseDevelopment = { name, main, replica, reset };
 }
 
-export const database = _database;
-export const databaseDevelopment = _databaseDevelopment;
-export default {
-  watch,
-  mode,
-  port,
-  devServerPort,
-  clientExtensions,
-  serverExtensions,
-  inject,
-  main,
-  dirname,
-  basename,
-  graphql,
-  page,
-  database,
-  databaseDevelopment,
-} as Config;
+export { database, databaseDevelopment };

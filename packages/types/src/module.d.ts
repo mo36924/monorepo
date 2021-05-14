@@ -2,6 +2,7 @@ declare module "@babel/plugin-syntax-typescript";
 declare module "@babel/plugin-transform-react-constant-elements";
 declare module "@babel/preset-react";
 declare module "@babel/preset-typescript";
+declare module "@tailwindcss/forms";
 declare module "acorn-jsx";
 declare module "babel-plugin-minify-dead-code-elimination";
 declare module "cssnano";

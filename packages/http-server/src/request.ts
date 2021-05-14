@@ -1,5 +1,6 @@
 import { IncomingMessage } from "http";
 import { basename, extname } from "path";
+import { fileURLToPath } from "url";
 import base64url from "@mo36924/base64url";
 import accepts, { Accepts } from "accepts";
 import { parse as parseCookie } from "cookie";
@@ -29,6 +30,7 @@ export class Request extends IncomingMessage {
   private __url!: string | null;
   private _href!: string | null;
   private $$url!: URL | null;
+  private _path!: string | null | undefined;
   private _basename!: string | null;
   private _extname!: string | null;
   private _userAgent!: string | null;
@@ -74,6 +76,17 @@ export class Request extends IncomingMessage {
   }
   get searchParams() {
     return this.$url.searchParams;
+  }
+  get path() {
+    if (this._path === null) {
+      try {
+        this._path = fileURLToPath(`file://${this._url}`);
+      } catch {
+        this._path = undefined;
+      }
+    }
+
+    return this._path;
   }
   get basename() {
     return (this._basename ??= basename(this.pathname));
@@ -170,6 +183,7 @@ prototype._origin = null;
 prototype.__url = null;
 prototype._href = null;
 prototype.$$url = null;
+prototype._path = null;
 prototype._basename = null;
 prototype._extname = null;
 prototype._userAgent = null;

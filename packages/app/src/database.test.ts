@@ -1,5 +1,5 @@
 import { describe, test } from "@jest/globals";
-import config from "@mo36924/config";
+import * as config from "@mo36924/config";
 import { schema } from "@mo36924/graphql-schema";
 import exec from "@mo36924/promise-exec";
 import { createConnection } from "mysql2/promise";

@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@mo36924/babel-plugin-inject": "^1.3.59",
+    "@mo36924/create-object": "^1.0.0",
     "@mo36924/page-generator": "^1.3.60",
     "cosmiconfig": "^7.0.0"
   }
