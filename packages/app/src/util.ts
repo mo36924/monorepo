@@ -3,6 +3,8 @@ import { dirname } from "path";
 import { format, resolveConfig } from "@mo36924/prettier";
 import ts from "typescript";
 
+export { batchWarnings, handleError } from "rollup/dist/shared/loadConfigFile.js";
+
 export const read = async (path: string) => {
   try {
     const data = await readFile(path, "utf8");

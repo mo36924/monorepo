@@ -12,7 +12,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import jsx from "acorn-jsx";
 import { OutputChunk, Plugin, rollup } from "rollup";
 import { terser } from "rollup-plugin-terser";
-import batchWarnings from "./batch-warnings";
+import { batchWarnings } from "../util";
 import { typescript } from "./plugins";
 
 export default async (config: Config, target: "client" | "server", plugins: Plugin[]) => {

@@ -8,3 +8,7 @@ declare module "*.graphql" {
   const documentNode: DocumentNode;
   export default documentNode;
 }
+declare module "*.css" {
+  const url: string;
+  export default url;
+}

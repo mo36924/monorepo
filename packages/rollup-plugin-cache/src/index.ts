@@ -157,8 +157,8 @@ const getCacheCode = async (options: Options): Promise<string> => {
   return `Object.assign(Object.create(null),{${codes.join()}});`;
 };
 
-const getCacheMiddlewareCode = (options: Options) => {
-  const cacheCode = getCacheCode(options);
+const getCacheMiddlewareCode = async (options: Options) => {
+  const cacheCode = await getCacheCode(options);
 
   if (!cacheCode) {
     return "export default () => () => {};";
@@ -218,9 +218,9 @@ export default (options: Options = {}): Required<Pick<Plugin, "name" | "buildSta
     async buildStart() {
       resolvedId = await this.resolve(middleware, undefined, { skipSelf: true });
     },
-    load(id) {
+    async load(id) {
       if (id === resolvedId?.id) {
-        code ??= getCacheMiddlewareCode(_options);
+        code ??= await getCacheMiddlewareCode(_options);
         return code;
       }
     },

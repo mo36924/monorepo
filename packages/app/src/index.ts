@@ -1,4 +1,5 @@
 import type { PartialConfig } from "@mo36924/config";
+import { handleError } from "./util";
 
 export default async (config: PartialConfig = {}) => {
   process.env.NODE_ENV = config.watch ? "development" : "production";
@@ -7,7 +8,6 @@ export default async (config: PartialConfig = {}) => {
   try {
     await app(config);
   } catch (err) {
-    process.exitCode = 1;
-    console.error(String(err));
+    handleError(err);
   }
 };
