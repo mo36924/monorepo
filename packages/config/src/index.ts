@@ -109,15 +109,15 @@ export const client = config.client
   ? resolve(config.client)
   : resolve(
       moduleName,
-      clientExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
-        "index.ts",
+      clientExtensions.map((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
+        "index.client.ts",
     );
 export const clientUrl = pathname(client);
 export const server = config.server
   ? resolve(config.server)
   : resolve(
       moduleName,
-      serverExtensions.filter((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
+      serverExtensions.map((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
         "index.ts",
     );
 export const prebuild = config.prebuild ?? ["readable-stream", ["pg", "pg-pool"]];
@@ -183,7 +183,7 @@ export const css = config.css ? resolve(config.css) : resolve(moduleName, "index
 export const cssUrl = existsSync(css) ? pathname(css) : "";
 export const icon = config.icon ? resolve(config.icon) : resolve(moduleName, "favicon.ico");
 export const iconUrl = existsSync(icon) ? pathname(icon) : "data:,";
-export const graphql = resolve(config.graphql ?? "./graphql/index.gql");
+export const graphql = config.graphql ? resolve(config.graphql) : resolve(moduleName, "index.gql");
 export const page: Config["page"] = {
   watch,
   dir: resolve(config.page?.dir ?? "pages"),
