@@ -10,6 +10,6 @@ export const serialize = (value: Wrapper): string => value[RAW];
 
 export const format = (value: string, options?: Options): Wrapper => {
   const filepath = options?.filepath ?? "index.js";
-  const formatted = prettierFormat(value, { ...resolveConfig.sync(filepath), ...options, filepath });
+  const formatted = prettierFormat(value, { ...resolveConfig.sync(filepath), ...options, filepath }).trim();
   return { [RAW]: formatted };
 };

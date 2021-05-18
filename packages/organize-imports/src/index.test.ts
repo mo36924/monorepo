@@ -1,4 +1,5 @@
 import { expect, test } from "@jest/globals";
+import { format } from "jest-snapshot-serializer-prettier";
 import index from "./index";
 
 test("organize-imports", async () => {
@@ -8,10 +9,9 @@ test("organize-imports", async () => {
     console.log(join, resolve);
   `);
 
-  expect(data).toMatchInlineSnapshot(`
-    "
-        import { join,resolve } from \\"path\\";
-        console.log(join, resolve);
-      "
+  expect(format(data)).toMatchInlineSnapshot(`
+    import { join, resolve } from "path";
+    console.log(join, resolve);
+
   `);
 });
