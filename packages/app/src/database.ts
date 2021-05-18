@@ -40,20 +40,6 @@ export default async (config: Config) => {
       await client.query(mysql.schema(schema));
       await client.query(mysql.data(schema));
       await client.end();
-
-      // const [rows] = await client.query(
-      //   "select table_name as `table_name` from information_schema.tables where table_schema=database() and table_type='BASE TABLE';",
-      // );
-
-      // if (Array.isArray(rows)) {
-      //   await client.query("set foreign_key_checks=0;");
-      //   await client.query(`drop table if exists ${rows.map(({ table_name }: any) => escapeId(table_name)).join()};`);
-      //   await client.query("set foreign_key_checks=1;");
-      // }
-
-      // await client.query(mysql.schema(schema));
-      // await client.query(mysql.data(schema));
-      // await client.end();
     };
   } else {
     const { main } = database;
