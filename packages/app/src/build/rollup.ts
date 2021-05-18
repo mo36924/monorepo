@@ -1,3 +1,4 @@
+import { rm } from "fs/promises";
 import { builtinModules } from "module";
 import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import type { Config } from "@mo36924/config";
@@ -15,9 +16,9 @@ import { terser } from "rollup-plugin-terser";
 import { batchWarnings } from "../util";
 import { typescript } from "./plugins";
 
-export default async (config: Config, target: "client" | "server", plugins: Plugin[]) => {
+export default async (config: Config, target: "client" | "server", plugins: Plugin[], write: boolean = false) => {
   const isClient = target === "client";
-  const sourceMap = !isClient;
+  const sourceMap = !isClient && write;
   const warnings = batchWarnings();
 
   const bundle = await rollup({
@@ -61,7 +62,7 @@ export default async (config: Config, target: "client" | "server", plugins: Plug
         exclude: [/\/node_modules\/(core-js|tslib)\//],
         babelHelpers: "bundled",
         sourceMaps: sourceMap,
-        presets: [[app, { target, env: "production" } as AppOptions]],
+        presets: [[app, { target, env: "production", inject: config.inject } as AppOptions]],
       }),
       terser(
         isClient
@@ -71,7 +72,11 @@ export default async (config: Config, target: "client" | "server", plugins: Plug
     ],
   });
 
-  const { output } = await bundle.generate({
+  if (write) {
+    await rm("dist", { force: true, recursive: true });
+  }
+
+  const { output } = await bundle[write ? "write" : "generate"]({
     dir: "dist",
     format: "module",
     sourcemap: sourceMap,
