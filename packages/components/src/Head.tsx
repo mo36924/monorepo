@@ -1,7 +1,7 @@
 import { clientUrl, cssUrl, iconUrl } from "@mo36924/config";
 import type { PropsWithChildren } from "react";
 
-const icon = <link rel="icon" type="image/x-icon" href={iconUrl} />;
+const icon = <link rel="icon" type="image/x-icon" href={iconUrl || "data:,"} />;
 const css = cssUrl ? <link rel="stylesheet" href={cssUrl} /> : null;
 const script = clientUrl ? <script src={clientUrl} type="module" /> : null;
 

@@ -15,10 +15,16 @@ export default async (config: Config) => {
   const client = await rollup(config, "client", [asset(pathnames)]);
   client.forEach(({ fileName, code }) => (caches[`/${fileName}`] = code));
 
+  const overwriteConfig: Partial<Config> = {
+    clientUrl: `/${client[0].fileName}`,
+    cssUrl: pathnames[config.css] ?? "",
+    iconUrl: pathnames[config.icon] ?? "",
+  };
+
   await rollup(
     config,
     "server",
-    [asset(pathnames), cache(caches), _config(createObject(config, { cssUrl: `/${client[0].fileName}` }))],
+    [asset(pathnames), cache(caches), _config(createObject(config, overwriteConfig))],
     true,
   );
 };

@@ -182,7 +182,7 @@ export const inject: Config["inject"] = createObject(
 export const css = config.css ? resolve(config.css) : resolve(moduleName, "index.css");
 export const cssUrl = existsSync(css) ? pathname(css) : "";
 export const icon = config.icon ? resolve(config.icon) : resolve(moduleName, "favicon.ico");
-export const iconUrl = existsSync(icon) ? pathname(icon) : "data:,";
+export const iconUrl = existsSync(icon) ? pathname(icon) : "";
 export const graphql = config.graphql ? resolve(config.graphql) : resolve(moduleName, "index.gql");
 export const page: Config["page"] = {
   watch,
