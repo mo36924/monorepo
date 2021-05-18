@@ -5,12 +5,17 @@ import { factory } from "@mo36924/typescript-graphql";
 import watchData from "@mo36924/watch-data";
 import { buildSchema } from "graphql";
 import ts from "typescript";
-import database from "./database";
 import { writeWithFormat } from "./util";
 
 export default async (config: Config) => {
   const watch = config.watch;
-  const resetDatabase = await database(config);
+
+  let database = async (_schema: string) => {};
+
+  if (watch) {
+    const mod = await import("./dev/database");
+    database = await mod.default(config);
+  }
 
   let taggedTemplateExpressionHook: ts.TaggedTemplateExpressionHook = () => {};
 
@@ -23,7 +28,7 @@ export default async (config: Config) => {
       const declaration = await typescript(graphqlSchemaSource);
       await writeWithFormat("types/graphql.d.ts", declaration);
       taggedTemplateExpressionHook = factory(graphqlSchema);
-      await resetDatabase(graphqlSchemaSource);
+      await database(graphqlSchemaSource);
     } catch {}
   };
 

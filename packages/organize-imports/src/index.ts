@@ -1,12 +1,8 @@
 import { dirname } from "path";
 import ts from "typescript";
 
-type Options = {
-  filepath?: string;
-};
-
-export default (text: string, options: Options = {}) => {
-  const filepath = ts.sys.resolvePath(options.filepath ?? "index.tsx");
+export default (text: string, filepath = "index.tsx") => {
+  filepath = ts.sys.resolvePath(filepath);
   const tsconfig = ts.findConfigFile(filepath, ts.sys.fileExists);
 
   const compilerOptions: ts.CompilerOptions = {

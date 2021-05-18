@@ -1,4 +1,4 @@
-import { rm, writeFile } from "fs/promises";
+import { mkdir, rm, writeFile } from "fs/promises";
 import { join } from "path";
 import type { Config } from "@mo36924/config";
 import createObject from "@mo36924/create-object";
@@ -24,5 +24,6 @@ export default async (config: Config) => {
   ]);
 
   await rm("dist", { force: true, recursive: true });
+  await mkdir("dist", { recursive: true });
   await Promise.all(server.map(({ fileName, code }) => writeFile(join("dist", fileName), code)));
 };

@@ -12,6 +12,5 @@ test("organize-imports", async () => {
   expect(format(data)).toMatchInlineSnapshot(`
     import { join, resolve } from "path";
     console.log(join, resolve);
-
   `);
 });

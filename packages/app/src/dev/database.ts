@@ -6,10 +6,6 @@ import retry from "@mo36924/retry";
 export default async (config: Config) => {
   const database = config.databaseDevelopment;
 
-  if (!config.watch || !database.reset) {
-    return async () => {};
-  }
-
   if (database.name === "mysql") {
     const { main } = database;
     const { database: _database, user, password, port } = main;

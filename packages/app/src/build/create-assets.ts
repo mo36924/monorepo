@@ -34,7 +34,8 @@ export default async (config: Config, chunks: OutputChunk[]) => {
   } catch {
     plugins.push(
       postcssImport(),
-      tailwindcss({ plugins: [forms] }),
+      // TODO https://github.com/tailwindlabs/tailwindcss/pull/4272
+      tailwindcss({ purge: false, plugins: [forms] }),
       purgecss({ content }),
       cssnano({ preset: "advanced" }),
     );

@@ -1,5 +1,7 @@
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname } from "path";
+import eslintLintText from "@mo36924/eslint-lint-text";
+import organizeImports from "@mo36924/organize-imports";
 import { format, resolveConfig } from "@mo36924/prettier";
 import ts from "typescript";
 
@@ -26,8 +28,14 @@ export const write = async (path: string, data: string) => {
 export const writeWithFormat = async (path: string, data: string) => {
   try {
     const config = await resolveConfig(path);
-    const _data = format(data, { ...config, filepath: path });
-    await write(path, _data);
+
+    if (/\.(ts|tsx|js|jsx|mjs)$/.test(path)) {
+      data = organizeImports(data, path);
+      data = await eslintLintText(data, path);
+    }
+
+    data = format(data, { ...config, filepath: path });
+    await write(path, data);
   } catch {}
 };
 
