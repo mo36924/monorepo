@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/redirect-middleware",
-  "version": "1.3.70",
+  "version": "1.3.71",
   "description": "redirect-middleware",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -26,6 +26,6 @@
     }
   },
   "dependencies": {
-    "@mo36924/http-server": "^1.3.70"
+    "@mo36924/http-server": "^1.3.71"
   }
 }
