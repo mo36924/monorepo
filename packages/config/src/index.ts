@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from "fs";
+import { existsSync } from "fs";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import type { Options as InjectOptions } from "@mo36924/babel-plugin-inject";
@@ -80,17 +80,10 @@ type DeepRequired<T> = Required<
 export type Config = DeepRequired<PartialConfig>;
 const filename = fileURLToPath(import.meta.url);
 const rootDir = path.resolve(filename, "..", "..", "..", "..", "..");
-const moduleName = "app";
 const extensions = [".tsx", ".jsx", ".ts", ".mjs", ".js", ".cjs", ".json"];
 const resolve = (...paths: string[]) => path.resolve(rootDir, ...paths);
 const pathname = (path: string) => pathToFileURL(path).pathname;
-const basenames: string[] = [];
-
-try {
-  basenames.push(...readdirSync(resolve(moduleName)));
-} catch {}
-
-const result = cosmiconfigSync(moduleName).search(rootDir);
+const result = cosmiconfigSync("app").search(rootDir);
 const config: PartialConfig = result?.config ?? {};
 
 export const watch = (process.env.NODE_ENV ?? config.mode) !== "production";
@@ -105,21 +98,9 @@ export const serverExtensions = config.serverExtensions ?? [
   ...extensions.map((extension) => `.server${extension}`),
   ...extensions,
 ];
-export const client = config.client
-  ? resolve(config.client)
-  : resolve(
-      moduleName,
-      clientExtensions.map((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
-        "index.client.ts",
-    );
+export const client = config.client ? resolve(config.client) : resolve("index.client.ts");
 export const clientUrl = pathname(client);
-export const server = config.server
-  ? resolve(config.server)
-  : resolve(
-      moduleName,
-      serverExtensions.map((extname) => `index${extname}`).find((basename) => basenames.includes(basename)) ??
-        "index.ts",
-    );
+export const server = config.server ? resolve(config.server) : resolve("index.ts");
 export const prebuild = config.prebuild ?? ["readable-stream", ["pg", "pg-pool"]];
 export const replaceModule = createObject(config.replaceModule ?? { "pg-native": "module.exports = {};" });
 export const inject: Config["inject"] = createObject(
@@ -179,16 +160,16 @@ export const inject: Config["inject"] = createObject(
   },
   config.inject,
 );
-export const css = config.css ? resolve(config.css) : resolve(moduleName, "index.css");
+export const css = config.css ? resolve(config.css) : resolve("index.css");
 export const cssUrl = existsSync(css) ? pathname(css) : "";
-export const icon = config.icon ? resolve(config.icon) : resolve(moduleName, "favicon.ico");
+export const icon = config.icon ? resolve(config.icon) : resolve("index.ico");
 export const iconUrl = existsSync(icon) ? pathname(icon) : "";
-export const graphql = config.graphql ? resolve(config.graphql) : resolve(moduleName, "index.gql");
+export const graphql = config.graphql ? resolve(config.graphql) : resolve("index.gql");
 export const page: Config["page"] = {
   watch,
   dir: resolve(config.page?.dir ?? "pages"),
-  file: resolve(config.page?.file ?? `${moduleName}/pages.ts`),
-  template: resolve(config.page?.template ?? `${moduleName}/pages.template.ts`),
+  file: resolve(config.page?.file ?? "pages.ts"),
+  template: resolve(config.page?.template ?? "pages.template.ts"),
   include: config.page?.include ?? ["**/*.tsx"],
   exclude: config.page?.exclude ?? ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
