@@ -1,4 +1,3 @@
-import { memoize } from "@mo36924/memoize";
 import {
   DocumentNode,
   getNamedType,
@@ -22,8 +21,6 @@ import type {
 } from "typescript";
 import { getTypescriptType } from "./typescript-type";
 
-const cache = memoize((_schema: GraphQLSchema) => new WeakMap<DocumentNode, Expression[] | undefined>(), new WeakMap());
-
 export const getArgs = (
   ts: typeof typescript,
   schema: GraphQLSchema,
@@ -31,12 +28,6 @@ export const getArgs = (
   checker: TypeChecker,
   documentNode: DocumentNode,
 ) => {
-  const map = cache(schema);
-
-  if (map.has(documentNode)) {
-    return map.get(documentNode);
-  }
-
   let operationDefinition: OperationDefinitionNode | undefined;
 
   for (const definition of documentNode.definitions) {
@@ -44,14 +35,12 @@ export const getArgs = (
       if (operationDefinition === undefined) {
         operationDefinition = definition;
       } else {
-        map.set(documentNode, undefined);
         return undefined;
       }
     }
   }
 
   if (operationDefinition === undefined) {
-    map.set(documentNode, undefined);
     return undefined;
   }
 
@@ -195,6 +184,5 @@ export const getArgs = (
     args.unshift(createSyntheticExpression(template, stringsType));
   }
 
-  map.set(documentNode, args);
   return args;
 };
