@@ -4,7 +4,7 @@ import app, { Options as AppOptions } from "@mo36924/babel-preset-app";
 import type { Config } from "@mo36924/config";
 import prebuild from "@mo36924/rollup-plugin-commonjs-prebuild";
 import graphql from "@mo36924/rollup-plugin-graphql";
-import graphqlSchema from "@mo36924/rollup-plugin-graphql-schema";
+import graphqlMiddleware from "@mo36924/rollup-plugin-graphql-middleware";
 import replaceModule from "@mo36924/rollup-plugin-replace-module";
 import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
@@ -35,7 +35,7 @@ export default async (config: Config, target: "client" | "server", plugins: Plug
       replaceModule(config.replaceModule),
       json({ compact: true, namedExports: true, preferConst: true }),
       graphql(),
-      graphqlSchema(config),
+      graphqlMiddleware(config),
       resolve(
         isClient
           ? {

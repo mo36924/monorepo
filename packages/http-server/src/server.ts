@@ -1,6 +1,7 @@
 import { createServer as createHttpServer, Server as HttpServer, ServerOptions } from "http";
 import { types } from "util";
 import cacheMiddleware from "@mo36924/cache-middleware";
+import graphqlMiddleware from "@mo36924/graphql-middleware";
 import httpError, { HttpError } from "http-errors";
 import { Request } from "./request";
 import { Response } from "./response";
@@ -38,7 +39,7 @@ export class Server {
   Request: typeof Request;
   Response: typeof Response;
   server!: HttpServer;
-  middlewareFactories: MiddlewareFactory[] = [cacheMiddleware()];
+  middlewareFactories: MiddlewareFactory[] = [cacheMiddleware(), graphqlMiddleware()];
   middlewares: Middleware[] = [];
   errorMiddlewareFactories: ErrorMiddlewareFactory[] = [];
   errorMiddlewares: ErrorMiddleware[] = [];

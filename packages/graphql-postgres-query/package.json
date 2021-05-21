@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/graphql-postgres-json-query",
-  "version": "1.3.46",
-  "description": "graphql-postgres-json-query",
+  "name": "@mo36924/graphql-postgres-query",
+  "version": "1.0.0",
+  "description": "graphql-postgres-query",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/graphql-postgres-json-query"
+    "directory": "packages/graphql-postgres-query"
   },
   "publishConfig": {
     "access": "public"
@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "@mo36924/graphql-query": "^1.3.46",
-    "@mo36924/graphql-schema": "^1.3.46",
     "@mo36924/graphql-utils": "^1.3.46",
     "@mo36924/postgres-escape": "^1.3.46",
     "graphql": "^15.5.0",

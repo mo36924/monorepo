@@ -1,10 +1,31 @@
+import { readFile } from "fs/promises";
+import { database, databaseDevelopment, graphql } from "@mo36924/config";
+import { schema as buildSchema } from "@mo36924/graphql-schema";
 import type { MiddlewareFactory } from "@mo36924/http-server";
-import type { Options } from "./type";
+import { parse } from "graphql";
 
-export type { Execute, ExecutionResult, FormattedExecutionResult, GraphQLParams, Options, Send } from "./type";
+export default (): MiddlewareFactory => async (server) => {
+  const config = process.env.NODE_ENV === "development" ? databaseDevelopment : database;
+  let gql: string;
 
-export default (options: Options): MiddlewareFactory => async () => {
-  const mod = await (process.env.NODE_ENV === "production" ? import("./graphql") : import("./graphiql"));
-  const middleware = await mod.default(options);
+  try {
+    gql = await readFile(graphql, "utf8");
+  } catch {
+    return;
+  }
+
+  const schema = buildSchema(gql);
+  const ast = parse(schema);
+  let middlewareFactory: MiddlewareFactory;
+
+  if (config.name === "postgres") {
+    const mod = await import("@mo36924/graphql-postgres-middleware");
+    middlewareFactory = mod.default({ ...config, ast });
+  } else {
+    const mod = await import("@mo36924/graphql-postgres-middleware");
+    middlewareFactory = mod.default({ ...config, ast });
+  }
+
+  const middleware = await middlewareFactory(server);
   return middleware;
 };

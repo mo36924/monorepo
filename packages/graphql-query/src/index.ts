@@ -1,11 +1,4 @@
-import {
-  defaultFieldResolver,
-  defaultTypeResolver,
-  DocumentNode,
-  getOperationRootType,
-  GraphQLError,
-  GraphQLSchema,
-} from "graphql";
+import { DocumentNode, getOperationRootType, GraphQLError, GraphQLSchema } from "graphql";
 import { buildExecutionContext } from "graphql/execution/execute";
 import { Fields, resolve } from "./resolve";
 
@@ -27,16 +20,7 @@ export default (
   variables?: { [key: string]: any } | null,
   operationName?: string | null,
 ): QueryResult => {
-  const context = buildExecutionContext(
-    schema,
-    document,
-    {},
-    {},
-    variables,
-    operationName,
-    defaultFieldResolver,
-    defaultTypeResolver,
-  );
+  const context = buildExecutionContext(schema, document, {}, {}, variables, operationName, null);
 
   if ((Array.isArray as (value: any) => value is readonly any[])(context)) {
     return { errors: context };
