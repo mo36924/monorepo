@@ -67,6 +67,10 @@ export class Server {
           }
         }
       } catch (err) {
+        if (process.env.NODE_ENV === "development") {
+          console.log(err);
+        }
+
         const _httpError = httpError.isHttpError(err) ? err : httpError(500, err instanceof Error ? err : String(err));
 
         if (!response.headersSent) {

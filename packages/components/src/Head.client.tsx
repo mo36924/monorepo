@@ -1,3 +1,3 @@
-import { Fragment } from "react";
+import { Fragment } from "preact";
 
 export const Head = Fragment;

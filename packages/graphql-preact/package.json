@@ -1,0 +1,38 @@
+{
+  "name": "@mo36924/graphql-preact",
+  "version": "1.0.0",
+  "description": "graphql-preact",
+  "keywords": [],
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/graphql-preact"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "browser": "./dist/index.client.js",
+  "exports": {
+    ".": {
+      "browser": "./dist/index.client.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@mo36924/escape": "^1.3.46",
+    "@mo36924/graphql-client": "^1.0.0",
+    "@mo36924/graphql-json": "^1.3.46",
+    "@mo36924/utils": "^1.0.0",
+    "graphql": "^15.5.0",
+    "preact": "^10.5.13"
+  }
+}

@@ -2,8 +2,8 @@ import { existsSync } from "fs";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import type { Options as InjectOptions } from "@mo36924/babel-plugin-inject";
-import createObject from "@mo36924/create-object";
 import type { Options as PageGeneratorOptions } from "@mo36924/page-generator";
+import { createObject } from "@mo36924/utils";
 import { cosmiconfigSync } from "cosmiconfig";
 
 type DatabaseConfig =
@@ -122,7 +122,7 @@ export const inject: Config["inject"] = createObject(
     RadioGroup: ["@headlessui/react", "RadioGroup"],
     Switch: ["@headlessui/react", "Switch"],
     Transition: ["@headlessui/react", "Transition"],
-    useQuery: ["@mo36924/graphql-react", "useQuery"],
+    useQuery: ["@mo36924/graphql-preact", "useQuery"],
     hydrate: ["@mo36924/hydrate", "default"],
     pageMatch: ["@mo36924/page-match", "default"],
     pages: ["@mo36924/pages", "default"],

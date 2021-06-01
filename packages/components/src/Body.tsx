@@ -1,7 +1,7 @@
-import { GraphQLScript } from "@mo36924/graphql-react";
-import type { PropsWithChildren } from "react";
+import { GraphQLScript } from "@mo36924/graphql-preact";
+import type { ComponentChildren } from "preact";
 
-export const Body = (props: PropsWithChildren<{}>) => (
+export const Body = (props: { children?: ComponentChildren }) => (
   <body>
     <div id="body">{props.children}</div>
     <GraphQLScript />

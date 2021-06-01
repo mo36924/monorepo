@@ -1,3 +1,0 @@
-# graphql-react
-
-graphql-react

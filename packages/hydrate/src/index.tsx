@@ -1,22 +1,17 @@
+import type { PageComponent } from "@mo36924/page";
 import type { Match } from "@mo36924/page-match";
 import pages from "@mo36924/pages";
-import { StrictMode } from "react";
-import { hydrate } from "react-dom";
+import { hydrate } from "preact";
 
 export default (match: Match) => {
   const url = new URL(location.href);
   const page = match(url);
 
   if (page) {
-    page.type.load().then(() => {
+    (page.type as PageComponent<any>).load().then(() => {
       const Pages = pages(match);
 
-      hydrate(
-        <StrictMode>
-          <Pages url={url} />
-        </StrictMode>,
-        document.getElementById("body"),
-      );
+      hydrate(<Pages url={url} />, document.getElementById("body")!);
     });
   }
 };

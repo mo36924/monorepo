@@ -38,22 +38,22 @@ describe("babel-preset-lib", () => {
   });
 
   test("resolve server file", () => {
-    const result = transform(`import babel from "./packages/graphql/src/index"`, { target: "server" });
-    expect(result).toMatchInlineSnapshot(`import babel from "./packages/graphql/src/index.ts";`);
+    const result = transform(`import babel from "./packages/graphql-client/src/index"`, { target: "server" });
+    expect(result).toMatchInlineSnapshot(`import babel from "./packages/graphql-client/src/index.ts";`);
   });
 
   test("resolve client file", () => {
-    const result = transform(`import babel from "./packages/graphql/src/index"`, { target: "client" });
-    expect(result).toMatchInlineSnapshot(`import babel from "./packages/graphql/src/index.client.ts";`);
+    const result = transform(`import babel from "./packages/graphql-client/src/index"`, { target: "client" });
+    expect(result).toMatchInlineSnapshot(`import babel from "./packages/graphql-client/src/index.client.ts";`);
   });
 
   test("resolve server dir", () => {
-    const result = transform(`import babel from "./packages/graphql/src"`, { target: "server" });
-    expect(result).toMatchInlineSnapshot(`import babel from "./packages/graphql/src/index.ts";`);
+    const result = transform(`import babel from "./packages/graphql-client/src"`, { target: "server" });
+    expect(result).toMatchInlineSnapshot(`import babel from "./packages/graphql-client/src/index.ts";`);
   });
 
   test("resolve client dir", () => {
-    const result = transform(`import babel from "./packages/graphql/src"`, { target: "client" });
-    expect(result).toMatchInlineSnapshot(`import babel from "./packages/graphql/src/index.client.ts";`);
+    const result = transform(`import babel from "./packages/graphql-client/src"`, { target: "client" });
+    expect(result).toMatchInlineSnapshot(`import babel from "./packages/graphql-client/src/index.client.ts";`);
   });
 });

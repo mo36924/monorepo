@@ -1,7 +1,7 @@
 import type { Config, PartialConfig } from "@mo36924/config";
 import * as defaultConfig from "@mo36924/config";
-import createObject from "@mo36924/create-object";
 import pageGenerator from "@mo36924/page-generator";
+import { createObject } from "@mo36924/utils";
 import graphql from "./graphql";
 import inject from "./inject";
 import tsconfig from "./tsconfig";

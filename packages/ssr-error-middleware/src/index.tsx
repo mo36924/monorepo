@@ -1,12 +1,18 @@
-import { context } from "@mo36924/graphql-react";
+import { context } from "@mo36924/graphql-preact";
 import type { ErrorMiddlewareFactory } from "@mo36924/http-server";
-import page, { PageComponent, PromisePageModule } from "@mo36924/page";
-import { StrictMode } from "react";
-import { renderToString } from "react-dom/server";
-import prepass from "react-ssr-prepass";
+import lazy from "@mo36924/preact-lazy";
+import { createObjectNull } from "@mo36924/utils";
+import type { ComponentType } from "preact";
+import render from "preact-render-to-string";
+import prepass from "preact-ssr-prepass";
 
-export default (errorPages: { [statusCode: string]: () => PromisePageModule<any> }): ErrorMiddlewareFactory => () => {
-  const errorPageComponents: { [statusCode: string]: PageComponent<any> | undefined } = Object.create(null);
+export default (errorPages: {
+  [statusCode: string]: () => Promise<{ default: ComponentType<any> }>;
+}): ErrorMiddlewareFactory => () => {
+  const errorPageComponents: {
+    [statusCode: string]: (ComponentType<any> & { load: () => Promise<void> }) | undefined;
+  } = createObjectNull();
+
   const entries = Object.entries(errorPages);
 
   if (!entries.length) {
@@ -14,7 +20,7 @@ export default (errorPages: { [statusCode: string]: () => PromisePageModule<any>
   }
 
   for (const [statusCode, errorPage] of entries) {
-    errorPageComponents[statusCode] = page(errorPage);
+    errorPageComponents[statusCode] = lazy(errorPage);
   }
 
   return async (error, request, response) => {
@@ -28,17 +34,15 @@ export default (errorPages: { [statusCode: string]: () => PromisePageModule<any>
       return;
     }
 
-    const graphql = Object.create(null);
+    const graphql = createObjectNull();
 
     const element = (
-      <StrictMode>
-        <context.Provider value={graphql}>
-          <ErrorPageComponent />
-        </context.Provider>
-      </StrictMode>
+      <context.Provider value={graphql}>
+        <ErrorPageComponent />
+      </context.Provider>
     );
 
     await prepass(element);
-    await response.send("<!DOCTYPE html>" + renderToString(element));
+    await response.send("<!DOCTYPE html>" + render(element));
   };
 };

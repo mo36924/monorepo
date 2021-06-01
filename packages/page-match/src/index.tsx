@@ -1,9 +1,9 @@
 import page, { ImportPage, PageComponent } from "@mo36924/page";
-import type { ReactElement } from "react";
+import type { JSX } from "preact";
 
 export type StaticPages = { [path: string]: ImportPage<any> };
 export type DynamicPages = [regexp: RegExp, names: string[], importPage: ImportPage<any>][];
-export type Match = (url: URL) => ReactElement<any, PageComponent<any>> | null;
+export type Match = (url: URL) => JSX.Element | null;
 
 export default (staticPages: StaticPages, dynamicPages: DynamicPages): Match => {
   const staticPageComponents: { [path: string]: PageComponent<any> } = Object.create(null);

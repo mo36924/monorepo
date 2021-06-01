@@ -1,3 +1,3 @@
-import type { PropsWithChildren } from "react";
+import type { ComponentChildren } from "preact";
 
-export const Html = (props: PropsWithChildren<{ lang?: string }>) => <html {...props} />;
+export const Html = (props: { lang?: string; children?: ComponentChildren }) => <html {...props} />;

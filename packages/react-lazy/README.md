@@ -1,3 +1,0 @@
-# react-lazy
-
-react-lazy
