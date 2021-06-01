@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/config",
-  "version": "1.3.71",
+  "version": "1.3.74",
   "description": "config",
   "keywords": [],
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@mo36924/babel-plugin-inject": "^1.3.59",
     "@mo36924/page-generator": "^1.3.60",
-    "@mo36924/utils": "^1.0.0",
+    "@mo36924/utils": "^1.3.74",
     "cosmiconfig": "^7.0.0"
   }
 }
