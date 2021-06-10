@@ -3,6 +3,7 @@ import { basename, dirname, join, resolve } from "path";
 import babel from "@babel/core";
 import typescript from "@babel/plugin-syntax-typescript";
 import { format, resolveConfig } from "@mo36924/prettier";
+import sortPackageJson from "sort-package-json";
 
 const { parseAsync, traverse, types } = babel;
 
@@ -131,36 +132,10 @@ export default async () => {
           );
         }
 
-        const formattedCode = format(
-          JSON.stringify({
-            name: undefined,
-            version: undefined,
-            description: undefined,
-            keywords: undefined,
-            author: undefined,
-            license: undefined,
-            homepage: undefined,
-            bugs: undefined,
-            repository: undefined,
-            publishConfig: undefined,
-            type: undefined,
-            main: undefined,
-            module: undefined,
-            browser: undefined,
-            bin: undefined,
-            types: undefined,
-            exports: undefined,
-            scripts: undefined,
-            dependencies: undefined,
-            devDependencies: undefined,
-            peerDependencies: undefined,
-            ...pkg,
-          }),
-          {
-            ...prettierOptions,
-            filepath: packageJsonPath,
-          },
-        );
+        const formattedCode = format(JSON.stringify(sortPackageJson(pkg), null, 2), {
+          ...prettierOptions,
+          filepath: packageJsonPath,
+        });
 
         await writeFile(packageJsonPath, formattedCode);
       } catch (err) {

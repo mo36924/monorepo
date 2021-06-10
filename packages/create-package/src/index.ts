@@ -57,7 +57,7 @@ export default async () => {
   };
 
   await Promise.allSettled([
-    write(join(dir, "package.json"), sortPackageJson(JSON.stringify(pkg, null, 2)), true),
+    write(join(dir, "package.json"), JSON.stringify(sortPackageJson(pkg), null, 2), true),
     write(join(dir, "README.md"), `# ${name}\n\n${name}\n`, false),
   ]);
 };

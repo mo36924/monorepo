@@ -31,6 +31,7 @@
   "dependencies": {
     "@babel/core": "^7.13.14",
     "@babel/plugin-syntax-typescript": "^7.12.13",
-    "@mo36924/prettier": "^1.3.46"
+    "@mo36924/prettier": "^1.3.46",
+    "sort-package-json": "^1.50.0"
   }
 }

@@ -27,5 +27,8 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
+  },
+  "scripts": {
+    "postinstall": "node ./dist/bin.mjs"
   }
 }

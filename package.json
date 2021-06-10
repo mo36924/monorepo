@@ -1,20 +1,19 @@
 {
-  "private": true,
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*"
   ],
-  "engines": {
-    "node": ">=14.14.0"
-  },
-  "type": "module",
   "scripts": {
     "build": "run-s clean test lint format bundle field",
     "bundle": "build-monorepo",
     "field": "update-package-field",
     "dev": "rollup -cw",
     "clean": "del \"packages/*/dist\"",
-    "format": "prettier --write .",
+    "format": "run-s format:*",
+    "format:sort-package-json": "sort-package-json \"package.json\" \"packages/*/package.json\"",
+    "format:prettier": "prettier --write .",
     "lint": "eslint --ext .ts,.tsx --fix .",
     "test": "jest --passWithNoTests"
   },
@@ -23,34 +22,16 @@
     "trailingComma": "all"
   },
   "eslintConfig": {
-    "plugins": [
-      "import",
-      "react-hooks"
-    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
       "sourceType": "module"
     },
-    "ignorePatterns": [
-      "**/dist/**"
+    "plugins": [
+      "import",
+      "react-hooks"
     ],
     "rules": {
       "no-var": "error",
-      "import/no-absolute-path": "error",
-      "import/no-dynamic-require": "error",
-      "import/no-webpack-loader-syntax": "error",
-      "import/no-self-import": "error",
-      "import/no-useless-path-segments": "error",
-      "import/order": [
-        "error",
-        {
-          "alphabetize": {
-            "order": "asc"
-          }
-        }
-      ],
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
       "padding-line-between-statements": [
         "warn",
         {
@@ -99,11 +80,28 @@
           ],
           "next": "*"
         }
-      ]
-    }
+      ],
+      "import/no-absolute-path": "error",
+      "import/no-dynamic-require": "error",
+      "import/no-self-import": "error",
+      "import/no-useless-path-segments": "error",
+      "import/no-webpack-loader-syntax": "error",
+      "import/order": [
+        "error",
+        {
+          "alphabetize": {
+            "order": "asc"
+          }
+        }
+      ],
+      "react-hooks/exhaustive-deps": "warn",
+      "react-hooks/rules-of-hooks": "error"
+    },
+    "ignorePatterns": [
+      "**/dist/**"
+    ]
   },
   "jest": {
-    "preset": "ts-jest",
     "globals": {
       "ts-jest": {
         "babelConfig": {
@@ -131,6 +129,7 @@
     "moduleNameMapper": {
       "^@mo36924/([^/]+)/?": "<rootDir>/packages/$1/src/"
     },
+    "preset": "ts-jest",
     "snapshotSerializers": [
       "jest-snapshot-serializer-babel",
       "jest-snapshot-serializer-graphql",
@@ -190,7 +189,7 @@
     "cookie": "^0.4.1",
     "core-js": "^3.10.0",
     "cosmiconfig": "^7.0.0",
-    "create-package": "npm:@mo36924/create-package@1.3.52",
+    "create-package": "npm:@mo36924/create-package@1.3.75",
     "cssnano": "^5.0.2",
     "cssnano-preset-advanced": "^5.0.1",
     "del-cli": "^3.0.1",
@@ -250,5 +249,8 @@
     "uuid": "^8.3.2",
     "vscode-languageserver-types": "^3.16.0",
     "webpack": "^5.31.0"
+  },
+  "engines": {
+    "node": ">=14.14.0"
   }
 }

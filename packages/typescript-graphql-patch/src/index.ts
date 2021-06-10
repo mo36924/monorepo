@@ -108,10 +108,10 @@ export default async () => {
             var declaration = index.buildDeclaration(schema, declarationPath);
             writeFile(declarationPath, declaration);
             ts.graphQLSchema = schema;
-          } finally {
-            if (dev) {
-              watch();
-            }
+          } catch (err) {}
+
+          if (dev) {
+            watch();
           }
         }
 
