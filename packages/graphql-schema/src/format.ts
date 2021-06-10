@@ -1,7 +1,11 @@
-import { format as _format, resolveConfig } from "@mo36924/prettier";
-import { parse, print, stripIgnoredCharacters } from "graphql";
+import prettier from "@mo36924/prettier";
+import { stripIgnoredCharacters } from "graphql";
 
-export const format = async (code: string, filepath: string = "index.gql") => {
-  const prettierConfig = await resolveConfig(filepath);
-  return _format(print(parse(stripIgnoredCharacters(code))), { ...prettierConfig, filepath });
+export const minify = (code: string) => {
+  return stripIgnoredCharacters(code);
+};
+
+export const format = (code: string, filepath: string = "index.gql") => {
+  const prettierConfig = prettier.resolveConfig.sync(filepath);
+  return prettier.format(minify(code), { ...prettierConfig, filepath });
 };

@@ -1,3 +1,0 @@
-# typescript-graphql
-
-typescript-graphql

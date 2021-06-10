@@ -1,5 +1,5 @@
 export const stringify = (data: any) =>
-  JSON.stringify(data, (key: string, value: any) => {
+  JSON.stringify(data, (_key: string, value: any) => {
     if (value instanceof Date) {
       return [0, value.toJSON()];
     }
@@ -8,7 +8,7 @@ export const stringify = (data: any) =>
   });
 
 export const parse = (data: string) =>
-  JSON.parse(data, (key: string, value: any) => {
+  JSON.parse(data, (_key: string, value: any) => {
     if (Array.isArray(value) && value.length === 2 && typeof value[0] === "number" && typeof value[1] === "string") {
       switch (value[0]) {
         case 0:

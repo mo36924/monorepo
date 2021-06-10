@@ -10,7 +10,7 @@ const wherePredicates = (where: Where | null | undefined, tableId: string) => {
   let predicates: string[] = [];
 
   for (const [field, ops] of Object.entries(args)) {
-    for (const [op, value] of Object.entries(ops)) {
+    for (const [op, value] of Object.entries<any>(ops)) {
       if (value === null) {
         switch (op) {
           case "eq":

@@ -1,11 +1,9 @@
 import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { model, schema as graphqlSchema } from "@mo36924/graphql-schema";
-import { buildSchema as graphqlBuildSchema, DocumentNode, GraphQLSchema, parse } from "graphql";
+import { buildSchema } from "@mo36924/graphql-schema";
+import { DocumentNode, GraphQLSchema, parse } from "graphql";
 import { raw } from "jest-snapshot-serializer-raw";
 import uuid from "uuid";
 import postgresQuery from "./index";
-
-const buildSchema = (gql: string) => graphqlBuildSchema(graphqlSchema(model(gql)));
 
 const rawQuery = (
   schema: GraphQLSchema,

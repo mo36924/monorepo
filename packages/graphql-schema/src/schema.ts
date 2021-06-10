@@ -1,44 +1,29 @@
-import { buildSchema } from "graphql";
-import { baseJoinTypeFields, baseTypeFields } from "./base-fields";
-import { customScalars } from "./custom-scalars";
+import { createObject } from "@mo36924/util";
+import { buildSchema as _buildSchema, Source } from "graphql";
 import { schemaDirectives } from "./directives";
-import { sortTypes } from "./sort-types";
-import { getTypes, printDirectives, printFieldType, Types } from "./types";
+import { baseFields, baseJoinTypeFields } from "./fields";
+import { format } from "./format";
+import { buildModel } from "./model";
+import { comparisonOperators, ComparisonOperators, LogicalOperators } from "./operators";
+import { customScalars, primaryKeyTypeName, scalarTypeNames } from "./scalars";
+import { printDirectives, printFieldType, sortTypes, Types } from "./types";
 import {
-  comparisonOperators,
-  copyTypes,
-  createObject,
+  getFieldName,
   getJoinTypeName,
   getKeyFieldName,
+  getKeyFieldNames,
   getListFieldName,
-  getNonListFieldName,
   getOrderName,
   getTypeName,
-  primaryKeyTypeName,
-  scalarTypeNames,
-} from "./utils";
+} from "./util";
 
-export type Where = {
-  [key: string]: {
-    eq?: any;
-    ne?: any;
-    gt?: any;
-    lt?: any;
-    ge?: any;
-    le?: any;
-    in?: any;
-    ni?: any;
-    li?: any;
-    nl?: any;
-  };
-  not?: any;
-  and?: any;
-  or?: any;
+export type Where<T extends string = "field1" | "field2" | "field3"> = {
+  [U in T | LogicalOperators]?: U extends LogicalOperators
+    ? Where<T> | undefined
+    : { [V in ComparisonOperators]?: any };
 };
 
-const fixRelation = (types: Types) => {
-  types = copyTypes(types);
-
+const fixSchemaTypes = (types: Types) => {
   for (const [typeName, type] of Object.entries(types)) {
     for (const [fieldName, field] of Object.entries(type.fields)) {
       if (field.scalar) {
@@ -53,7 +38,7 @@ const fixRelation = (types: Types) => {
       }
 
       if (typeDirective) {
-        typeDirective.keys = [getKeyFieldName(typeName), getKeyFieldName(field.type)];
+        typeDirective.keys = getKeyFieldNames(typeName, field.type);
         const joinTypeName = typeDirective.name;
 
         if (types[joinTypeName]) {
@@ -61,34 +46,34 @@ const fixRelation = (types: Types) => {
         }
 
         const typeNames = [typeName, field.type].sort();
-        const keys = typeNames.map((typeName) => getKeyFieldName(typeName));
+        const keys = getKeyFieldNames(typeNames[0], typeNames[1]);
 
-        types[joinTypeName] = createObject({
+        types[joinTypeName] = {
           name: joinTypeName,
-          directives: createObject({ join: Object.create(null) }),
+          directives: { join: {} },
           fields: createObject({
-            [keys[0]]: createObject({
+            [keys[0]]: {
               name: keys[0],
               type: primaryKeyTypeName,
               list: false,
               nullable: false,
               scalar: true,
-              directives: createObject({
-                ref: createObject({ name: typeNames[0] }),
-              }),
-            }),
-            [keys[1]]: createObject({
+              directives: {
+                ref: { name: typeNames[0] },
+              },
+            },
+            [keys[1]]: {
               name: keys[1],
               type: primaryKeyTypeName,
               list: false,
               nullable: false,
               scalar: true,
-              directives: createObject({
-                ref: createObject({ name: typeNames[1] }),
-              }),
-            }),
+              directives: {
+                ref: { name: typeNames[1] },
+              },
+            },
           }),
-        });
+        };
 
         continue;
       }
@@ -105,30 +90,30 @@ const fixRelation = (types: Types) => {
 
         const nullable = refTypeFields[refTypeFieldName]?.nullable ?? true;
 
-        refTypeFields[refTypeFieldName] = createObject({
+        refTypeFields[refTypeFieldName] = {
           name: refTypeFieldName,
           type: typeName,
           list: false,
           nullable: nullable,
           scalar: false,
-          directives: createObject({
-            key: createObject({
+          directives: {
+            key: {
               name: keyFieldName,
-            }),
-          }),
-        });
+            },
+          },
+        };
 
-        refTypeFields[keyFieldName] = createObject({
+        refTypeFields[keyFieldName] = {
           name: keyFieldName,
           type: primaryKeyTypeName,
           list: false,
           nullable: nullable,
           scalar: true,
-          directives: createObject({
-            ref: createObject({ name: typeName }),
-            ...(field.list ? {} : { unique: Object.create(null) }),
-          }),
-        });
+          directives: {
+            ref: { name: typeName },
+            ...(field.list ? {} : { unique: {} }),
+          },
+        };
 
         continue;
       }
@@ -147,7 +132,7 @@ const fixRelation = (types: Types) => {
       // *:*
       if (fieldIsList && refFieldIsList) {
         const typeNames = [typeName, refTypeName].sort();
-        const joinTypeName = getJoinTypeName(typeNames);
+        const joinTypeName = getJoinTypeName(typeName, refTypeName);
 
         if (types[joinTypeName]) {
           continue;
@@ -155,15 +140,15 @@ const fixRelation = (types: Types) => {
 
         directives.type = {
           name: joinTypeName,
-          keys: [getKeyFieldName(typeName), getKeyFieldName(refTypeName)],
+          keys: getKeyFieldNames(typeName, refTypeName),
         };
 
         refListField.directives.type = {
           name: joinTypeName,
-          keys: [getKeyFieldName(refTypeName), getKeyFieldName(typeName)],
+          keys: getKeyFieldNames(refTypeName, typeName),
         };
 
-        const keyFieldNames = typeNames.map((typeName) => getKeyFieldName(typeName));
+        const keyFieldNames = getKeyFieldNames(typeNames[0], typeNames[1]);
 
         types[joinTypeName] = {
           name: joinTypeName,
@@ -201,7 +186,7 @@ const fixRelation = (types: Types) => {
 
       // 1:*
       if (fieldIsList && !refFieldIsList) {
-        const refNonListFieldName = getNonListFieldName(typeName);
+        const refNonListFieldName = getFieldName(typeName);
         const keyFieldName = getKeyFieldName(typeName);
 
         directives.field = {
@@ -241,7 +226,7 @@ const fixRelation = (types: Types) => {
       // 1:1
       if (!fieldIsList && !refFieldIsList) {
         if (field.nullable) {
-          const refNonListFieldName = getNonListFieldName(typeName);
+          const refNonListFieldName = getFieldName(typeName);
           const keyFieldName = getKeyFieldName(typeName);
 
           directives.field = {
@@ -274,7 +259,7 @@ const fixRelation = (types: Types) => {
             },
           };
         } else {
-          const refNonListFieldName = getNonListFieldName(typeName);
+          const refNonListFieldName = getFieldName(typeName);
           const keyFieldName = getKeyFieldName(refTypeName);
 
           refTypeFields[refNonListFieldName] = {
@@ -312,17 +297,13 @@ const fixRelation = (types: Types) => {
     }
   }
 
-  return types;
-};
-
-const insertBaseFields = (types: Types) => {
-  types = copyTypes(types);
+  types = sortTypes(types);
 
   for (const type of Object.values(types)) {
     if (type.directives.join) {
       type.fields = createObject({ ...baseJoinTypeFields, ...type.fields });
     } else {
-      type.fields = createObject({ ...baseTypeFields, ...type.fields });
+      type.fields = createObject({ ...baseFields, ...type.fields });
     }
   }
 
@@ -330,7 +311,7 @@ const insertBaseFields = (types: Types) => {
 };
 
 const printSchema = (types: Types) => {
-  let schema = customScalars + schemaDirectives;
+  let schema = `scalar Unknown\n${customScalars}${schemaDirectives}`;
   let query = "";
   let mutation = "";
   let objectType = "";
@@ -382,7 +363,7 @@ const printSchema = (types: Types) => {
       continue;
     }
 
-    const fieldName = getNonListFieldName(typeName);
+    const fieldName = getFieldName(typeName);
     const fieldListName = getListFieldName(fieldName);
 
     query += `
@@ -480,8 +461,8 @@ const printSchema = (types: Types) => {
     deleteInput += `}`;
 
     whereInput += `
-      and: [Where${typeName}!]
-      or: [Where${typeName}!]
+      and: Where${typeName}
+      or: Where${typeName}
       not: Where${typeName}
     }`;
 
@@ -489,16 +470,20 @@ const printSchema = (types: Types) => {
   }
 
   for (const scalarType of scalarTypeNames) {
+    if (scalarType === "ID") {
+      continue;
+    }
+
     whereInput += `input Where${scalarType} {`;
 
     for (const comparisonOperator of comparisonOperators) {
-      if (scalarType === "Boolean" && (comparisonOperator === "eq" || comparisonOperator === "ne")) {
+      if (scalarType === "Boolean" && comparisonOperator !== "eq" && comparisonOperator !== "ne") {
         continue;
       }
 
-      if (comparisonOperator === "in" || comparisonOperator === "ni") {
+      if (comparisonOperator === "in") {
         whereInput += `${comparisonOperator}: [${scalarType}]\n`;
-      } else if (comparisonOperator === "li" || comparisonOperator === "nl") {
+      } else if (comparisonOperator === "like") {
         whereInput += `${comparisonOperator}: String\n`;
       } else {
         whereInput += `${comparisonOperator}: ${scalarType}\n`;
@@ -527,15 +512,26 @@ const printSchema = (types: Types) => {
     whereInput +
     orderInput;
 
+  schema = format(schema);
   return schema;
 };
 
-export const schema = (source: string) => {
-  let types = getTypes(source);
-  types = fixRelation(types);
-  types = insertBaseFields(types);
-  types = sortTypes(types);
-  const schema = printSchema(types);
-  buildSchema(schema);
-  return schema;
+const buildGraphQL = (graphql: string | Source) => {
+  let types = buildModel(graphql);
+  types = fixSchemaTypes(types);
+  graphql = printSchema(types);
+  const schema = _buildSchema(graphql);
+  return { graphql, types, schema };
+};
+
+export const fixSchema = (graphql: string | Source) => {
+  return buildGraphQL(graphql).graphql;
+};
+
+export const buildSchemaTypes = (graphql: string | Source) => {
+  return buildGraphQL(graphql).types;
+};
+
+export const buildSchema = (graphql: string | Source) => {
+  return buildGraphQL(graphql).schema;
 };

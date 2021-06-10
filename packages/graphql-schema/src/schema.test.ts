@@ -1,9 +1,9 @@
 import { expect, it } from "@jest/globals";
-import { buildASTSchema, parse } from "graphql";
-import { schema } from "./schema";
+import { raw } from "@mo36924/jest-snapshot-serializer-raw";
+import { fixSchema } from "./schema";
 
-it("graphql-schema", () => {
-  const gql = `
+it("fixSchema", () => {
+  const graphql = fixSchema(`
     type User {
       name: String!
       profile: Profile
@@ -21,46 +21,33 @@ it("graphql-schema", () => {
       name: String!
       users: [User!]!
     }
-  `;
+  `);
 
-  const schemaGql = schema(gql);
-  const documentNode = parse(schemaGql);
-  buildASTSchema(documentNode);
-
-  expect(documentNode).toMatchInlineSnapshot(`
+  expect(raw(graphql)).toMatchInlineSnapshot(`
+    scalar Unknown
     scalar UUID
-
     scalar Date
-
     directive @join on OBJECT
-
     directive @unique on FIELD_DEFINITION
-
     directive @key(name: String!) on FIELD_DEFINITION
-
     directive @ref(name: String!) on FIELD_DEFINITION
-
     directive @field(name: String!, key: String!) on FIELD_DEFINITION
-
     directive @type(name: String!, keys: [String!]!) on FIELD_DEFINITION
-
     type Query {
       class(where: WhereClass, order: [OrderClass!], offset: Int): Class
       classes(where: WhereClass, order: [OrderClass!], limit: Int, offset: Int): [Class!]!
       club(where: WhereClub, order: [OrderClub!], offset: Int): Club
       clubs(where: WhereClub, order: [OrderClub!], limit: Int, offset: Int): [Club!]!
-      user(where: WhereUser, order: [OrderUser!], offset: Int): User
-      users(where: WhereUser, order: [OrderUser!], limit: Int, offset: Int): [User!]!
       profile(where: WhereProfile, order: [OrderProfile!], offset: Int): Profile
       profiles(where: WhereProfile, order: [OrderProfile!], limit: Int, offset: Int): [Profile!]!
+      user(where: WhereUser, order: [OrderUser!], offset: Int): User
+      users(where: WhereUser, order: [OrderUser!], limit: Int, offset: Int): [User!]!
     }
-
     type Mutation {
       create(data: CreateData!): Query!
       update(data: UpdateData!): Query!
       delete(data: DeleteData!): Query!
     }
-
     type Class {
       id: UUID!
       version: Int!
@@ -70,7 +57,6 @@ it("graphql-schema", () => {
       name: String!
       users(where: WhereUser, order: [OrderUser!], limit: Int, offset: Int): [User!]! @field(name: "class", key: "classId")
     }
-
     type Club {
       id: UUID!
       version: Int!
@@ -78,22 +64,14 @@ it("graphql-schema", () => {
       updatedAt: Date!
       isDeleted: Boolean!
       name: String!
-      users(where: WhereUser, order: [OrderUser!], limit: Int, offset: Int): [User!]! @type(name: "ClubToUser", keys: ["clubId", "userId"])
+      users(where: WhereUser, order: [OrderUser!], limit: Int, offset: Int): [User!]!
+        @type(name: "ClubToUser", keys: ["clubId", "userId"])
     }
-
-    type User {
+    type ClubToUser @join {
       id: UUID!
-      version: Int!
-      createdAt: Date!
-      updatedAt: Date!
-      isDeleted: Boolean!
-      name: String!
-      profile: Profile @field(name: "user", key: "userId")
-      class: Class @key(name: "classId")
-      clubs(where: WhereClub, order: [OrderClub!], limit: Int, offset: Int): [Club!]! @type(name: "ClubToUser", keys: ["userId", "clubId"])
-      classId: UUID @ref(name: "Class")
+      clubId: UUID! @ref(name: "Club")
+      userId: UUID! @ref(name: "User")
     }
-
     type Profile {
       id: UUID!
       version: Int!
@@ -104,127 +82,115 @@ it("graphql-schema", () => {
       user: User @key(name: "userId")
       userId: UUID @ref(name: "User") @unique
     }
-
-    type ClubToUser @join {
+    type User {
       id: UUID!
+      version: Int!
       createdAt: Date!
       updatedAt: Date!
       isDeleted: Boolean!
-      clubId: UUID! @ref(name: "Club")
-      userId: UUID! @ref(name: "User")
+      class: Class @key(name: "classId")
+      classId: UUID @ref(name: "Class")
+      clubs(where: WhereClub, order: [OrderClub!], limit: Int, offset: Int): [Club!]!
+        @type(name: "ClubToUser", keys: ["userId", "clubId"])
+      name: String!
+      profile: Profile @field(name: "user", key: "userId")
     }
-
     input CreateData {
       class: CreateDataClass
       classes: [CreateDataClass!]
       club: CreateDataClub
       clubs: [CreateDataClub!]
-      user: CreateDataUser
-      users: [CreateDataUser!]
       profile: CreateDataProfile
       profiles: [CreateDataProfile!]
+      user: CreateDataUser
+      users: [CreateDataUser!]
     }
-
     input UpdateData {
       class: UpdateDataClass
       classes: [UpdateDataClass!]
       club: UpdateDataClub
       clubs: [UpdateDataClub!]
-      user: UpdateDataUser
-      users: [UpdateDataUser!]
       profile: UpdateDataProfile
       profiles: [UpdateDataProfile!]
+      user: UpdateDataUser
+      users: [UpdateDataUser!]
     }
-
     input DeleteData {
       class: DeleteDataClass
       classes: [DeleteDataClass!]
       club: DeleteDataClub
       clubs: [DeleteDataClub!]
-      user: DeleteDataUser
-      users: [DeleteDataUser!]
       profile: DeleteDataProfile
       profiles: [DeleteDataProfile!]
+      user: DeleteDataUser
+      users: [DeleteDataUser!]
     }
-
     input CreateDataClass {
       name: String!
       users: [CreateDataUser!]
     }
-
     input CreateDataClub {
       name: String!
       users: [CreateDataUser!]
     }
-
-    input CreateDataUser {
-      name: String!
-      profile: CreateDataProfile
-      class: CreateDataClass
-      clubs: [CreateDataClub!]
-    }
-
     input CreateDataProfile {
       age: Int
       user: CreateDataUser
     }
-
+    input CreateDataUser {
+      class: CreateDataClass
+      clubs: [CreateDataClub!]
+      name: String!
+      profile: CreateDataProfile
+    }
     input UpdateDataClass {
       id: UUID!
       version: Int!
       name: String
       users: [UpdateDataUser!]
     }
-
     input UpdateDataClub {
       id: UUID!
       version: Int!
       name: String
       users: [UpdateDataUser!]
     }
-
-    input UpdateDataUser {
-      id: UUID!
-      version: Int!
-      name: String
-      profile: UpdateDataProfile
-      class: UpdateDataClass
-      clubs: [UpdateDataClub!]
-    }
-
     input UpdateDataProfile {
       id: UUID!
       version: Int!
       age: Int
       user: UpdateDataUser
     }
-
+    input UpdateDataUser {
+      id: UUID!
+      version: Int!
+      class: UpdateDataClass
+      clubs: [UpdateDataClub!]
+      name: String
+      profile: UpdateDataProfile
+    }
     input DeleteDataClass {
       id: UUID!
       version: Int!
       users: [DeleteDataUser!]
     }
-
     input DeleteDataClub {
       id: UUID!
       version: Int!
       users: [DeleteDataUser!]
     }
-
-    input DeleteDataUser {
-      id: UUID!
-      version: Int!
-      profile: DeleteDataProfile
-      class: DeleteDataClass
-      clubs: [DeleteDataClub!]
-    }
-
     input DeleteDataProfile {
       id: UUID!
       version: Int!
       user: DeleteDataUser
     }
-
+    input DeleteDataUser {
+      id: UUID!
+      version: Int!
+      class: DeleteDataClass
+      clubs: [DeleteDataClub!]
+      profile: DeleteDataProfile
+    }
     input WhereClass {
       id: WhereUUID
       version: WhereInt
@@ -232,11 +198,10 @@ it("graphql-schema", () => {
       updatedAt: WhereDate
       isDeleted: WhereBoolean
       name: WhereString
-      and: [WhereClass!]
-      or: [WhereClass!]
+      and: WhereClass
+      or: WhereClass
       not: WhereClass
     }
-
     input WhereClub {
       id: WhereUUID
       version: WhereInt
@@ -244,24 +209,10 @@ it("graphql-schema", () => {
       updatedAt: WhereDate
       isDeleted: WhereBoolean
       name: WhereString
-      and: [WhereClub!]
-      or: [WhereClub!]
+      and: WhereClub
+      or: WhereClub
       not: WhereClub
     }
-
-    input WhereUser {
-      id: WhereUUID
-      version: WhereInt
-      createdAt: WhereDate
-      updatedAt: WhereDate
-      isDeleted: WhereBoolean
-      name: WhereString
-      classId: WhereUUID
-      and: [WhereUser!]
-      or: [WhereUser!]
-      not: WhereUser
-    }
-
     input WhereProfile {
       id: WhereUUID
       version: WhereInt
@@ -270,24 +221,22 @@ it("graphql-schema", () => {
       isDeleted: WhereBoolean
       age: WhereInt
       userId: WhereUUID
-      and: [WhereProfile!]
-      or: [WhereProfile!]
+      and: WhereProfile
+      or: WhereProfile
       not: WhereProfile
     }
-
-    input WhereID {
-      eq: ID
-      ne: ID
-      gt: ID
-      lt: ID
-      ge: ID
-      le: ID
-      in: [ID]
-      ni: [ID]
-      li: String
-      nl: String
+    input WhereUser {
+      id: WhereUUID
+      version: WhereInt
+      createdAt: WhereDate
+      updatedAt: WhereDate
+      isDeleted: WhereBoolean
+      classId: WhereUUID
+      name: WhereString
+      and: WhereUser
+      or: WhereUser
+      not: WhereUser
     }
-
     input WhereInt {
       eq: Int
       ne: Int
@@ -296,11 +245,8 @@ it("graphql-schema", () => {
       ge: Int
       le: Int
       in: [Int]
-      ni: [Int]
-      li: String
-      nl: String
+      like: String
     }
-
     input WhereFloat {
       eq: Float
       ne: Float
@@ -309,11 +255,8 @@ it("graphql-schema", () => {
       ge: Float
       le: Float
       in: [Float]
-      ni: [Float]
-      li: String
-      nl: String
+      like: String
     }
-
     input WhereString {
       eq: String
       ne: String
@@ -322,22 +265,12 @@ it("graphql-schema", () => {
       ge: String
       le: String
       in: [String]
-      ni: [String]
-      li: String
-      nl: String
+      like: String
     }
-
     input WhereBoolean {
-      gt: Boolean
-      lt: Boolean
-      ge: Boolean
-      le: Boolean
-      in: [Boolean]
-      ni: [Boolean]
-      li: String
-      nl: String
+      eq: Boolean
+      ne: Boolean
     }
-
     input WhereUUID {
       eq: UUID
       ne: UUID
@@ -346,11 +279,8 @@ it("graphql-schema", () => {
       ge: UUID
       le: UUID
       in: [UUID]
-      ni: [UUID]
-      li: String
-      nl: String
+      like: String
     }
-
     input WhereDate {
       eq: Date
       ne: Date
@@ -359,11 +289,8 @@ it("graphql-schema", () => {
       ge: Date
       le: Date
       in: [Date]
-      ni: [Date]
-      li: String
-      nl: String
+      like: String
     }
-
     enum OrderClass {
       ID_ASC
       ID_DESC
@@ -378,7 +305,6 @@ it("graphql-schema", () => {
       NAME_ASC
       NAME_DESC
     }
-
     enum OrderClub {
       ID_ASC
       ID_DESC
@@ -393,28 +319,6 @@ it("graphql-schema", () => {
       NAME_ASC
       NAME_DESC
     }
-
-    enum OrderUser {
-      ID_ASC
-      ID_DESC
-      VERSION_ASC
-      VERSION_DESC
-      CREATED_AT_ASC
-      CREATED_AT_DESC
-      UPDATED_AT_ASC
-      UPDATED_AT_DESC
-      IS_DELETED_ASC
-      IS_DELETED_DESC
-      NAME_ASC
-      NAME_DESC
-      CLASS_ID_ASC
-      CLASS_ID_DESC
-      CLASS_ID_ASC_NULLS_FIRST
-      CLASS_ID_ASC_NULLS_LAST
-      CLASS_ID_DESC_NULLS_FIRST
-      CLASS_ID_DESC_NULLS_LAST
-    }
-
     enum OrderProfile {
       ID_ASC
       ID_DESC
@@ -438,6 +342,26 @@ it("graphql-schema", () => {
       USER_ID_ASC_NULLS_LAST
       USER_ID_DESC_NULLS_FIRST
       USER_ID_DESC_NULLS_LAST
+    }
+    enum OrderUser {
+      ID_ASC
+      ID_DESC
+      VERSION_ASC
+      VERSION_DESC
+      CREATED_AT_ASC
+      CREATED_AT_DESC
+      UPDATED_AT_ASC
+      UPDATED_AT_DESC
+      IS_DELETED_ASC
+      IS_DELETED_DESC
+      CLASS_ID_ASC
+      CLASS_ID_DESC
+      CLASS_ID_ASC_NULLS_FIRST
+      CLASS_ID_ASC_NULLS_LAST
+      CLASS_ID_DESC_NULLS_FIRST
+      CLASS_ID_DESC_NULLS_LAST
+      NAME_ASC
+      NAME_DESC
     }
 
   `);

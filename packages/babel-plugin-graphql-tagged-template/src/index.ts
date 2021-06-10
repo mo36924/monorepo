@@ -1,33 +1,20 @@
 import { readFileSync } from "fs";
 import type { default as babel, PluginObj } from "@babel/core";
-import {
-  buildSchema,
-  DocumentNode,
-  GraphQLScalarType,
-  GraphQLSchema,
-  parse,
-  stripIgnoredCharacters,
-  validate,
-} from "graphql";
+import { buildSchema } from "@mo36924/graphql-schema";
+import { DocumentNode, GraphQLSchema, parse, stripIgnoredCharacters, validate } from "graphql";
 
 export type Options = {
   schema: string | GraphQLSchema;
 };
 
 export default ({ types: t }: typeof babel, options: Options): PluginObj => {
-  let schema: GraphQLSchema = buildSchema("scalar Unknown");
+  let schema: GraphQLSchema;
 
   if (typeof options.schema === "string") {
-    try {
-      const gql = readFileSync(options.schema || "schema.gql", "utf8");
-      schema = buildSchema(`${gql}\nscalar Unknown`);
-    } catch {}
+    const graphql = readFileSync(options.schema || "index.graphql", "utf8");
+    schema = buildSchema(graphql);
   } else if (options.schema) {
     schema = options.schema;
-  }
-
-  if (!schema.getType("Unknown")) {
-    schema.getTypeMap()["Unknown"] = new GraphQLScalarType({ name: "Unknown" });
   }
 
   return {
@@ -44,7 +31,13 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
 
         const name = tag.name;
 
-        if (name !== "gql" && name !== "useQuery" && name !== "useMutation") {
+        if (
+          name !== "gql" &&
+          name !== "query" &&
+          name !== "mutation" &&
+          name !== "useQuery" &&
+          name !== "useMutation"
+        ) {
           return;
         }
 
@@ -56,20 +49,24 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
           variables += `$_${i}:Unknown`;
         }
 
-        if (variables) {
-          variables = `(${variables})`;
+        if (name === "query" || name === "useQuery") {
+          if (variables) {
+            query = `query(${variables}){${query}}`;
+          } else {
+            query = `{${query}}`;
+          }
+        } else if (name === "mutation" || name === "useMutation") {
+          if (variables) {
+            query = `mutation(${variables}){${query}}`;
+          } else {
+            query = `mutation{${query}}`;
+          }
         }
 
-        if (name === "useQuery") {
-          query = `query${variables}{${query}}`;
-        } else if (name === "useMutation") {
-          query = `mutation${variables}{${query}}`;
-        }
-
-        query = stripIgnoredCharacters(query);
         let documentNode: DocumentNode;
 
         try {
+          query = stripIgnoredCharacters(query);
           documentNode = parse(query);
         } catch (err) {
           throw path.buildCodeFrameError(String(err));
@@ -79,11 +76,11 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
 
         for (const error of errors) {
           const match = error.message.match(
-            /^Variable "(.*?)" of type "Unknown" used in position expecting type "(.*?)"\.$/,
+            /^Variable ".*?" of type "Unknown" used in position expecting type "(.*?)"\.$/,
           );
 
           if (match) {
-            query = query.replace(`${match[1]}:Unknown`, `${match[1]}:${match[2]}`);
+            query = query.replace("Unknown", match[1]);
           } else {
             throw path.buildCodeFrameError(error.message);
           }

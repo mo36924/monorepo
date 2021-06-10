@@ -1,6 +1,9 @@
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import { format, resolveConfig } from "@mo36924/prettier";
+import prettier from "prettier";
+import sortPackageJson from "sort-package-json";
+
+const { format, resolveConfig } = prettier;
 
 async function write(path: string, code: string, overwrite: boolean) {
   const config = await resolveConfig(path);
@@ -31,7 +34,12 @@ export default async () => {
     pkg = JSON.parse(await readFile(join(dir, "package.json"), "utf8"));
   } catch {}
 
-  const _pkg: { [key: string]: any } = {
+  pkg = {
+    version: "1.0.0",
+    description: name,
+    keywords: [],
+    license: "MIT",
+    ...pkg,
     name: `${base.name?.split("/")[0] || "@mo36924"}/${name}`,
     author: base.author ?? "mo36924 <mo36924@users.noreply.github.com>",
     homepage: base.homepage ?? "https://github.com/mo36924/monorepo#readme",
@@ -48,36 +56,8 @@ export default async () => {
     },
   };
 
-  pkg = {
-    name: undefined,
-    version: "1.0.0",
-    description: name,
-    keywords: [],
-    author: undefined,
-    license: "MIT",
-    homepage: undefined,
-    bugs: undefined,
-    repository: undefined,
-    publishConfig: undefined,
-    main: undefined,
-    module: undefined,
-    browser: undefined,
-    bin: undefined,
-    exports: undefined,
-    scripts: undefined,
-    prettier: undefined,
-    eslintConfig: undefined,
-    jest: undefined,
-    dependencies: undefined,
-    devDependencies: undefined,
-    peerDependencies: undefined,
-    optionalDependencies: undefined,
-    ...pkg,
-    ..._pkg,
-  };
-
   await Promise.allSettled([
-    write(join(dir, "package.json"), JSON.stringify(pkg, null, 2), true),
+    write(join(dir, "package.json"), sortPackageJson(JSON.stringify(pkg, null, 2)), true),
     write(join(dir, "README.md"), `# ${name}\n\n${name}\n`, false),
   ]);
 };

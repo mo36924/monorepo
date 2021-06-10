@@ -1,7 +1,6 @@
 import type { Config } from "@mo36924/config";
-import { mysql, postgres } from "@mo36924/graphql-schema";
 import exec from "@mo36924/promise-exec";
-import retry from "@mo36924/retry";
+import { retry } from "@mo36924/util";
 
 export default async (config: Config) => {
   const database = config.databaseDevelopment;
@@ -18,6 +17,8 @@ export default async (config: Config) => {
     return async (schema: string) => {
       const { createConnection } = await import("mysql2/promise");
       const { escapeId } = await import("@mo36924/mysql-escape");
+      const { buildDataSchema } = await import("@mo36924/graphql-mysql-data-schema");
+      const { buildData } = await import("@mo36924/graphql-mysql-data");
       const escapedDatabase = escapeId(_database);
 
       const client = await retry(async () => {
@@ -33,8 +34,8 @@ export default async (config: Config) => {
       await client.query(`drop database if exists ${escapedDatabase};`);
       await client.query(`create database ${escapedDatabase};`);
       await client.query(`use ${escapedDatabase};`);
-      await client.query(mysql.schema(schema));
-      await client.query(mysql.data(schema));
+      await client.query(buildDataSchema(schema));
+      await client.query(buildData(schema));
       await client.end();
     };
   } else {
@@ -52,6 +53,8 @@ export default async (config: Config) => {
       } = await import("pg");
 
       const { escapeId } = await import("@mo36924/postgres-escape");
+      const { buildDataSchema } = await import("@mo36924/graphql-postgres-data-schema");
+      const { buildData } = await import("@mo36924/graphql-postgres-data");
       const escapedDatabase = escapeId(_database);
 
       let client = await retry(async () => {
@@ -69,8 +72,8 @@ export default async (config: Config) => {
       await client.end();
       client = new Client({ ...database.main });
       await client.connect();
-      await client.query(postgres.schema(schema));
-      await client.query(postgres.data(schema));
+      await client.query(buildDataSchema(schema));
+      await client.query(buildData(schema));
       await client.end();
     };
   }

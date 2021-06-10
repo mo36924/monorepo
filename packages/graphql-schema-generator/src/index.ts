@@ -1,7 +1,7 @@
 import { watch } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname } from "path";
-import { format, schema as buildSchema } from "@mo36924/graphql-schema";
+import { format, fixSchema } from "@mo36924/graphql-schema";
 
 export type Options = {
   watch?: boolean;
@@ -53,8 +53,8 @@ export default async (options?: Options) => {
 
   async function generate() {
     const model = await readFile(modelPath, "utf8");
-    const schema = buildSchema(model);
-    const formattedSchema = await format(schema, schemaPath);
+    const schema = fixSchema(model);
+    const formattedSchema = format(schema, schemaPath);
     await writeFileAsync(schemaPath, formattedSchema);
   }
 };

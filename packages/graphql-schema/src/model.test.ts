@@ -1,54 +1,48 @@
-import { expect, it } from "@jest/globals";
-import { buildSchema, Source } from "graphql";
-import { customScalars } from "./custom-scalars";
-import { modelDirectives } from "./directives";
-import { model } from "./model";
+import { expect, test } from "@jest/globals";
+import { raw } from "@mo36924/jest-snapshot-serializer-raw";
+import { fixModel } from "./model";
 
-it("graphql-model", () => {
-  const gql = `
+test("fixModel", () => {
+  const model = fixModel(`
     type User {
+      id: ID!
       name: String!
       profiles: Profile
       class: Class!
       clubs: [Clubs]
     }
     type Profile {
+      uuid: ID!
       age: Int
     }
     type Class {
       name: String!
-      user: [User!]
+      user: [User!] 
     }
     type Clubs {
       name: String!
       users: [User]!
     }
-  `;
+  `);
 
-  const modelGql = model(gql);
-  buildSchema(`${customScalars}${modelDirectives}${modelGql}`);
-  const source = new Source(modelGql);
-
-  expect(source).toMatchInlineSnapshot(`
+  expect(raw(model)).toMatchInlineSnapshot(`
     type Class {
       name: String!
       users: [User!]!
     }
-
-    type Club {
+    type Clubs {
       name: String!
       users: [User!]!
     }
-
     type Profile {
       age: Int
+      uuid: UUID!
     }
-
     type User {
-      name: String!
-      profile: Profile
       class: Class!
       clubs: [Club!]!
+      name: String!
+      profile: Profile
     }
 
   `);

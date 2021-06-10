@@ -1,131 +1,114 @@
-import { baseTypeFields } from "./base-fields";
-import { customScalars } from "./custom-scalars";
-import { modelDirectives } from "./directives";
-import { sortTypes } from "./sort-types";
-import { Field, FieldDirectives, Fields, getTypes, printTypes, Types } from "./types";
-import { copyTypes, createObject, getJoinTypeName, getListFieldName, getNonListFieldName, getTypeName } from "./utils";
+import { createObjectNull } from "@mo36924/util";
+import type { Source } from "graphql";
+import type { FieldDirectives } from "./directives";
+import { buildTypes, Field, Fields, printTypes, sortTypes, Types } from "./types";
+import {
+  getFieldName,
+  getJoinTypeName,
+  getListFieldName,
+  getTypeName,
+  isReservedFieldName,
+  isReservedTypeName,
+} from "./util";
 
-const deleteBaseFields = (types: Types) => {
-  for (const { fields } of Object.values(types)) {
-    for (const fieldName of Object.keys(fields)) {
-      if (fieldName in baseTypeFields) {
-        delete fields[fieldName];
-      }
-    }
-  }
+const fixModelTypes = (types: Types) => {
+  const _types = createObjectNull<Types>();
+  const joinTypeSet = new Set<string>();
+  const renameJoinTypeFields: Field[] = [];
 
-  return types;
-};
+  for (const type of Object.values(types)) {
+    const { name, fields } = type;
+    const typeName = getTypeName(name);
 
-const fixName = (types: Types) => {
-  const _types: Types = createObject();
-
-  // fix fieldName and fieldTypeName
-  for (const [typeName, type] of Object.entries(types)) {
-    const fields: Fields = createObject();
-
-    for (const [fieldName, field] of Object.entries(type.fields)) {
-      const _fieldName = field.list ? getListFieldName(fieldName) : getNonListFieldName(fieldName);
-      fields[_fieldName] = { ...field, type: getTypeName(field.type) };
+    if (isReservedTypeName(typeName)) {
+      continue;
     }
 
-    const _fields: Fields = createObject();
+    const _fields = createObjectNull<Fields>();
 
-    for (const [fieldName, field] of Object.entries(fields)) {
-      if (field.scalar) {
-        _fields[fieldName] = field;
+    for (const field of Object.values(fields)) {
+      const list = field.list;
+      const name = (list ? getListFieldName : getFieldName)(field.name);
+
+      if (isReservedFieldName(name)) {
         continue;
       }
 
-      const fieldTypeName = field.type;
-      const _fieldName = field.list ? getListFieldName(fieldTypeName) : getNonListFieldName(fieldTypeName);
-      const __fieldName = _fieldName in fields || _fieldName in _fields ? fieldName : _fieldName;
-      _fields[__fieldName] = field;
+      const { scalar, directives } = field;
+      const type = getTypeName(field.type);
+      const _directives: FieldDirectives = {};
+      _fields[name] = { ...field, name, type, directives: _directives };
+
+      if (scalar) {
+        continue;
+      }
+
+      const _field = _fields[name];
+
+      if (directives.field?.name) {
+        if (!list) {
+          _field.nullable = true;
+        }
+
+        _directives.field = { name: getFieldName(directives.field.name) } as FieldDirectives["field"];
+      } else if (directives.type?.name && list) {
+        let joinTypeName: string;
+
+        if (getTypeName(name) === type) {
+          joinTypeName = getJoinTypeName(typeName, type);
+        } else {
+          joinTypeName = getJoinTypeName(directives.type.name);
+          renameJoinTypeFields.push(_field);
+        }
+
+        joinTypeSet.add(joinTypeName);
+        _directives.type = { name: joinTypeName } as FieldDirectives["type"];
+      }
     }
 
-    _types[getTypeName(typeName)] = { ...type, fields: _fields };
+    _types[typeName] = {
+      ...type,
+      directives: {},
+      fields: _fields,
+    };
+  }
+
+  for (let i = 0, len = renameJoinTypeFields.length; i < len; i++) {
+    const _renameJoinTypeFields = [renameJoinTypeFields[i]];
+
+    for (let j = i + 1; j < len; j++) {
+      if (renameJoinTypeFields[i].directives.type!.name === renameJoinTypeFields[j].directives.type!.name) {
+        _renameJoinTypeFields.push(renameJoinTypeFields[j]);
+      }
+    }
+
+    if (_renameJoinTypeFields.length === 2) {
+      const joinTypeName = getJoinTypeName(_renameJoinTypeFields[0].name, _renameJoinTypeFields[1].name);
+      joinTypeSet.add(joinTypeName);
+      _renameJoinTypeFields[0].directives.type!.name = _renameJoinTypeFields[1].directives.type!.name = joinTypeName;
+    }
+  }
+
+  for (const type of Object.keys(_types)) {
+    const joinTypeName = getJoinTypeName(type);
+
+    if (joinTypeSet.has(joinTypeName)) {
+      delete _types[type];
+    }
   }
 
   return _types;
 };
 
-function fixDirective(types: Types) {
-  types = copyTypes(types);
-  const array: [fieldName: string, field: Field][] = [];
-
-  for (const [typeName, type] of Object.entries(types)) {
-    for (const [fieldName, field] of Object.entries(type.fields)) {
-      const directives: FieldDirectives = field.directives;
-
-      if (field.scalar) {
-        delete directives.field;
-        delete directives.type;
-      }
-
-      const { field: fieldDirective, type: typeDirective } = directives;
-      const fieldDirectiveName = fieldDirective?.name;
-
-      if (fieldDirectiveName !== undefined) {
-        fieldDirective!.name = getNonListFieldName(fieldDirectiveName);
-
-        if (!field.list) {
-          field.nullable = true;
-        }
-      }
-
-      const typeDirectiveName = typeDirective?.name;
-
-      if (typeDirectiveName !== undefined) {
-        if (getTypeName(fieldName) === field.type) {
-          const refTypeFields = types[field.type].fields;
-          const refFieldName = getListFieldName(typeName);
-          const refDirectives = refTypeFields[refFieldName]?.directives ?? {};
-          delete directives.type;
-          delete refDirectives.type;
-
-          refTypeFields[refFieldName] = {
-            name: refFieldName,
-            type: typeName,
-            list: true,
-            nullable: false,
-            scalar: false,
-            directives: refDirectives,
-          };
-
-          continue;
-        }
-
-        array.push([fieldName, field]);
-        const typeNames = typeDirectiveName.split("To").map(getTypeName);
-
-        if (typeNames.length === 2 && typeNames.every((typeName) => typeName in types)) {
-          typeDirective!.name = getJoinTypeName(typeNames);
-          continue;
-        }
-      }
-    }
-  }
-
-  array.forEach(([fieldName, field], i, array) => {
-    const typeDirective = field.directives.type!;
-    const joinTypeName = typeDirective.name;
-    const _array = array.slice(i + 1).filter((v) => v[1].directives.type!.name === joinTypeName);
-
-    if (_array.length === 1) {
-      const [_fieldName, _field] = _array[0];
-      typeDirective.name = _field.directives.type!.name = getJoinTypeName([fieldName, _fieldName]);
-    }
-  });
-
-  return types;
-}
-
-export const model = (source: string) => {
-  let types = getTypes(`${customScalars}${modelDirectives}${source}`);
-  types = deleteBaseFields(types);
-  types = fixName(types);
-  types = fixDirective(types);
+export const fixModel = (graphql: string | Source) => {
+  let types = buildModel(graphql);
   types = sortTypes(types);
-  const model = printTypes(types);
-  return model;
+  graphql = printTypes(types);
+  return graphql;
+};
+
+export const buildModel = (graphql: string | Source) => {
+  let types = buildTypes(graphql);
+  types = fixModelTypes(types);
+  return types;
 };
