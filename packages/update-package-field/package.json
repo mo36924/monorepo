@@ -3,8 +3,6 @@
   "version": "1.3.76",
   "description": "update-package-field",
   "keywords": [],
-  "author": "mo36924 <mo36924@users.noreply.github.com>",
-  "license": "MIT",
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
     "url": "https://github.com/mo36924/monorepo/issues"
@@ -14,24 +12,26 @@
     "url": "git+https://github.com/mo36924/monorepo.git",
     "directory": "packages/update-package-field"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "bin": {
-    "update-package-field": "./dist/bin.mjs"
-  },
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "bin": {
+    "update-package-field": "./dist/bin.mjs"
+  },
   "dependencies": {
-    "@babel/core": "^7.13.14",
-    "@babel/plugin-syntax-typescript": "^7.12.13",
+    "@babel/core": "^7.14.6",
+    "@babel/plugin-syntax-typescript": "^7.14.5",
     "@mo36924/prettier": "^1.3.46",
     "sort-package-json": "^1.50.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

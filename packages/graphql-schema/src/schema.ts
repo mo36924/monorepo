@@ -17,10 +17,17 @@ import {
   getTypeName,
 } from "./util";
 
-export type Where<T extends string = "field1" | "field2" | "field3"> = {
+export type WhereArgument<T extends string = "field1" | "field2" | "field3"> = {
   [U in T | LogicalOperators]?: U extends LogicalOperators
-    ? Where<T> | undefined
+    ? WhereArgument<T> | undefined
     : { [V in ComparisonOperators]?: any };
+};
+
+export type FieldArguments = {
+  where?: WhereArgument;
+  order?: string[];
+  limit?: number;
+  offset?: number;
 };
 
 const fixSchemaTypes = (types: Types) => {

@@ -1,0 +1,31 @@
+{
+  "name": "@mo36924/babel-plugin-replace-jsx-ligature",
+  "version": "1.0.0",
+  "description": "babel-plugin-replace-jsx-ligature",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/babel-plugin-replace-jsx-ligature"
+  },
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "dependencies": {
+    "@babel/core": "^7.14.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

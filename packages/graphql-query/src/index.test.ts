@@ -1,6 +1,16 @@
 import { describe, expect, it } from "@jest/globals";
 import { buildSchema, parse } from "graphql";
-import resolve from "./index";
+import { buildQuery as _buildQuery } from "./index";
+
+const buildQuery = (...args: Parameters<typeof _buildQuery>) => {
+  const result = _buildQuery(...args);
+
+  if (result.errors) {
+    throw result.errors[0];
+  }
+
+  return { data: result.data };
+};
 
 describe("graphql-query", () => {
   it("object", () => {
@@ -24,7 +34,7 @@ describe("graphql-query", () => {
       }
     `);
 
-    const result = resolve(schema, query, { limit: 1 });
+    const result = buildQuery(schema, query, { limit: 1 });
 
     expect(result).toMatchInlineSnapshot(`
       Object {
@@ -102,7 +112,7 @@ describe("graphql-query", () => {
       }
     `);
 
-    const result = resolve(schema, query, { data: { id: "id" } });
+    const result = buildQuery(schema, query, { data: { id: "id" } });
 
     expect(result).toMatchInlineSnapshot(`
       Object {
@@ -197,7 +207,7 @@ describe("graphql-query", () => {
       }
     `);
 
-    const result = resolve(schema, query);
+    const result = buildQuery(schema, query);
 
     expect(result).toMatchInlineSnapshot(`
       Object {
@@ -300,7 +310,7 @@ describe("graphql-query", () => {
       }
     `);
 
-    const result = resolve(schema, query);
+    const result = buildQuery(schema, query);
 
     expect(result).toMatchInlineSnapshot(`
       Object {
@@ -340,84 +350,6 @@ describe("graphql-query", () => {
                         "name": "id",
                       },
                     },
-                    "list": false,
-                    "name": "name",
-                    "nullable": false,
-                    "parentType": "User",
-                    "returnType": "String",
-                    "type": "scalar",
-                    "types": Object {},
-                  },
-                },
-              },
-            },
-          },
-        },
-      }
-    `);
-  });
-
-  it("query directive", () => {
-    const schema = buildSchema(`
-      directive @default(value: String!) on FIELD
-
-      type Query {
-        users: [User!]!
-      }
-
-      type User {
-        id: ID!
-        name: String!
-      }
-    `);
-
-    const query = parse(`
-      {
-        users {
-          id @default(value: "1")
-          name
-        }
-      }
-    `);
-
-    const result = resolve(schema, query);
-
-    expect(result).toMatchInlineSnapshot(`
-      Object {
-        "data": Object {
-          "Query": Object {
-            "users": Object {
-              "alias": "users",
-              "args": Object {},
-              "directives": Object {},
-              "list": true,
-              "name": "users",
-              "nullable": false,
-              "parentType": "Query",
-              "returnType": "User",
-              "type": "object",
-              "types": Object {
-                "User": Object {
-                  "id": Object {
-                    "alias": "id",
-                    "args": Object {},
-                    "directives": Object {
-                      "default": Object {
-                        "value": "1",
-                      },
-                    },
-                    "list": false,
-                    "name": "id",
-                    "nullable": false,
-                    "parentType": "User",
-                    "returnType": "ID",
-                    "type": "scalar",
-                    "types": Object {},
-                  },
-                  "name": Object {
-                    "alias": "name",
-                    "args": Object {},
-                    "directives": Object {},
                     "list": false,
                     "name": "name",
                     "nullable": false,

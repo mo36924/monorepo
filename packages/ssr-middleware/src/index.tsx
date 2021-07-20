@@ -1,7 +1,7 @@
 import { context } from "@mo36924/graphql-preact";
 import type { MiddlewareFactory } from "@mo36924/http-server";
 import type { Match } from "@mo36924/page-match";
-import { createObjectNull } from "@mo36924/utils";
+import { createObjectNull } from "@mo36924/util";
 import render from "preact-render-to-string";
 import prepass from "preact-ssr-prepass";
 

@@ -1,6 +1,6 @@
 import type { Config } from "@mo36924/config";
-import exec from "@mo36924/promise-exec";
 import { retry } from "@mo36924/util";
+import { exec } from "@mo36924/util-node";
 
 export default async (config: Config) => {
   const database = config.databaseDevelopment;

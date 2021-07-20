@@ -1,7 +1,7 @@
 import { context } from "@mo36924/graphql-preact";
 import type { ErrorMiddlewareFactory } from "@mo36924/http-server";
 import lazy from "@mo36924/preact-lazy";
-import { createObjectNull } from "@mo36924/utils";
+import { createObjectNull } from "@mo36924/util";
 import type { ComponentType } from "preact";
 import render from "preact-render-to-string";
 import prepass from "preact-ssr-prepass";

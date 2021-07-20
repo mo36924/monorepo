@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import type { Options as InjectOptions } from "@mo36924/babel-plugin-inject";
 import type { Options as PageGeneratorOptions } from "@mo36924/page-generator";
-import { createObject } from "@mo36924/utils";
+import { createObject } from "@mo36924/util";
 import { cosmiconfigSync } from "cosmiconfig";
 
 type DatabaseConfig =

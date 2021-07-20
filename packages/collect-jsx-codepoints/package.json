@@ -1,0 +1,33 @@
+{
+  "name": "@mo36924/collect-jsx-codepoints",
+  "version": "1.0.0",
+  "description": "collect-jsx-codepoints",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/collect-jsx-codepoints"
+  },
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "dependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/plugin-syntax-typescript": "^7.14.5",
+    "fast-glob": "^3.2.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

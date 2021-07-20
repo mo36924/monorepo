@@ -1,3 +1,0 @@
-# graphql-utils
-
-graphql-utils

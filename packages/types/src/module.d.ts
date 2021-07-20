@@ -1,4 +1,5 @@
 declare module "@babel/plugin-syntax-typescript";
+declare module "@babel/plugin-syntax-jsx";
 declare module "@babel/plugin-transform-react-constant-elements";
 declare module "@babel/preset-react";
 declare module "@babel/preset-typescript";

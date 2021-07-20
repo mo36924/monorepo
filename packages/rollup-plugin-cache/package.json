@@ -3,8 +3,6 @@
   "version": "1.3.63",
   "description": "rollup-plugin-cache",
   "keywords": [],
-  "author": "mo36924 <mo36924@users.noreply.github.com>",
-  "license": "MIT",
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
     "url": "https://github.com/mo36924/monorepo/issues"
@@ -14,17 +12,16 @@
     "url": "git+https://github.com/mo36924/monorepo.git",
     "directory": "packages/rollup-plugin-cache"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "dependencies": {
     "@gfx/zopfli": "^1.0.15",
     "@mo36924/base64url": "^1.3.46",
@@ -32,5 +29,8 @@
     "fast-glob": "^3.2.5",
     "mime-types": "^2.1.29",
     "rollup": "^2.44.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

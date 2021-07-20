@@ -16,14 +16,14 @@ export default (): MiddlewareFactory => async (server) => {
 
   const schema = fixSchema(gql);
   const ast = parse(schema);
-  let middlewareFactory: MiddlewareFactory;
+  let middlewareFactory!: MiddlewareFactory;
 
   if (config.name === "postgres") {
-    const mod = await import("@mo36924/graphql-postgres-middleware");
-    middlewareFactory = mod.default({ ...config, ast });
+    // const mod = await import("@mo36924/graphql-postgres-middleware");
+    //middlewareFactory = mod.default({ ...config, ast });
   } else {
-    const mod = await import("@mo36924/graphql-postgres-middleware");
-    middlewareFactory = mod.default({ ...config, ast });
+    // const mod = await import("@mo36924/graphql-postgres-middleware");
+    //middlewareFactory = mod.default({ ...config, ast });
   }
 
   const middleware = await middlewareFactory(server);

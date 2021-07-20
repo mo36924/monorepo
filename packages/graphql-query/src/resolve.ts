@@ -1,4 +1,4 @@
-import { fieldDirectives } from "@mo36924/graphql-utils";
+import type { FieldDirectives } from "@mo36924/graphql-schema";
 import {
   FieldNode,
   getDirectiveValues,
@@ -21,11 +21,12 @@ import {
 } from "graphql";
 import type { ExecutionContext } from "graphql/execution/execute";
 import { getArgumentValues } from "graphql/execution/values";
+import { getDirectives } from "./directives";
 
 export type Types = { [typeName: string]: Fields };
 export type Fields = { [fieldName: string]: Field };
+export type Directives = FieldDirectives;
 export type Args = { [key: string]: any };
-export type Directives = { [directive: string]: { [key: string]: any } | undefined };
 export type Field = {
   parentType: string;
   alias: string;
@@ -77,19 +78,19 @@ const resolveField = (
   const name = fieldNode.name.value;
   const alias = fieldNode.alias ? fieldNode.alias.value : name;
   const field = (parentType as GraphQLObjectType | GraphQLInterfaceType).getFields()[name];
-  const directives: { [key: string]: any } = Object.assign(Object.create(null), fieldDirectives(context.schema, field));
+  const directives = getDirectives(field.astNode!);
 
-  for (const directive of fieldNode.directives || []) {
-    const name = directive.name.value;
+  // for (const directive of fieldNode.directives || []) {
+  //   const name = directive.name.value;
 
-    switch (name) {
-      case "skip":
-      case "include":
-        continue;
-    }
+  //   switch (name) {
+  //     case "skip":
+  //     case "include":
+  //       continue;
+  //   }
 
-    directives[name] = getArgumentValues(context.schema.getDirective(name)!, directive, context.variableValues);
-  }
+  //   directives[name] = getArgumentValues(context.schema.getDirective(name)!, directive, context.variableValues);
+  // }
 
   if (name === "__typename") {
     fields[alias] = {

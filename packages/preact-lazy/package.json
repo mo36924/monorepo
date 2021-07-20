@@ -3,8 +3,6 @@
   "version": "1.3.74",
   "description": "preact-lazy",
   "keywords": [],
-  "author": "mo36924 <mo36924@users.noreply.github.com>",
-  "license": "MIT",
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
     "url": "https://github.com/mo36924/monorepo/issues"
@@ -14,12 +12,8 @@
     "url": "git+https://github.com/mo36924/monorepo.git",
     "directory": "packages/preact-lazy"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "browser": "./dist/index.client.js",
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
   "exports": {
     ".": {
       "browser": "./dist/index.client.js",
@@ -27,7 +21,13 @@
       "require": "./dist/index.js"
     }
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "browser": "./dist/index.client.js",
   "dependencies": {
     "preact": "^10.5.13"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
