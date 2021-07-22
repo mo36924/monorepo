@@ -25,7 +25,11 @@ async function writeFileAsync(path: string, data: string) {
 }
 
 export default async (options?: Options) => {
-  const { watch: watchMode, model: modelPath, schema: schemaPath } = {
+  const {
+    watch: watchMode,
+    model: modelPath,
+    schema: schemaPath,
+  } = {
     ...defaultOptions,
     ...options,
   };

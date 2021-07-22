@@ -24,7 +24,6 @@
   "module": "./dist/index.mjs",
   "dependencies": {
     "@mo36924/config": "^1.3.77",
-    "@mo36924/graphql-postgres-middleware": "^1.3.75",
     "@mo36924/graphql-schema": "^1.3.77",
     "@mo36924/http-server": "^1.3.77",
     "graphql": "^15.5.0"

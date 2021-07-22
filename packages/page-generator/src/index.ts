@@ -1,8 +1,8 @@
 import { once } from "events";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, extname, relative, resolve, sep } from "path";
-import { format as _format, resolveConfig } from "@mo36924/prettier";
 import { watch } from "chokidar";
+import prettier from "prettier";
 
 export type Options = {
   watch?: boolean;
@@ -12,6 +12,8 @@ export type Options = {
   include?: string[];
   exclude?: string[];
 };
+
+const { format: _format, resolveConfig } = prettier;
 
 const defaultOptions: Required<Options> = {
   watch: process.env.NODE_ENV !== "production",
@@ -38,7 +40,14 @@ export const match = pageMatch(staticPages, dynamicPages);
 `;
 
 export default async (options?: Options) => {
-  const { watch: watchMode, dir, file, template, include, exclude } = {
+  const {
+    watch: watchMode,
+    dir,
+    file,
+    template,
+    include,
+    exclude,
+  } = {
     ...defaultOptions,
     ...options,
   };

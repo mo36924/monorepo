@@ -24,7 +24,7 @@
   "module": "./dist/index.mjs",
   "dependencies": {
     "memfs": "^3.2.2",
-    "rollup": "^2.44.0",
+    "rollup": "^2.53.2",
     "webpack": "^5.31.0"
   },
   "publishConfig": {

@@ -1,4 +1,3 @@
-import { format, resolveConfig } from "@mo36924/prettier";
 import {
   getNamedType,
   getNullableType,
@@ -9,6 +8,9 @@ import {
   isNonNullType,
   isScalarType,
 } from "graphql";
+import prettier from "prettier";
+
+const { format, resolveConfig } = prettier;
 
 const getFieldType = (field: GraphQLInputField) => {
   const { type, name } = field;

@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "rollup": "^2.44.0"
+    "rollup": "^2.53.2"
   },
   "publishConfig": {
     "access": "public"

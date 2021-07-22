@@ -1,3 +1,0 @@
-# ssr-middleware
-
-ssr-middleware

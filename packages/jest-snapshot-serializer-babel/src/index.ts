@@ -1,5 +1,7 @@
 import type { BabelFileResult } from "@babel/core";
-import { format, resolveConfig } from "@mo36924/prettier";
+import prettier from "prettier";
+
+const { format, resolveConfig } = prettier;
 
 const config = { ...resolveConfig.sync("index.js"), filepath: "index.js" };
 

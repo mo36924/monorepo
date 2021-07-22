@@ -1,3 +1,0 @@
-# preact-hooks
-
-preact-hooks

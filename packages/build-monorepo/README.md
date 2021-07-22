@@ -1,3 +1,0 @@
-# build-monorepo
-
-build-monorepo

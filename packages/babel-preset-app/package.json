@@ -36,8 +36,6 @@
     "@mo36924/babel-plugin-replace": "^1.3.77",
     "@mo36924/babel-plugin-resolve": "^1.3.77",
     "@mo36924/babel-plugin-resolve-subpath": "^1.3.77",
-    "@mo36924/jsx-dev-runtime": "^1.3.77",
-    "core-js": "^3.10.0",
     "react-refresh": "^0.10.0"
   },
   "publishConfig": {

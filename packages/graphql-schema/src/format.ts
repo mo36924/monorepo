@@ -1,5 +1,5 @@
-import prettier from "@mo36924/prettier";
 import { stripIgnoredCharacters } from "graphql";
+import prettier from "prettier";
 
 export const minify = (code: string) => {
   return stripIgnoredCharacters(code);

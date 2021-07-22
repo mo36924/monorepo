@@ -1,3 +1,0 @@
-# preact-lazy
-
-preact-lazy

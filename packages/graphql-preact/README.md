@@ -1,3 +1,0 @@
-# graphql-preact
-
-graphql-preact

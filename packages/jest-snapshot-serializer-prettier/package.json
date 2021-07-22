@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/prettier": "^1.3.77"
+    "prettier": "^2.3.2"
   },
   "publishConfig": {
     "access": "public"

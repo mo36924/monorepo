@@ -83,8 +83,8 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj<State> 
 
               if (
                 references === 1 &&
-                referencePath.parentPath.matchesPattern("module.exports") &&
-                referencePath.parentPath.parentPath.isAssignmentExpression() &&
+                referencePath.parentPath?.matchesPattern("module.exports") &&
+                referencePath.parentPath.parentPath?.isAssignmentExpression() &&
                 referencePath.parentPath.parentPath.parentPath.isExpressionStatement() &&
                 referencePath.parentPath.parentPath.parentPath.parentPath.isProgram()
               ) {
@@ -207,7 +207,7 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj<State> 
           return;
         }
 
-        const statement = path.findParent((path) => path.parentPath.isProgram());
+        const statement = path.findParent((path) => !!path.parentPath?.isProgram());
 
         if (!statement) {
           return;

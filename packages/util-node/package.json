@@ -22,6 +22,9 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "dependencies": {
+    "prettier": "^2.3.2"
+  },
   "publishConfig": {
     "access": "public"
   }

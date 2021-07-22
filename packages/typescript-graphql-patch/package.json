@@ -23,10 +23,14 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "bin": {
-    "typescript-graphql-patch": "./dist/bin.mjs"
+    "typescript-graphql-patch": "./dist/bin.js"
   },
   "scripts": {
     "postinstall": "node -e \"import('./dist/bin.mjs').catch(e => {console.log(e)})\""
+  },
+  "dependencies": {
+    "graphql": "^15.5.0",
+    "typescript": "^4.3.5"
   },
   "publishConfig": {
     "access": "public"
