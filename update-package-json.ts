@@ -62,7 +62,6 @@ await Promise.all(
     pkg = {
       ...pkg,
       type: undefined,
-      exports: undefined,
       dependencies: undefined,
       devDependencies: undefined,
       peerDependencies: undefined,
@@ -88,6 +87,10 @@ await Promise.all(
 
     if (Object.keys(exports).length) {
       pkg.exports = {
+        ...{
+          ".": undefined,
+          ...pkg.exports,
+        },
         ".": {
           browser: undefined,
           import: undefined,
