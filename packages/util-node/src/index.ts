@@ -1,6 +1,7 @@
 import { exec as _exec } from "child_process";
-import { writeFile as _writeFile, readFile as _readFile } from "fs/promises";
+import { writeFile as _writeFile, readFile as _readFile, mkdir } from "fs/promises";
 import { AddressInfo, createServer } from "net";
+import { dirname } from "path";
 import { promisify } from "util";
 
 export const exec = promisify(_exec);
@@ -31,9 +32,21 @@ export const writeFile = async (path: string, code: string, options?: { overwrit
     code = prettier.format(code, { ...config, filepath: path });
   }
 
-  await _writeFile(path, code, {
-    flag: options?.overwrite === false ? "wx" : undefined,
-  });
+  const writeOpiotns = { flag: options?.overwrite === false ? "wx" : undefined };
+
+  try {
+    await _writeFile(path, code, writeOpiotns);
+  } catch {
+    await mkdir(dirname(path), { recursive: true });
+
+    try {
+      await _writeFile(path, code, writeOpiotns);
+    } catch {
+      return false;
+    }
+  }
+
+  return true;
 };
 
 export const readFile = async (path: string) => {
