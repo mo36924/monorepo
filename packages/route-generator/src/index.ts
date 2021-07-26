@@ -2,6 +2,7 @@ import { once } from "events";
 import { mkdir } from "fs/promises";
 import { dirname, extname, relative, resolve, sep } from "path";
 import { readFile, writeFile } from "@mo36924/util-node";
+import { camelCase } from "change-case";
 import { watch } from "chokidar";
 
 export type Options = {
@@ -37,9 +38,7 @@ export const dynamics: [pathnameRegExp: RegExp, propNames: string[], Component: 
 export const errors: { [pathname: string]: ComponentType<any> | undefined } = {
   /*errors*/
 };
-export const paths = {
-  /*paths*/
-};
+/*paths*/
 export const match = (pathname: string) => {
   const props: { [name: string]: string } = {};
   let Route = statics[pathname];
@@ -107,42 +106,67 @@ export default async (options?: Options) => {
   function pathToRoute(absolutePath: string) {
     const nonExtAbsolutePath = absolutePath.slice(0, -extname(absolutePath).length || undefined);
     const nonExtPath = relative(dir, nonExtAbsolutePath).split(sep).join("/");
-    const componentName = "$" + nonExtPath.replace(/[\/\-]/g, "$");
-    const searchPath = "/" + nonExtPath.replace(/^index$/, "").replace(/\/index$/, "/");
+    const componentName = camelCase(nonExtPath);
+    let pagePath = "/" + nonExtPath.replace(/^index$/, "").replace(/\/index$/, "/");
 
-    const searchTemplate = searchPath
-      .replace(/__|_/g, (m) => (m === "_" ? ":" : "_"))
-      .replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
-        return `\${props.${p1}}`;
-      });
-
-    let pagePath = searchPath.replace(/__|_/g, (m) => (m === "_" ? ":" : "_"));
+    const searchTemplate = pagePath
+      .replace(/\[([A-Za-z][0-9A-Za-z]*)\]/g, (_m, propName) => {
+        return `\${props.${propName}}`;
+      })
+      .replace(/\[([A-Za-z][0-9A-Za-z]*)_([A-Za-z][0-9A-Za-z]*)\]/g, (_m, propName, _type) => {
+        return `\${props.${propName}}`;
+      })
+      .replace(
+        /\[([A-Za-z][0-9A-Za-z]*)_([A-Za-z][0-9A-Za-z]*)_(\$[a-z]+)_([0-9A-Za-z]+)\]/g,
+        (_m, propName, _type, _operator, _value) => {
+          return `\${props.${propName}}`;
+        },
+      );
 
     const rank = pagePath
       .split("/")
       .map((segment) => {
-        if (!segment.includes(":")) {
+        if (!segment.includes("[")) {
           return 9;
         }
 
-        if (segment[0] !== ":") {
+        if (
+          /^\[[A-Za-z][0-9A-Za-z]*(_[A-Za-z][0-9A-Za-z]*|_[A-Za-z][0-9A-Za-z]*_\$[a-z]+_[0-9A-Za-z]+)?\]$/.test(segment)
+        ) {
           return 8;
         }
 
-        return segment.split(":").length;
+        return segment.split(
+          /\[[A-Za-z][0-9A-Za-z]*(_[A-Za-z][0-9A-Za-z]*|_[A-Za-z][0-9A-Za-z]*_\$[a-z]+_[0-9A-Za-z]+)?\]/,
+        ).length;
       })
       .join("");
 
-    const isDynamic = pagePath.includes(":");
-    const paramNames: string[] = [];
+    const isDynamic =
+      /\[[A-Za-z][0-9A-Za-z]*(_[A-Za-z][0-9A-Za-z]*|_[A-Za-z][0-9A-Za-z]*_\$[a-z]+_[0-9A-Za-z]+)?\]/.test(pagePath);
+
+    const propNames: string[] = [];
 
     if (isDynamic) {
       pagePath =
         "/^" +
-        pagePath.replace(/\//g, "\\/").replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
-          paramNames.push(p1);
-          return "([^\\/]+?)";
-        }) +
+        pagePath
+          .replace(/\//g, "\\/")
+          .replace(/\[([A-Za-z][0-9A-Za-z]*)\]/g, (_m, propName) => {
+            propNames.push(propName);
+            return "([^\\/]+?)";
+          })
+          .replace(/\[([A-Za-z][0-9A-Za-z]*)_([A-Za-z][0-9A-Za-z]*)\]/g, (_m, propName, _type) => {
+            propNames.push(propName);
+            return "([^\\/]+?)";
+          })
+          .replace(
+            /\[([A-Za-z][0-9A-Za-z]*)_([A-Za-z][0-9A-Za-z]*)_(\$[a-z]+)_([0-9A-Za-z]+)\]/g,
+            (_m, propName, _type, _operator, _value) => {
+              propNames.push(propName);
+              return "([^\\/]+?)";
+            },
+          ) +
         "$/";
     }
 
@@ -154,12 +178,11 @@ export default async (options?: Options) => {
 
     return {
       importPath,
-      searchPath,
       searchTemplate,
       componentName,
       isDynamic,
       pagePath,
-      paramNames,
+      propNames,
       rank,
     };
   }
@@ -172,13 +195,13 @@ export default async (options?: Options) => {
       return;
     }
 
-    const { paramNames, isDynamic } = pathToRoute(absolutePath);
+    const { propNames, isDynamic } = pathToRoute(absolutePath);
 
     if (isDynamic) {
-      const params = paramNames.map((name) => `${name}: string`).join();
+      const propsType = `{${propNames.map((propName) => `${JSON.stringify(propName)}: string`).join()}}`;
 
       code = `
-        export default (props: { ${params} }) => {
+        export default (props: ${propsType}) => {
           return (
             <div></div>
           )
@@ -210,31 +233,23 @@ export default async (options?: Options) => {
     let errors = "";
     let paths = "";
 
-    for (const {
-      importPath,
-      searchPath,
-      searchTemplate,
-      componentName,
-      pagePath,
-      isDynamic,
-      paramNames,
-    } of pagePaths) {
+    for (const { importPath, searchTemplate, componentName, pagePath, isDynamic, propNames } of pagePaths) {
       const importSource = JSON.stringify(importPath);
-      const propsType = `{${paramNames.map((name) => `${JSON.stringify(name)}: string`).join()}}`;
+      const propsType = `{${propNames.map((propName) => `${JSON.stringify(propName)}: string`).join()}}`;
       const componentType = `ComponentType<${propsType}>`;
 
       imports += dynamicImport
-        ? `const ${componentName}: ${componentType} = lazy(() => import(${importSource}));`
-        : `import $${componentName} from ${importSource};const ${componentName}: ${componentType} = $${componentName};`;
+        ? `const $${componentName}: ${componentType} = lazy(() => import(${importSource}));`
+        : `import $$${componentName} from ${importSource};const $${componentName}: ${componentType} = $$${componentName};`;
 
       if (isDynamic) {
-        dynamics += `[${pagePath},${JSON.stringify(paramNames)},${componentName}],`;
-        paths += `${JSON.stringify(searchPath)}: (props: ${propsType}) => \`${searchTemplate}\`,`;
+        dynamics += `[${pagePath},${JSON.stringify(propNames)},$${componentName}],`;
+        paths += `export const ${componentName} = (props: ${propsType}) => \`${searchTemplate}\`;`;
       } else if (/^\/[45]\d\d$/.test(pagePath)) {
-        errors += `${pagePath.slice(1)}: ${componentName},`;
+        errors += `${pagePath.slice(1)}: $${componentName},`;
       } else {
-        statics += `${JSON.stringify(pagePath)}: ${componentName},`;
-        paths += `${JSON.stringify(searchPath)}: ${JSON.stringify(searchTemplate)},`;
+        statics += `${JSON.stringify(pagePath)}: $${componentName},`;
+        paths += `export const ${componentName} = ${JSON.stringify(searchTemplate)};`;
       }
     }
 
