@@ -41,6 +41,83 @@ const voidElements = new Set<string>([
   "wbr",
 ]);
 
+const propertyNames: { [key: string]: string } = Object.assign(Object.create(null), {
+  acceptCharset: "accept-charset",
+  httpEquiv: "http-equiv",
+  accentHeight: "accent-height",
+  alignmentBaseline: "alignment-baseline",
+  arabicForm: "arabic-form",
+  baselineShift: "baseline-shift",
+  capHeight: "cap-height",
+  clipPath: "clip-path",
+  clipRule: "clip-rule",
+  colorInterpolation: "color-interpolation",
+  colorInterpolationFilters: "color-interpolation-filters",
+  colorProfile: "color-profile",
+  colorRendering: "color-rendering",
+  dominantBaseline: "dominant-baseline",
+  enableBackground: "enable-background",
+  fillOpacity: "fill-opacity",
+  fillRule: "fill-rule",
+  floodOpacity: "flood-opacity",
+  floodColor: "flood-color",
+  fontFamily: "font-family",
+  fontSize: "font-size",
+  fontSizeAdjust: "font-size-adjust",
+  fontStretch: "font-stretch",
+  fontStyle: "font-style",
+  fontVariant: "font-variant",
+  fontWeight: "font-weight",
+  glyphName: "glyph-name",
+  glyphOrientationHorizontal: "glyph-orientation-horizontal",
+  glyphOrientationVertical: "glyph-orientation-vertical",
+  horizAdvX: "horiz-adv-x",
+  horizOriginX: "horiz-origin-x",
+  imageRendering: "image-rendering",
+  letterSpacing: "letter-spacing",
+  lightingColor: "lighting-color",
+  markerEnd: "marker-end",
+  markerMid: "marker-mid",
+  markerStart: "marker-start",
+  overlinePosition: "overline-position",
+  overlineThickness: "overline-thickness",
+  paintOrder: "paint-order",
+  panose1: "panose-1",
+  pointerEvents: "pointer-events",
+  renderingIntent: "rendering-intent",
+  shapeRendering: "shape-rendering",
+  stopColor: "stop-color",
+  stopOpacity: "stop-opacity",
+  strikethroughPosition: "strikethrough-position",
+  strikethroughThickness: "strikethrough-thickness",
+  strokeDasharray: "stroke-dasharray",
+  strokeDashoffset: "stroke-dashoffset",
+  strokeLinecap: "stroke-linecap",
+  strokeLinejoin: "stroke-linejoin",
+  strokeMiterlimit: "stroke-miterlimit",
+  strokeWidth: "stroke-width",
+  strokeOpacity: "stroke-opacity",
+  textAnchor: "text-anchor",
+  textDecoration: "text-decoration",
+  textRendering: "text-rendering",
+  underlinePosition: "underline-position",
+  underlineThickness: "underline-thickness",
+  unicodeBidi: "unicode-bidi",
+  unicodeRange: "unicode-range",
+  unitsPerEm: "units-per-em",
+  vAlphabetic: "v-alphabetic",
+  vectorEffect: "vector-effect",
+  vertAdvY: "vert-adv-y",
+  vertOriginX: "vert-origin-x",
+  vertOriginY: "vert-origin-y",
+  vHanging: "v-hanging",
+  vIdeographic: "v-ideographic",
+  vMathematical: "v-mathematical",
+  wordSpacing: "word-spacing",
+  writingMode: "writing-mode",
+  xHeight: "x-height",
+});
+
 export const Fragment = (props: { children?: Children }) => props.children;
 
 export const jsx = (
@@ -179,18 +256,20 @@ export const render = async (children: Children, context: any = {}): Promise<str
         continue;
       }
 
+      const name = propertyNames[key] ?? key.toLowerCase();
+
       if (value === true) {
-        attributes += ` ${key}`;
+        attributes += ` ${name}`;
         continue;
       }
 
       switch (typeof value) {
         case "string":
-          attributes += ` ${key}="${escapeHtml(value, true)}"`;
+          attributes += ` ${name}="${escapeHtml(value, true)}"`;
           continue;
         case "number":
         case "bigint":
-          attributes += ` ${key}="${value}"`;
+          attributes += ` ${name}="${value}"`;
           continue;
       }
     }
