@@ -17,15 +17,16 @@ export type Options = {
 const defaultOptions: Required<Options> = {
   watch: process.env.NODE_ENV !== "production",
   dir: "src/routes",
-  file: "src/lib/router.ts",
+  file: "src/components/Router.tsx",
   dynamicImport: true,
-  template: "src/lib/router.template.ts",
+  template: "src/components/Router.template.tsx",
   include: ["**/*.tsx"],
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
 
 const defaultTemplate = `
-import { ComponentType, lazy } from "react";
+// @ts-ignore
+import { ComponentType, lazy, Suspense } from "react";
 /*imports*/
 export const statics: { [pathname: string]: ComponentType<any> | undefined } = {
   /*statics*/
@@ -52,7 +53,20 @@ export const match = (pathname: string) => {
       }
     });
   }
-  return [Route, props] as const;
+  return Route && ([Route, props] as const);
+};
+export default (props: { pathname: string }) => {
+  const matches = match(props.pathname);
+  if (matches) {
+    const [Component, props] = matches;
+    return (
+      <Suspense fallback>
+        <Component {...props}></Component>
+      </Suspense>
+    );
+  } else {
+    return null;
+  }
 };
 `;
 
@@ -206,7 +220,7 @@ export default async (options?: Options) => {
       paramNames,
     } of pagePaths) {
       const importSource = JSON.stringify(importPath);
-      const propsType = `{${paramNames.map((name) => `${name}: string`).join()}}`;
+      const propsType = `{${paramNames.map((name) => `${JSON.stringify(name)}: string`).join()}}`;
       const componentType = `ComponentType<${propsType}>`;
 
       imports += dynamicImport
