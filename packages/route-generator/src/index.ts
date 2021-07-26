@@ -95,7 +95,13 @@ export default async (options?: Options) => {
     const nonExtPath = relative(dir, nonExtAbsolutePath).split(sep).join("/");
     const componentName = "$" + nonExtPath.replace(/[\/\-]/g, "$");
     const searchPath = "/" + nonExtPath.replace(/^index$/, "").replace(/\/index$/, "/");
-    let searchTemplate = searchPath;
+
+    const searchTemplate = searchPath
+      .replace(/__|_/g, (m) => (m === "_" ? ":" : "_"))
+      .replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
+        return `\${props.${p1}}`;
+      });
+
     let pagePath = searchPath.replace(/__|_/g, (m) => (m === "_" ? ":" : "_"));
 
     const rank = pagePath
@@ -124,10 +130,6 @@ export default async (options?: Options) => {
           return "([^\\/]+?)";
         }) +
         "$/";
-
-      searchTemplate = pagePath.replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
-        return `\${props.${p1}}`;
-      });
     }
 
     let importPath = relative(dirname(file), nonExtAbsolutePath).split(sep).join("/");
@@ -218,7 +220,7 @@ export default async (options?: Options) => {
         errors += `${pagePath.slice(1)}: ${componentName},`;
       } else {
         statics += `${JSON.stringify(pagePath)}: ${componentName},`;
-        paths += `${JSON.stringify(searchPath)}: () => ${JSON.stringify(searchTemplate)},`;
+        paths += `${JSON.stringify(searchPath)}: ${JSON.stringify(searchTemplate)},`;
       }
     }
 
