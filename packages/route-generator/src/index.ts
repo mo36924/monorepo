@@ -1,5 +1,5 @@
 import { once } from "events";
-import { mkdir } from "fs/promises";
+import { access, mkdir } from "fs/promises";
 import { dirname, extname, relative, resolve, sep } from "path";
 import { readFile, writeFile } from "@mo36924/util-node";
 import { camelCase } from "change-case";
@@ -99,6 +99,7 @@ export default async (options?: Options) => {
     watcher.on("add", generate);
     watcher.on("unlink", generate);
     watcher.on("unlinkDir", generate);
+    watcher.on("raw", generate);
   } else {
     await watcher.close();
   }
@@ -222,11 +223,22 @@ export default async (options?: Options) => {
 
   async function generate() {
     const watched = watcher.getWatched();
+    const watchedPaths: string[] = [];
 
-    const pagePaths = Object.entries(watched)
-      .flatMap(([_dir, names]) => names.map((name) => pathToRoute(resolve(dir, _dir, name))))
-      .sort((a, b) => (b.rank as any) - (a.rank as any));
+    await Promise.allSettled(
+      Object.entries(watched)
+        .flatMap(([_dir, names]) => names.map((name) => resolve(dir, _dir, name)))
+        .map(async (path) => {
+          try {
+            await access(path);
+            watchedPaths.push(path);
+          } catch {
+            watcher.unwatch(path);
+          }
+        }),
+    );
 
+    const pagePaths = watchedPaths.map((path) => pathToRoute(path)).sort((a, b) => (b.rank as any) - (a.rank as any));
     let imports = "";
     let statics = "";
     let dynamics = "";
