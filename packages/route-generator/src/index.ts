@@ -36,6 +36,9 @@ export const dynamics: [pathnameRegExp: RegExp, propNames: string[], Component: 
 export const errors: { [pathname: string]: ComponentType<any> | undefined } = {
   /*errors*/
 };
+export const paths = {
+  /*paths*/
+};
 export const match = (pathname: string) => {
   const props: { [name: string]: string } = {};
   let Route = statics[pathname];
@@ -91,13 +94,9 @@ export default async (options?: Options) => {
     const nonExtAbsolutePath = absolutePath.slice(0, -extname(absolutePath).length || undefined);
     const nonExtPath = relative(dir, nonExtAbsolutePath).split(sep).join("/");
     const componentName = "$" + nonExtPath.replace(/[\/\-]/g, "$");
-
-    let pagePath =
-      "/" +
-      nonExtPath
-        .replace(/^index$/, "")
-        .replace(/\/index$/, "/")
-        .replace(/__|_/g, (m) => (m === "_" ? ":" : "_"));
+    const searchPath = "/" + nonExtPath.replace(/^index$/, "").replace(/\/index$/, "/");
+    let searchTemplate = searchPath;
+    let pagePath = searchPath.replace(/__|_/g, (m) => (m === "_" ? ":" : "_"));
 
     const rank = pagePath
       .split("/")
@@ -125,6 +124,10 @@ export default async (options?: Options) => {
           return "([^\\/]+?)";
         }) +
         "$/";
+
+      searchTemplate = searchTemplate.replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
+        return `\${props.${p1}}`;
+      });
     }
 
     let importPath = relative(dirname(file), nonExtAbsolutePath).split(sep).join("/");
@@ -135,6 +138,8 @@ export default async (options?: Options) => {
 
     return {
       importPath,
+      searchPath,
+      searchTemplate,
       componentName,
       isDynamic,
       pagePath,
@@ -187,21 +192,33 @@ export default async (options?: Options) => {
     let statics = "";
     let dynamics = "";
     let errors = "";
+    let paths = "";
 
-    for (const { importPath, componentName, pagePath, isDynamic, paramNames } of pagePaths) {
+    for (const {
+      importPath,
+      searchPath,
+      searchTemplate,
+      componentName,
+      pagePath,
+      isDynamic,
+      paramNames,
+    } of pagePaths) {
       const importSource = JSON.stringify(importPath);
-      const propsType = `ComponentType<{${paramNames.map((name) => `${name}:string`).join()}}>`;
+      const propsType = `{${paramNames.map((name) => `${name}: string`).join()}}`;
+      const componentType = `ComponentType<${propsType}>`;
 
       imports += dynamicImport
-        ? `const ${componentName}: ${propsType} = lazy(() => import(${importSource}));`
-        : `import $${componentName} from ${importSource};const ${componentName}: ${propsType} = $${componentName};`;
+        ? `const ${componentName}: ${componentType} = lazy(() => import(${importSource}));`
+        : `import $${componentName} from ${importSource};const ${componentName}: ${componentType} = $${componentName};`;
 
       if (isDynamic) {
         dynamics += `[${pagePath},${JSON.stringify(paramNames)},${componentName}],`;
+        paths += `${JSON.stringify(searchPath)}: (props: ${propsType}) => \`${searchTemplate}\`,`;
       } else if (/^\/[45]\d\d$/.test(pagePath)) {
-        errors += `${pagePath.slice(1)}: ${componentName}`;
+        errors += `${pagePath.slice(1)}: ${componentName},`;
       } else {
-        statics += `${JSON.stringify(pagePath)}: ${componentName}`;
+        statics += `${JSON.stringify(pagePath)}: ${componentName},`;
+        paths += `${JSON.stringify(searchPath)}: () => ${JSON.stringify(searchTemplate)},`;
       }
     }
 
@@ -212,7 +229,7 @@ export default async (options?: Options) => {
       code = defaultTemplate;
     }
 
-    code = Object.entries({ imports, statics, dynamics, errors }).reduce(
+    code = Object.entries({ imports, statics, dynamics, errors, paths }).reduce(
       (code, [key, value]) => code.replace(`/*${key}*/`, () => value),
       code,
     );
