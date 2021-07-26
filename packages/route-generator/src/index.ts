@@ -125,7 +125,7 @@ export default async (options?: Options) => {
         }) +
         "$/";
 
-      searchTemplate = searchTemplate.replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
+      searchTemplate = pagePath.replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, p1) => {
         return `\${props.${p1}}`;
       });
     }
