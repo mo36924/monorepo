@@ -9,7 +9,7 @@ test("postcss-modules", async () => {
   const plugin = pluginFactory({
     renameId: (value) => `id_${value}`,
     renameClass: (value) => `class_${value}`,
-    generate: (result) => {
+    write: (result) => {
       const code =
         Object.entries(result.ids)
           .map(([id, renamedId]) => `export const $${camelCase(id)} = ${JSON.stringify(renamedId)};\n`)

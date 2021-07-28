@@ -6,15 +6,19 @@ import selectorParser from "postcss-selector-parser";
 export type Options = {
   renameId?: (id: string, options: RenameOptions) => string;
   renameClass?: (className: string, options: RenameOptions) => string;
-  generate?: boolean | ((result: Result) => Promise<void> | void);
+  write?: boolean | ((result: Result) => Promise<void> | void);
+  extname?: string;
+  path?: boolean | string;
 };
 
 export type RenameOptions = {
-  from?: string;
-  to?: string;
-  file?: string;
-  id?: string;
-  source?: string;
+  from: string | undefined;
+  to: string | undefined;
+  file: string | undefined;
+  id: string | undefined;
+  source: string | undefined;
+  extname: string | undefined;
+  path: boolean | string | undefined;
 };
 
 export type Result = RenameOptions & {
@@ -22,12 +26,22 @@ export type Result = RenameOptions & {
   classes: { [name: string]: string };
 };
 
-const defaultExit = async (result: Result) => {
-  if (!result.from) {
+const defaultWrite = async (result: Result) => {
+  let path: string | undefined;
+
+  if (result.path === true) {
+    path = result.to ?? result.from;
+  } else if (result.path) {
+    path = result.path;
+  } else {
+    path = result.from;
+  }
+
+  if (!path) {
     return;
   }
 
-  const path = `${result.from}.ts`;
+  path += result.extname ?? ".ts";
 
   const code =
     Object.entries(result.ids)
@@ -44,15 +58,7 @@ const defaultExit = async (result: Result) => {
 };
 
 const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
-  const { renameId, renameClass, generate } = options;
-  let _generate: undefined | ((result: Result) => Promise<void> | void) = undefined;
-
-  if (generate === true) {
-    _generate = defaultExit;
-  } else if (generate) {
-    _generate = generate;
-  }
-
+  const { renameId, renameClass, write, extname, path } = options;
   return {
     postcssPlugin: "postcss-modules",
     OnceExit(root, { result }) {
@@ -65,6 +71,8 @@ const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
         file: root.source?.input.file,
         id: root.source?.input.id,
         source: root.source?.input.css,
+        extname,
+        path,
       };
 
       root.walkRules((rule) => {
@@ -93,8 +101,12 @@ const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
 
       result.messages.push({ type: "export", plugin: "postcss-modules", ids, classes });
 
-      if (_generate) {
-        return _generate({ ids, classes, ...renameOptions });
+      if (write) {
+        return (write === true ? defaultWrite : write)({
+          ids,
+          classes,
+          ...renameOptions,
+        });
       }
     },
   };
