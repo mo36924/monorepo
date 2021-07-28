@@ -41,9 +41,10 @@ const defaultWrite = async (result: Result) => {
     return;
   }
 
-  path += result.extname ?? ".ts";
+  path += result.extname ?? ".js";
 
   const code =
+    "export {};\n" +
     Object.entries(result.ids)
       .map(([id, renamedId]) => `export const $${camelCase(id)} = ${JSON.stringify(renamedId)};\n`)
       .join("") +
