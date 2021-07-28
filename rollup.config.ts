@@ -68,7 +68,7 @@ for (const path of paths) {
         entryFileNames: "[name].js",
         chunkFileNames: "[name]-[hash].js",
         interop: "auto",
-        exports: "named",
+        exports: "auto",
       },
     ],
     external,
