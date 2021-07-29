@@ -7,6 +7,7 @@ export type Options = {
   from?: true;
   to?: string;
   extname?: string;
+  loader?: string;
   format?: boolean;
   renameId?: (id: string, options: RenameOptions) => string;
   renameClass?: (className: string, options: RenameOptions) => string;
@@ -24,6 +25,8 @@ export type RenameOptions = {
 export type Result = RenameOptions & {
   ids: { [name: string]: string };
   classes: { [name: string]: string };
+  css: string;
+  loader?: string;
   format?: boolean;
 };
 
@@ -32,8 +35,13 @@ const defaultWrite = async (result: Result) => {
     return;
   }
 
-  const code =
-    "export {};\n" +
+  let code = "";
+
+  if (result.loader && result.css) {
+    code = `import loader from ${JSON.stringify(result.loader)};\nloader(${JSON.stringify(result.css)});\n`;
+  }
+
+  code +=
     Object.entries(result.ids)
       .map(([id, renamedId]) => `export const $${camelCase(id)} = ${JSON.stringify(renamedId)};\n`)
       .join("") +
@@ -44,11 +52,15 @@ const defaultWrite = async (result: Result) => {
       )
       .join("");
 
+  if (!code) {
+    code = "export {};\n";
+  }
+
   await writeFile(result.to, code, { format: result.format });
 };
 
 const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
-  const { renameId, renameClass, write = defaultWrite, format } = options;
+  const { renameId, renameClass, write = defaultWrite, loader, format } = options;
   return {
     postcssPlugin: "postcss-modules",
     OnceExit(root, { result }) {
@@ -101,6 +113,8 @@ const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
       return write({
         ids,
         classes,
+        css: root.toString(),
+        loader,
         format,
         ...renameOptions,
       });

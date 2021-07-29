@@ -9,9 +9,10 @@ test("postcss-modules", async () => {
   const plugin = pluginFactory({
     renameId: (value) => `id_${value}`,
     renameClass: (value) => `class_${value}`,
+    loader: "@mo36924/css-loader",
     write: (result) => {
       const code =
-        "export {};\n" +
+        `import loader from "${result.loader}";\nloader(${JSON.stringify(result.css)});\n` +
         Object.entries(result.ids)
           .map(([id, renamedId]) => `export const $${camelCase(id)} = ${JSON.stringify(renamedId)};\n`)
           .join("") +
@@ -49,7 +50,8 @@ test("postcss-modules", async () => {
   `);
 
   expect(mod).toMatchInlineSnapshot(`
-    "export {};
+    "import loader from \\"@mo36924/css-loader\\";
+    loader(\\"\\\\n    #id_a {\\\\n      display: block;\\\\n    }\\\\n    .class_b {\\\\n      display: inline;\\\\n    }\\\\n  \\");
     export const $a = \\"id_a\\";
     export const _b = \\"class_b\\";
     "

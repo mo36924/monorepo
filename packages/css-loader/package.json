@@ -1,0 +1,30 @@
+{
+  "name": "@mo36924/css-loader",
+  "version": "1.0.0",
+  "description": "css-loader",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/css-loader"
+  },
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "exports": {
+    ".": {
+      "browser": "./dist/index.client.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "browser": "./dist/index.client.js",
+  "publishConfig": {
+    "access": "public"
+  }
+}

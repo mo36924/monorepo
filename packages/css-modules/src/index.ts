@@ -14,6 +14,7 @@ type Options = {
   extname?: string;
   watch?: boolean;
   format?: boolean;
+  loader?: string;
 };
 
 export default async (options: Options) => {
@@ -21,6 +22,7 @@ export default async (options: Options) => {
   const dir = resolve(options.dir ?? "");
   const extname = resolve(options.extname ?? ".js");
   const format = options.format;
+  const loader = options.loader;
   const watcher = watch(options.include, { cwd: base, ignored: options.exclude });
 
   const listener = async (path: string) => {
@@ -33,7 +35,7 @@ export default async (options: Options) => {
       postcssrc(options).catch(() => ({ plugins: [], options })),
     ]);
 
-    await postcss([...plugins, postcssModules({ to: to + extname, format })]).process(css, _options);
+    await postcss([...plugins, postcssModules({ to: to + extname, format, loader })]).process(css, _options);
   };
 
   if (options.watch) {

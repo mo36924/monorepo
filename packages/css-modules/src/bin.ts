@@ -10,6 +10,7 @@ program
   .option("-x, --extname <extname>", "Override the output file extension")
   .option("-w, --watch", "Watch files for changes and recompile as needed")
   .option("-f, --format", "Format output file")
+  .option("-l, --loader <loader>", "Loader")
   .parse();
 
 index({ ...program.opts(), include: program.args }).catch((e) => {
