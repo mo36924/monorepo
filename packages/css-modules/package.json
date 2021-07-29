@@ -1,0 +1,39 @@
+{
+  "name": "@mo36924/css-modules",
+  "version": "1.0.0",
+  "description": "css-modules",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/css-modules"
+  },
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "bin": {
+    "css-modules": "./dist/bin.js"
+  },
+  "dependencies": {
+    "@mo36924/postcss-modules": "^1.3.93",
+    "chokidar": "^3.5.1",
+    "commander": "^8.1.0",
+    "events": "^3.3.0",
+    "postcss": "^8.3.5",
+    "postcss-load-config": "^3.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

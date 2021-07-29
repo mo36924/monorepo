@@ -11,6 +11,7 @@ test("postcss-modules", async () => {
     renameClass: (value) => `class_${value}`,
     write: (result) => {
       const code =
+        "export {};\n" +
         Object.entries(result.ids)
           .map(([id, renamedId]) => `export const $${camelCase(id)} = ${JSON.stringify(renamedId)};\n`)
           .join("") +
@@ -48,7 +49,8 @@ test("postcss-modules", async () => {
   `);
 
   expect(mod).toMatchInlineSnapshot(`
-    "export const $a = \\"id_a\\";
+    "export {};
+    export const $a = \\"id_a\\";
     export const _b = \\"class_b\\";
     "
   `);

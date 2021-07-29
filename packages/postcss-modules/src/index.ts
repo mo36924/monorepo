@@ -4,11 +4,13 @@ import type { Plugin, PluginCreator } from "postcss";
 import selectorParser from "postcss-selector-parser";
 
 export type Options = {
+  from?: true;
+  to?: string;
+  extname?: string;
+  format?: boolean;
   renameId?: (id: string, options: RenameOptions) => string;
   renameClass?: (className: string, options: RenameOptions) => string;
-  write?: boolean | ((result: Result) => Promise<void> | void);
-  extname?: string;
-  path?: boolean | string;
+  write?: (result: Result) => Promise<void> | void;
 };
 
 export type RenameOptions = {
@@ -17,31 +19,18 @@ export type RenameOptions = {
   file: string | undefined;
   id: string | undefined;
   source: string | undefined;
-  extname: string | undefined;
-  path: boolean | string | undefined;
 };
 
 export type Result = RenameOptions & {
   ids: { [name: string]: string };
   classes: { [name: string]: string };
+  format?: boolean;
 };
 
 const defaultWrite = async (result: Result) => {
-  let path: string | undefined;
-
-  if (result.path === true) {
-    path = result.to ?? result.from;
-  } else if (result.path) {
-    path = result.path;
-  } else {
-    path = result.from;
-  }
-
-  if (!path) {
+  if (!result.to) {
     return;
   }
-
-  path += result.extname ?? ".js";
 
   const code =
     "export {};\n" +
@@ -55,25 +44,32 @@ const defaultWrite = async (result: Result) => {
       )
       .join("");
 
-  await writeFile(path, code);
+  await writeFile(result.to, code, { format: result.format });
 };
 
 const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
-  const { renameId, renameClass, write, extname, path } = options;
+  const { renameId, renameClass, write = defaultWrite, format } = options;
   return {
     postcssPlugin: "postcss-modules",
     OnceExit(root, { result }) {
       const ids: { [name: string]: string } = Object.create(null);
       const classes: { [name: string]: string } = Object.create(null);
+      let to: string | undefined = undefined;
+
+      if (options.to) {
+        to = options.to;
+      } else if (!options.from && result.opts.to) {
+        to = result.opts.to + (options.extname ?? ".js");
+      } else if (result.opts.from) {
+        to = result.opts.from + (options.extname ?? ".js");
+      }
 
       const renameOptions: RenameOptions = {
         from: result.opts.from,
-        to: result.opts.to,
+        to,
         file: root.source?.input.file,
         id: root.source?.input.id,
         source: root.source?.input.css,
-        extname,
-        path,
       };
 
       root.walkRules((rule) => {
@@ -102,13 +98,12 @@ const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
 
       result.messages.push({ type: "export", plugin: "postcss-modules", ids, classes });
 
-      if (write) {
-        return (write === true ? defaultWrite : write)({
-          ids,
-          classes,
-          ...renameOptions,
-        });
-      }
+      return write({
+        ids,
+        classes,
+        format,
+        ...renameOptions,
+      });
     },
   };
 };
