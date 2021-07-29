@@ -45,5 +45,6 @@ export default async (options: Options) => {
     const watched = watcher.getWatched();
     const paths = Object.entries(watched).flatMap(([dir, names]) => names.map((name) => join(dir, name)));
     await Promise.all(paths.map(listener));
+    await watcher.close();
   }
 };
