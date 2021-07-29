@@ -20,7 +20,7 @@ type Options = {
 export default async (options: Options) => {
   const base = resolve(options.base ?? "");
   const dir = resolve(options.dir ?? "");
-  const extname = resolve(options.extname ?? ".js");
+  const extname = options.extname ?? ".js";
   const format = options.format;
   const loader = options.loader;
   const watcher = watch(options.include, { cwd: base, ignored: options.exclude });
@@ -39,11 +39,11 @@ export default async (options: Options) => {
   };
 
   if (options.watch) {
+    watcher.on("add", listener).on("change", listener);
+  } else {
     await once(watcher, "ready");
     const watched = watcher.getWatched();
     const paths = Object.entries(watched).flatMap(([dir, names]) => names.map((name) => join(dir, name)));
     await Promise.all(paths.map(listener));
-  } else {
-    watcher.on("add", listener).on("change", listener);
   }
 };
