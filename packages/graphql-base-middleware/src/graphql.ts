@@ -61,7 +61,6 @@ export default async (options: Options): Promise<Middleware> => {
           }
 
           break;
-
         default:
           if (url === "/graphql" || url.startsWith("/graphql?")) {
             throw httpError(405, "GraphQL only supports GET and POST requests.", {

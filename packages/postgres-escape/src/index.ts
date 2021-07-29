@@ -10,7 +10,6 @@ export const escape = (value: string | number | boolean | Date | null | undefine
       return value ? "TRUE" : "FALSE";
     case "number":
       return value.toString();
-
     case "object":
       if (value instanceof Date) {
         const iso = value.toISOString();

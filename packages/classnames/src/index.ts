@@ -13,7 +13,6 @@ const classNames = (...args: ClassValue[]): string => {
       case "number":
         classes.push(arg);
         continue;
-
       case "object":
         if (Array.isArray(arg)) {
           const className = classNames(...arg);

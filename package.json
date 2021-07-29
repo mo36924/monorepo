@@ -77,6 +77,22 @@
             "multiline-let"
           ],
           "next": "*"
+        },
+        {
+          "blankLine": "never",
+          "prev": "*",
+          "next": [
+            "case",
+            "default"
+          ]
+        },
+        {
+          "blankLine": "never",
+          "prev": [
+            "case",
+            "default"
+          ],
+          "next": "*"
         }
       ],
       "import/no-absolute-path": "error",
@@ -202,7 +218,7 @@
     "del-cli": "^3.0.1",
     "encodeurl": "^1.0.2",
     "enhanced-resolve": "^5.7.0",
-    "esbuild": "^0.12.15",
+    "esbuild": "^0.12.16",
     "eslint": "^7.28.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-react-hooks": "^4.2.0",
