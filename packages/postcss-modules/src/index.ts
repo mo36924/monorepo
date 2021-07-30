@@ -109,11 +109,13 @@ const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
       });
 
       result.messages.push({ type: "export", plugin: "postcss-modules", ids, classes });
-
+      let css: string;
       return write({
         ids,
         classes,
-        css: root.toString(),
+        get css() {
+          return (css ??= root.toString());
+        },
         loader,
         format,
         ...renameOptions,
