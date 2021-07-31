@@ -4,7 +4,6 @@ import env, { Options as envOptions } from "@babel/preset-env";
 import react from "@babel/preset-react";
 import babelTypescript from "@babel/preset-typescript";
 import babelResolve, { Options as babelResolveOptions } from "@mo36924/babel-plugin-resolve";
-import subpath from "@mo36924/babel-plugin-resolve-subpath";
 import importMetaUrl from "@mo36924/rollup-plugin-import-meta-url";
 import shebang from "@mo36924/rollup-plugin-shebang";
 import { babel } from "@rollup/plugin-babel";
@@ -184,7 +183,6 @@ function getPlugins(target: "server" | "client"): NonNullable<RollupOptions["plu
             ],
           } as babelResolveOptions,
         ],
-        [subpath],
         [constant],
       ],
     }),

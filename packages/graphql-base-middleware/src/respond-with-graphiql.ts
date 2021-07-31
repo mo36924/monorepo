@@ -15,7 +15,7 @@ export const respondWithGraphiQL = async (
     result: result?.raw === undefined ? result : JSON.parse(result.raw),
   };
 
-  const { renderGraphiQL } = await import("express-graphql/renderGraphiQL");
+  const { renderGraphiQL } = await import("express-graphql/renderGraphiQL.js");
   const payload = renderGraphiQL(data, options);
   const chunk = Buffer.from(payload, "utf8");
   res.setHeader("Content-Type", "text/html; charset=utf-8");

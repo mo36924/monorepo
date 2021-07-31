@@ -13,3 +13,6 @@ declare module "react-refresh/babel";
 declare module "react-refresh/runtime";
 declare module "rollup/dist/shared/loadConfigFile.js";
 declare module "tailwindcss";
+declare module "preact-render-to-string/jsx" {
+  export { default } from "preact-render-to-string/dist/jsx";
+}
