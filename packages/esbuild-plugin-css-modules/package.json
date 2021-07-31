@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/esbuild-plugin-css-modules",
-  "version": "1.0.0",
+  "version": "1.4.3",
   "description": "esbuild-plugin-css-modules",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
