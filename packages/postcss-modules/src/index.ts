@@ -11,6 +11,7 @@ export type Options = {
   format?: boolean;
   renameId?: (id: string, options: RenameOptions) => string;
   renameClass?: (className: string, options: RenameOptions) => string;
+  generator?: (result: Result) => string;
   write?: (result: Result) => Promise<void> | void;
 };
 
@@ -26,6 +27,7 @@ export type Result = RenameOptions & {
   ids: { [name: string]: string };
   classes: { [name: string]: string };
   css: string;
+  generator: (result: Result) => string;
   loader?: string;
   format?: boolean;
 };
@@ -35,32 +37,32 @@ const defaultWrite = async (result: Result) => {
     return;
   }
 
-  let code = "";
+  const cssModule = result.generator(result);
+  await writeFile(result.to, cssModule, { format: result.format });
+};
+
+const defaultGenerator = (result: Result) => {
+  let cssModule = "";
 
   if (result.loader && result.css) {
-    code = `import loader from ${JSON.stringify(result.loader)};\nloader(${JSON.stringify(result.css)});\n`;
+    cssModule += `import loader from ${JSON.stringify(result.loader)};\nloader(${JSON.stringify(result.css)});\n`;
   }
 
-  code +=
-    Object.entries(result.ids)
-      .map(([id, renamedId]) => `export const $${camelCase(id)} = ${JSON.stringify(renamedId)};\n`)
-      .join("") +
-    Object.entries(result.classes)
-      .map(
-        ([className, renamedClassName]) =>
-          `export const _${camelCase(className)} = ${JSON.stringify(renamedClassName)};\n`,
-      )
-      .join("");
-
-  if (!code) {
-    code = "export {};\n";
+  for (const [id, renamedId] of Object.entries(result.ids)) {
+    cssModule += `export const $${camelCase(id)} = ${JSON.stringify(renamedId)};\n`;
   }
 
-  await writeFile(result.to, code, { format: result.format });
+  for (const [className, renamedClass] of Object.entries(result.classes)) {
+    cssModule += `export const _${camelCase(className)} = ${JSON.stringify(renamedClass)};\n`;
+  }
+
+  cssModule = cssModule || "export {};\n";
+
+  return cssModule;
 };
 
 const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
-  const { renameId, renameClass, write = defaultWrite, loader, format } = options;
+  const { renameId, renameClass, write = defaultWrite, generator = defaultGenerator, loader, format } = options;
   return {
     postcssPlugin: "postcss-modules",
     OnceExit(root, { result }) {
@@ -111,14 +113,15 @@ const pluginCreator: PluginCreator<Options> = (options = {}): Plugin => {
       result.messages.push({ type: "export", plugin: "postcss-modules", ids, classes });
       let css: string;
       return write({
+        ...renameOptions,
         ids,
         classes,
+        loader,
+        format,
+        generator,
         get css() {
           return (css ??= root.toString());
         },
-        loader,
-        format,
-        ...renameOptions,
       });
     },
   };
