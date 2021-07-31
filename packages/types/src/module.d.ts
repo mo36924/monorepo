@@ -7,6 +7,7 @@ declare module "@tailwindcss/forms";
 declare module "acorn-jsx";
 declare module "babel-plugin-minify-dead-code-elimination";
 declare module "cssnano";
+declare module "cssnano-preset-advanced";
 declare module "postcss-import";
 declare module "react-refresh/babel";
 declare module "react-refresh/runtime";

@@ -1,0 +1,40 @@
+{
+  "name": "@mo36924/esbuild-plugin-asset",
+  "version": "1.0.0",
+  "description": "esbuild-plugin-asset",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/esbuild-plugin-asset"
+  },
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "dependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "@mo36924/util-node": "^1.3.91",
+    "cssnano": "^5.0.7",
+    "cssnano-preset-advanced": "^5.1.3",
+    "esbuild": "^0.12.16",
+    "postcss": "^8.3.5",
+    "postcss-load-config": "^3.1.0",
+    "sass": "^1.37.0",
+    "terser": "^5.7.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
