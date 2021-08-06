@@ -11,6 +11,7 @@ export type Options = {
   file?: string;
   dynamicImport?: boolean;
   template?: string;
+  bracket?: boolean;
   include?: string[];
   exclude?: string[];
 };
@@ -21,6 +22,7 @@ const defaultOptions: Required<Options> = {
   file: "src/components/Router.tsx",
   dynamicImport: true,
   template: "src/components/Router.template.tsx",
+  bracket: false,
   include: ["**/*.tsx"],
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
@@ -76,6 +78,7 @@ export default async (options?: Options) => {
     file,
     template,
     dynamicImport,
+    bracket,
     include,
     exclude,
   } = {
@@ -108,67 +111,50 @@ export default async (options?: Options) => {
     const nonExtAbsolutePath = absolutePath.slice(0, -extname(absolutePath).length || undefined);
     const nonExtPath = relative(dir, nonExtAbsolutePath).split(sep).join("/");
     const componentName = camelCase(nonExtPath);
-    let pagePath = "/" + nonExtPath.replace(/^index$/, "").replace(/\/index$/, "/");
+    const props: { [name: string]: string } = {};
 
-    const searchTemplate = pagePath
-      .replace(/\[([A-Za-z][0-9A-Za-z]*)\]/g, (_m, propName) => {
-        return `\${props.${propName}}`;
-      })
-      .replace(/\[([A-Za-z][0-9A-Za-z]*)_([A-Za-z][0-9A-Za-z]*)\]/g, (_m, propName, _type) => {
-        return `\${props.${propName}}`;
-      })
-      .replace(
-        /\[([A-Za-z][0-9A-Za-z]*)_([A-Za-z][0-9A-Za-z]*)_(\$[a-z]+)_([0-9A-Za-z]+)\]/g,
-        (_m, propName, _type, _operator, _value) => {
-          return `\${props.${propName}}`;
-        },
-      );
+    let pagePath =
+      "/" +
+      nonExtPath
+        .replace(/^index$/, "")
+        .replace(/\/index$/, "/")
+        .replace(
+          bracket
+            ? /\[([A-Za-z][0-9A-Za-z]*)(?:_([A-Za-z][0-9A-Za-z]*))?\]/g
+            : /__|_([A-Za-z][0-9A-Za-z]*)(?:_([A-Za-z][0-9A-Za-z]*))?/g,
+          (match, name, type = "string") => {
+            if (match === "__") {
+              return "_";
+            }
+
+            props[name] = type;
+            return `:${name}`;
+          },
+        );
+
+    const searchTemplate = pagePath.replace(/\:([A-Za-z][0-9A-Za-z]*)/g, (_m, name) => {
+      return `\${props.${name}}`;
+    });
 
     const rank = pagePath
       .split("/")
       .map((segment) => {
-        if (!segment.includes("[")) {
+        if (!segment.includes(":")) {
           return 9;
         }
 
-        if (
-          /^\[[A-Za-z][0-9A-Za-z]*(_[A-Za-z][0-9A-Za-z]*|_[A-Za-z][0-9A-Za-z]*_\$[a-z]+_[0-9A-Za-z]+)?\]$/.test(segment)
-        ) {
+        if (segment[0] !== ":") {
           return 8;
         }
 
-        return segment.split(
-          /\[[A-Za-z][0-9A-Za-z]*(_[A-Za-z][0-9A-Za-z]*|_[A-Za-z][0-9A-Za-z]*_\$[a-z]+_[0-9A-Za-z]+)?\]/,
-        ).length;
+        return segment.split(":").length;
       })
       .join("");
 
-    const isDynamic =
-      /\[[A-Za-z][0-9A-Za-z]*(_[A-Za-z][0-9A-Za-z]*|_[A-Za-z][0-9A-Za-z]*_\$[a-z]+_[0-9A-Za-z]+)?\]/.test(pagePath);
-
-    const propNames: string[] = [];
+    const isDynamic = pagePath.includes(":");
 
     if (isDynamic) {
-      pagePath =
-        "/^" +
-        pagePath
-          .replace(/\//g, "\\/")
-          .replace(/\[([A-Za-z][0-9A-Za-z]*)\]/g, (_m, propName) => {
-            propNames.push(propName);
-            return "([^\\/]+?)";
-          })
-          .replace(/\[([A-Za-z][0-9A-Za-z]*)_([A-Za-z][0-9A-Za-z]*)\]/g, (_m, propName, _type) => {
-            propNames.push(propName);
-            return "([^\\/]+?)";
-          })
-          .replace(
-            /\[([A-Za-z][0-9A-Za-z]*)_([A-Za-z][0-9A-Za-z]*)_(\$[a-z]+)_([0-9A-Za-z]+)\]/g,
-            (_m, propName, _type, _operator, _value) => {
-              propNames.push(propName);
-              return "([^\\/]+?)";
-            },
-          ) +
-        "$/";
+      pagePath = "/^" + pagePath.replace(/\//g, "\\/").replace(/\:([A-Za-z][0-9A-Za-z]*)/g, () => "([^\\/]+?)") + "$/";
     }
 
     let importPath = relative(dirname(file), nonExtAbsolutePath).split(sep).join("/");
@@ -183,7 +169,7 @@ export default async (options?: Options) => {
       componentName,
       isDynamic,
       pagePath,
-      propNames,
+      props,
       rank,
     };
   }
@@ -196,10 +182,12 @@ export default async (options?: Options) => {
       return;
     }
 
-    const { propNames, isDynamic } = pathToRoute(absolutePath);
+    const { props, isDynamic } = pathToRoute(absolutePath);
 
     if (isDynamic) {
-      const propsType = `{${propNames.map((propName) => `${JSON.stringify(propName)}: string`).join()}}`;
+      const propsType = `{${Object.entries(props)
+        .map(([name, type]) => `${JSON.stringify(name)}: ${type}`)
+        .join()}}`;
 
       code = `
         export default (props: ${propsType}) => {
@@ -245,9 +233,13 @@ export default async (options?: Options) => {
     let errors = "";
     let paths = "";
 
-    for (const { importPath, searchTemplate, componentName, pagePath, isDynamic, propNames } of pagePaths) {
+    for (const { importPath, searchTemplate, componentName, pagePath, isDynamic, props } of pagePaths) {
       const importSource = JSON.stringify(importPath);
-      const propsType = `{${propNames.map((propName) => `${JSON.stringify(propName)}: string`).join()}}`;
+
+      const propsType = `{${Object.entries(props)
+        .map(([name, type]) => `${JSON.stringify(name)}: ${type}`)
+        .join()}}`;
+
       const componentType = `ComponentType<${propsType}>`;
 
       imports += dynamicImport
@@ -255,7 +247,7 @@ export default async (options?: Options) => {
         : `import $$${componentName} from ${importSource};const $${componentName}: ${componentType} = $$${componentName};`;
 
       if (isDynamic) {
-        dynamics += `[${pagePath},${JSON.stringify(propNames)},$${componentName}],`;
+        dynamics += `[${pagePath},${JSON.stringify(Object.keys(props))},$${componentName}],`;
         paths += `export const ${componentName} = (props: ${propsType}) => \`${searchTemplate}\`;`;
       } else if (/^\/[45]\d\d$/.test(pagePath)) {
         errors += `${pagePath.slice(1)}: $${componentName},`;
