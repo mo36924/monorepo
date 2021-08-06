@@ -89,7 +89,7 @@ export default async (options?: Options) => {
     ...options,
   };
 
-  await Promise.all([
+  await Promise.allSettled([
     mkdir(dir, { recursive: true }),
     mkdir(dirname(file), { recursive: true }),
     writeFile(template, defaultTemplate, { overwrite: false }),
