@@ -12,6 +12,7 @@ export type Options = {
   dynamicImport?: boolean;
   template?: string;
   bracket?: boolean;
+  extensions?: string[];
   include?: string[];
   exclude?: string[];
 };
@@ -23,6 +24,7 @@ const defaultOptions: Required<Options> = {
   dynamicImport: true,
   template: "src/components/Router.template.tsx",
   bracket: false,
+  extensions: [],
   include: ["**/*.tsx"],
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
@@ -79,6 +81,7 @@ export default async (options?: Options) => {
     template,
     dynamicImport,
     bracket,
+    extensions,
     include,
     exclude,
   } = {
@@ -108,7 +111,11 @@ export default async (options?: Options) => {
   }
 
   function pathToRoute(absolutePath: string) {
-    const nonExtAbsolutePath = absolutePath.slice(0, -extname(absolutePath).length || undefined);
+    const end = extensions.length
+      ? extensions.find((extension) => absolutePath.endsWith(extension))?.length
+      : extname(absolutePath).length;
+
+    const nonExtAbsolutePath = absolutePath.slice(0, end ? -end : undefined);
     const nonExtPath = relative(dir, nonExtAbsolutePath).split(sep).join("/");
     const componentName = camelCase(nonExtPath);
     const props: { [name: string]: string } = {};
