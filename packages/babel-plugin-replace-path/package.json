@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/babel-plugin-resolve",
-  "version": "1.4.0",
-  "description": "babel-plugin-resolve",
+  "name": "@mo36924/babel-plugin-replace-path",
+  "version": "1.0.0",
+  "description": "babel-plugin-replace-path",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/babel-plugin-resolve"
+    "directory": "packages/babel-plugin-replace-path"
   },
   "license": "MIT",
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -23,8 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@babel/core": "^7.15.0",
-    "enhanced-resolve": "^5.7.0"
+    "@babel/core": "^7.15.0"
   },
   "publishConfig": {
     "access": "public"

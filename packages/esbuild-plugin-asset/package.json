@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@babel/core": "^7.14.6",
+    "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.14.7",
     "@mo36924/util-node": "^1.4.0",
     "cssnano": "^5.0.7",

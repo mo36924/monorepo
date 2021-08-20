@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@babel/core": "^7.14.6",
+    "@babel/core": "^7.15.0",
     "babel-plugin-minify-dead-code-elimination": "^0.5.1"
   },
   "publishConfig": {
