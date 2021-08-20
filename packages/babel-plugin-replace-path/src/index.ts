@@ -6,6 +6,9 @@ export type Options = {
   paths?: {
     [prefix: string]: string;
   };
+  pathRegexps?: {
+    [regexp: string]: string;
+  };
   relative?: boolean;
 };
 type State = {
@@ -14,30 +17,47 @@ type State = {
 
 export default (
   { types: t }: typeof babel,
-  { baseUrl = ".", paths = {}, relative: optionRelative = true }: Options,
+  { baseUrl = ".", paths = {}, pathRegexps: optionPathRegexps = {}, relative: optionRelative = true }: Options,
 ): PluginObj<State> => {
   const basePath = resolve(baseUrl);
   const pathEntries = Object.entries(paths);
 
+  const pathRegexps = Object.entries(optionPathRegexps).map<[RegExp, string]>(([regexp, path]) => [
+    new RegExp(regexp),
+    path,
+  ]);
+
   const replacePath = (path: string, request: string) => {
-    const pathEntry = pathEntries.find((pathEntry) => request.startsWith(pathEntry[0]));
+    let _request = request;
 
-    if (!pathEntry) {
-      return request;
-    }
-
-    request = resolve(basePath, pathEntry[1] + request.slice(pathEntry[0].length));
-
-    if (optionRelative) {
-      const dir = dirname(path);
-      request = relative(dir, request);
-
-      if (request[0] !== "/" && request[0] !== ".") {
-        request = "./" + request;
+    for (const [prefix, path] of pathEntries) {
+      if (_request.startsWith(prefix)) {
+        _request = resolve(basePath, path + _request.slice(prefix.length));
+        break;
       }
     }
 
-    return request.split(sep).join("/");
+    for (const [regexp, path] of pathRegexps) {
+      if (regexp.test(_request)) {
+        _request = resolve(basePath, _request.replace(regexp, path));
+        break;
+      }
+    }
+
+    if (_request === request) {
+      return _request;
+    }
+
+    if (optionRelative) {
+      const dir = dirname(path);
+      _request = relative(dir, _request);
+
+      if (_request[0] !== "/" && _request[0] !== ".") {
+        _request = "./" + _request;
+      }
+    }
+
+    return _request.split(sep).join("/");
   };
 
   const transformDeclaration = (
