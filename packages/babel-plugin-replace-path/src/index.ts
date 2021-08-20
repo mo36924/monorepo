@@ -9,6 +9,9 @@ export type Options = {
   pathRegexps?: {
     [regexp: string]: string;
   };
+  regexps?: {
+    [regexp: string]: string;
+  };
   relative?: boolean;
 };
 type State = {
@@ -17,7 +20,13 @@ type State = {
 
 export default (
   { types: t }: typeof babel,
-  { baseUrl = ".", paths = {}, pathRegexps: optionPathRegexps = {}, relative: optionRelative = true }: Options,
+  {
+    baseUrl = ".",
+    paths = {},
+    pathRegexps: optionPathRegexps = {},
+    regexps: optionRegexps = {},
+    relative: optionRelative = true,
+  }: Options,
 ): PluginObj<State> => {
   const basePath = resolve(baseUrl);
   const pathEntries = Object.entries(paths);
@@ -26,6 +35,8 @@ export default (
     new RegExp(regexp),
     path,
   ]);
+
+  const regexps = Object.entries(optionRegexps).map<[RegExp, string]>(([regexp, path]) => [new RegExp(regexp), path]);
 
   const replacePath = (path: string, request: string) => {
     let _request = request;
@@ -40,6 +51,13 @@ export default (
     for (const [regexp, path] of pathRegexps) {
       if (regexp.test(_request)) {
         _request = resolve(basePath, _request.replace(regexp, path));
+        break;
+      }
+    }
+
+    for (const [regexp, path] of regexps) {
+      if (regexp.test(_request)) {
+        _request = _request.replace(regexp, path);
         break;
       }
     }
