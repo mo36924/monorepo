@@ -1,4 +1,4 @@
-import { dirname, relative, resolve, sep } from "path";
+import { dirname, isAbsolute, relative, resolve, sep } from "path";
 import type { default as babel, NodePath, PluginObj, types as t } from "@babel/core";
 
 export type Options = {
@@ -13,6 +13,7 @@ export type Options = {
     [regexp: string]: string;
   };
   relative?: boolean;
+  normalize?: boolean;
 };
 type State = {
   filename?: string;
@@ -26,6 +27,7 @@ export default (
     pathRegexps: optionPathRegexps = {},
     regexps: optionRegexps = {},
     relative: optionRelative = true,
+    normalize = true,
   }: Options,
 ): PluginObj<State> => {
   const basePath = resolve(baseUrl);
@@ -55,9 +57,9 @@ export default (
       }
     }
 
-    for (const [regexp, path] of regexps) {
+    for (const [regexp, replaceValue] of regexps) {
       if (regexp.test(_request)) {
-        _request = _request.replace(regexp, path);
+        _request = resolve(dirname(path), _request.replace(regexp, replaceValue));
         break;
       }
     }
@@ -67,15 +69,18 @@ export default (
     }
 
     if (optionRelative) {
-      const dir = dirname(path);
-      _request = relative(dir, _request);
+      _request = relative(dirname(path), _request);
 
-      if (_request[0] !== "/" && _request[0] !== ".") {
-        _request = "./" + _request;
+      if (!isAbsolute(_request) && _request[0] !== ".") {
+        _request = "." + sep + _request;
       }
     }
 
-    return _request.split(sep).join("/");
+    if (normalize) {
+      return _request.split(sep).join("/");
+    }
+
+    return _request;
   };
 
   const transformDeclaration = (
