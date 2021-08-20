@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/config",
-  "version": "1.4.0",
+  "version": "1.4.8",
   "description": "config",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/babel-plugin-inject": "^1.4.0",
+    "@mo36924/babel-plugin-inject": "^1.4.8",
     "@mo36924/page-generator": "^1.4.0",
     "@mo36924/util": "^1.4.0",
     "cosmiconfig": "^7.0.0"
