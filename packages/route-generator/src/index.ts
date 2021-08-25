@@ -1,6 +1,6 @@
 import { once } from "events";
 import { access, mkdir } from "fs/promises";
-import { dirname, extname, relative, resolve, sep } from "path";
+import { dirname, relative, resolve, sep } from "path";
 import { readFile, writeFile } from "@mo36924/util-node";
 import { camelCase } from "change-case";
 import { watch } from "chokidar";
@@ -12,7 +12,8 @@ export type Options = {
   dynamicImport?: boolean | string;
   template?: string;
   bracket?: boolean;
-  extensions?: string[];
+  removeRoutePathExtensions?: string[];
+  removeImportPathExtensions?: string[];
   include?: string[];
   exclude?: string[];
 };
@@ -24,7 +25,8 @@ const defaultOptions: Required<Options> = {
   dynamicImport: "lazy",
   template: "src/components/Router.template.tsx",
   bracket: false,
-  extensions: [],
+  removeRoutePathExtensions: [".tsx"],
+  removeImportPathExtensions: [".tsx"],
   include: ["**/*.tsx"],
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
@@ -73,6 +75,16 @@ export default (props: { pathname: string }) => {
 };
 `;
 
+const removeExtension = (path: string, extensions: string[] = []) => {
+  const extension = extensions.find((extension) => path.endsWith(extension));
+
+  if (extension) {
+    path = path.slice(0, -extension.length);
+  }
+
+  return path;
+};
+
 export default async (options?: Options) => {
   const {
     watch: _watch,
@@ -81,7 +93,8 @@ export default async (options?: Options) => {
     template,
     dynamicImport,
     bracket,
-    extensions,
+    removeRoutePathExtensions,
+    removeImportPathExtensions,
     include,
     exclude,
   } = {
@@ -111,11 +124,7 @@ export default async (options?: Options) => {
   }
 
   function pathToRoute(absolutePath: string) {
-    const end = extensions.length
-      ? extensions.find((extension) => absolutePath.endsWith(extension))?.length
-      : extname(absolutePath).length;
-
-    const nonExtAbsolutePath = absolutePath.slice(0, end ? -end : undefined);
+    const nonExtAbsolutePath = removeExtension(absolutePath, removeRoutePathExtensions);
     const nonExtPath = relative(dir, nonExtAbsolutePath).split(sep).join("/");
     const componentName = camelCase(nonExtPath);
     const props: { [name: string]: string } = {};
@@ -164,7 +173,9 @@ export default async (options?: Options) => {
       pagePath = "/^" + pagePath.replace(/\//g, "\\/").replace(/\:([A-Za-z][0-9A-Za-z]*)/g, () => "([^\\/]+?)") + "$/";
     }
 
-    let importPath = relative(dirname(file), nonExtAbsolutePath).split(sep).join("/");
+    let importPath = relative(dirname(file), removeExtension(absolutePath, removeImportPathExtensions))
+      .split(sep)
+      .join("/");
 
     if (importPath[0] !== "." && importPath[0] !== "/") {
       importPath = `./${importPath}`;
