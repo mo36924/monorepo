@@ -11,6 +11,7 @@ export type Options = {
   file?: string;
   dynamicImport?: boolean | string;
   template?: string;
+  routeTemplate?: string;
   bracket?: boolean;
   removeRoutePathExtensions?: string[];
   removeImportPathExtensions?: string[];
@@ -24,6 +25,7 @@ const defaultOptions: Required<Options> = {
   file: "src/components/Router.tsx",
   dynamicImport: "lazy",
   template: "src/components/Router.template.tsx",
+  routeTemplate: "src/components/Route.template.tsx",
   bracket: false,
   removeRoutePathExtensions: [".tsx"],
   removeImportPathExtensions: [".tsx"],
@@ -75,6 +77,27 @@ export default (props: { pathname: string }) => {
 };
 `;
 
+const reactTemplate = `
+export default (props: /*props*/) => {
+  return (
+    <div></div>
+  )
+}
+`;
+
+const vueTemplate = `
+<script setup lang="ts">
+defineProps</*props*/>();
+</script>
+
+<style scoped lang="scss">
+</style>
+
+<template>
+  <div></div>
+</template>
+`;
+
 const removeExtension = (path: string, extensions: string[] = []) => {
   const extension = extensions.find((extension) => path.endsWith(extension));
 
@@ -91,6 +114,7 @@ export default async (options?: Options) => {
     dir,
     file,
     template,
+    routeTemplate,
     dynamicImport,
     bracket,
     removeRoutePathExtensions,
@@ -102,10 +126,13 @@ export default async (options?: Options) => {
     ...options,
   };
 
+  const defaultRouteTemplate = include.some((glob) => glob.endsWith(".vue")) ? vueTemplate : reactTemplate;
+
   await Promise.allSettled([
     mkdir(dir, { recursive: true }),
     mkdir(dirname(file), { recursive: true }),
     writeFile(template, defaultTemplate, { overwrite: false }),
+    writeFile(routeTemplate, defaultRouteTemplate, { overwrite: false }),
   ]);
 
   const watcher = watch(include, { cwd: dir, ignored: exclude });
@@ -118,7 +145,7 @@ export default async (options?: Options) => {
     watcher.on("add", generate);
     watcher.on("unlink", generate);
     watcher.on("unlinkDir", generate);
-    watcher.on("raw", generate);
+    // watcher.on("raw", generate);
   } else {
     await watcher.close();
   }
@@ -200,29 +227,20 @@ export default async (options?: Options) => {
       return;
     }
 
-    const { props, isDynamic } = pathToRoute(absolutePath);
+    const { props } = pathToRoute(absolutePath);
 
-    if (isDynamic) {
-      const propsType = `{${Object.entries(props)
-        .map(([name, type]) => `${JSON.stringify(name)}: ${type}`)
-        .join()}}`;
+    const propsType = `{${Object.entries(props)
+      .map(([name, type]) => `${JSON.stringify(name)}: ${type}`)
+      .join()}}`;
 
-      code = `
-        export default (props: ${propsType}) => {
-          return (
-            <div></div>
-          )
-        }
-      `;
-    } else {
-      code = `
-        export default () => {
-          return (
-            <div></div>
-          )
-        }
-      `;
+    code = await readFile(routeTemplate);
+
+    if (code === undefined) {
+      await writeFile(routeTemplate, defaultRouteTemplate);
+      code = defaultRouteTemplate;
     }
+
+    code = code.replace("/*props*/", () => propsType);
 
     await writeFile(absolutePath, code);
   }
