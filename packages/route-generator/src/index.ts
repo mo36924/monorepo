@@ -78,23 +78,26 @@ export default (props: { pathname: string }) => {
 `;
 
 const reactTemplate = `
-export default (props: /*props*/) => {
+export default (/*props:{props}*/) => {
   return (
-    <div></div>
+    <div>Hello World!</div>
   )
 }
 `;
 
 const vueTemplate = `
 <script setup lang="ts">
-defineProps</*props*/>();
+defineProps/*<{props}>*/();
 </script>
 
 <style scoped lang="scss">
+div {
+  font-size: 16px;
+}
 </style>
 
 <template>
-  <div></div>
+  <div>Hello World!</div>
 </template>
 `;
 
@@ -240,7 +243,9 @@ export default async (options?: Options) => {
       code = defaultRouteTemplate;
     }
 
-    code = code.replace("/*props*/", () => propsType);
+    code = code
+      .replace("/*props*/", () => propsType)
+      .replace(/\/\*(.*?){props}(.*?)\*\//, (_m, p1, p2) => `${p1}${propsType}${p2}`);
 
     await writeFile(absolutePath, code);
   }
