@@ -9,7 +9,7 @@ export type Options = {
   watch?: boolean;
   dir?: string;
   file?: string;
-  dynamicImport?: boolean;
+  dynamicImport?: boolean | string;
   template?: string;
   bracket?: boolean;
   extensions?: string[];
@@ -21,7 +21,7 @@ const defaultOptions: Required<Options> = {
   watch: process.env.NODE_ENV !== "production",
   dir: "src/routes",
   file: "src/components/Router.tsx",
-  dynamicImport: true,
+  dynamicImport: "lazy",
   template: "src/components/Router.template.tsx",
   bracket: false,
   extensions: [],
@@ -235,6 +235,7 @@ export default async (options?: Options) => {
 
     const pagePaths = watchedPaths.map((path) => pathToRoute(path)).sort((a, b) => (b.rank as any) - (a.rank as any));
     let imports = "";
+    let _imports = "";
     let statics = "";
     let dynamics = "";
     let errors = "";
@@ -249,9 +250,14 @@ export default async (options?: Options) => {
 
       const componentType = `ComponentType<${propsType}>`;
 
-      imports += dynamicImport
-        ? `const $${componentName}: ${componentType} = lazy(() => import(${importSource}));`
-        : `import $$${componentName} from ${importSource};const $${componentName}: ${componentType} = $$${componentName};`;
+      imports +=
+        dynamicImport === true
+          ? `const $${componentName}: ${componentType} = () => import(${importSource});`
+          : dynamicImport
+          ? `const $${componentName}: ${componentType} = ${dynamicImport}(() => import(${importSource}));`
+          : `import $$${componentName} from ${importSource};`;
+
+      _imports += dynamicImport ? "" : `const $${componentName}: ${componentType} = $$${componentName};`;
 
       if (isDynamic) {
         dynamics += `[${pagePath},${JSON.stringify(Object.keys(props))},$${componentName}],`;
@@ -263,6 +269,8 @@ export default async (options?: Options) => {
         paths += `export const ${componentName} = ${JSON.stringify(searchTemplate)};`;
       }
     }
+
+    imports += _imports;
 
     let code = await readFile(template);
 
