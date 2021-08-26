@@ -33,10 +33,10 @@ const defaultOptions: Required<Options> = {
   exclude: ["**/*.(client|server|test|spec).tsx", "**/__tests__/**"],
 };
 
-const defaultTemplate = `
-// @ts-ignore
+const defaultReactTemplate = `
 import { ComponentType, lazy, Suspense } from "react";
 /*imports*/
+/*declarations*/
 export const statics: { [pathname: string]: ComponentType<any> | undefined } = {
   /*statics*/
 };
@@ -77,7 +77,50 @@ export default (props: { pathname: string }) => {
 };
 `;
 
-const reactTemplate = `
+const defaultVueTemplate = `
+import { DefineComponent, h } from "vue";
+/*imports*/
+
+type ComponentType<T = any> = DefineComponent<T, {}, any>;
+/*declarations*/
+
+export const statics: { [pathname: string]: ComponentType<any> | undefined } = {
+  /*statics*/
+};
+export const dynamics: [pathnameRegExp: RegExp, propNames: string[], Component: ComponentType<any>][] = [
+  /*dynamics*/
+];
+export const errors: { [pathname: string]: ComponentType<any> | undefined } = {
+  /*errors*/
+};
+/*paths*/
+export const match = (pathname: string) => {
+  const props: { [name: string]: string } = {};
+  let Route = statics[pathname];
+  if (!Route) {
+    dynamics.some((dynamic) => {
+      const matches = pathname.match(dynamic[0]);
+      if (matches) {
+        dynamic[1].forEach((name, index) => (props[name] = matches[index + 1]));
+        Route = dynamic[2];
+        return true;
+      }
+    });
+  }
+  return Route && ([Route, props] as const);
+};
+export default (props: { pathname: string }) => {
+  const matches = match(props.pathname);
+  if (matches) {
+    const [Component, props] = matches;
+    return h(Component, props);
+  } else {
+    return null;
+  }
+};
+`;
+
+const defaultReactRouteTemplate = `
 export default (/*props:{props}*/) => {
   return (
     <div>Hello World!</div>
@@ -85,7 +128,7 @@ export default (/*props:{props}*/) => {
 }
 `;
 
-const vueTemplate = `
+const defaultVueRouteTemplate = `
 <script setup lang="ts">
 defineProps/*<{props}>*/();
 </script>
@@ -129,7 +172,9 @@ export default async (options?: Options) => {
     ...options,
   };
 
-  const defaultRouteTemplate = include.some((glob) => glob.endsWith(".vue")) ? vueTemplate : reactTemplate;
+  const [defaultTemplate, defaultRouteTemplate] = include.some((glob) => glob.endsWith(".vue"))
+    ? [defaultVueTemplate, defaultVueRouteTemplate]
+    : [defaultReactTemplate, defaultReactRouteTemplate];
 
   await Promise.allSettled([
     mkdir(dir, { recursive: true }),
@@ -269,7 +314,7 @@ export default async (options?: Options) => {
 
     const pagePaths = watchedPaths.map((path) => pathToRoute(path)).sort((a, b) => (b.rank as any) - (a.rank as any));
     let imports = "";
-    let _imports = "";
+    let declarations = "";
     let statics = "";
     let dynamics = "";
     let errors = "";
@@ -291,7 +336,7 @@ export default async (options?: Options) => {
           ? `const $${componentName}: ${componentType} = ${dynamicImport}(() => import(${importSource}));`
           : `import $$${componentName} from ${importSource};`;
 
-      _imports += dynamicImport ? "" : `const $${componentName}: ${componentType} = $$${componentName};`;
+      declarations += dynamicImport ? "" : `const $${componentName}: ${componentType} = $$${componentName};`;
 
       if (isDynamic) {
         dynamics += `[${pagePath},${JSON.stringify(Object.keys(props))},$${componentName}],`;
@@ -304,8 +349,6 @@ export default async (options?: Options) => {
       }
     }
 
-    imports += _imports;
-
     let code = await readFile(template);
 
     if (code === undefined) {
@@ -313,7 +356,7 @@ export default async (options?: Options) => {
       code = defaultTemplate;
     }
 
-    code = Object.entries({ imports, statics, dynamics, errors, paths }).reduce(
+    code = Object.entries({ imports, declarations, statics, dynamics, errors, paths }).reduce(
       (code, [key, value]) => code.replace(`/*${key}*/`, () => value),
       code,
     );
