@@ -329,14 +329,16 @@ export default async (options?: Options) => {
 
       const componentType = `ComponentType<${propsType}>`;
 
-      imports +=
-        dynamicImport === true
-          ? `const $${componentName}: ${componentType} = () => import(${importSource});`
-          : dynamicImport
-          ? `const $${componentName}: ${componentType} = ${dynamicImport}(() => import(${importSource}));`
-          : `import $$${componentName} from ${importSource};`;
-
-      declarations += dynamicImport ? "" : `const $${componentName}: ${componentType} = $$${componentName};`;
+      if (dynamicImport) {
+        if (dynamicImport === true) {
+          declarations += `const $${componentName}: ${componentType} = () => import(${importSource});`;
+        } else {
+          declarations += `const $${componentName}: ${componentType} = ${dynamicImport}(() => import(${importSource}));`;
+        }
+      } else {
+        imports += `import $$${componentName} from ${importSource};`;
+        declarations += `const $${componentName}: ${componentType} = $$${componentName};`;
+      }
 
       if (isDynamic) {
         dynamics += `[${pagePath},${JSON.stringify(Object.keys(props))},$${componentName}],`;
