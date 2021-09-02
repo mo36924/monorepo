@@ -78,10 +78,10 @@ export default (props: { pathname: string }) => {
 `;
 
 const defaultVueTemplate = `
-import { DefineComponent, h } from "vue";
+import { Component, h } from "vue";
 /*imports*/
 
-type ComponentType<T = any> = DefineComponent<T, {}, any>;
+type ComponentType<T = any> = Component<T>;
 /*declarations*/
 
 export const statics: { [pathname: string]: ComponentType<any> | undefined } = {

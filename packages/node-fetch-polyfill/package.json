@@ -16,12 +16,14 @@
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "exports": {
     ".": {
+      "browser": "./dist/index.client.js",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "browser": "./dist/index.client.js",
   "dependencies": {
     "node-fetch": "^2.6.1"
   },
