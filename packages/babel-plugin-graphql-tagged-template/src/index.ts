@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import type { default as babel, PluginObj } from "@babel/core";
+import type { default as babel, PluginObj, types as t } from "@babel/core";
 import { buildSchema } from "@mo36924/graphql-schema";
 import { DocumentNode, GraphQLSchema, parse, stripIgnoredCharacters, validate } from "graphql";
 
@@ -39,6 +39,10 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
           name !== "useMutation"
         ) {
           return;
+        }
+
+        if (name === "gql" && expressions.length) {
+          throw path.buildCodeFrameError("gql invalid expressions.");
         }
 
         let query = quasis[0].value.cooked ?? quasis[0].value.raw;
@@ -98,24 +102,17 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
           throw path.buildCodeFrameError(error.message);
         }
 
-        const properties = [t.objectProperty(t.identifier("query"), t.stringLiteral(query))];
+        const args: t.Expression[] = [t.stringLiteral(query)];
 
         if (variables) {
-          properties.push(
-            t.objectProperty(
-              t.identifier("variables"),
-              t.objectExpression(
-                expressions.map((expression, i) => t.objectProperty(t.identifier(`_${i}`), expression as any)),
-              ),
+          args.push(
+            t.objectExpression(
+              expressions.map((expression, i) => t.objectProperty(t.identifier(`_${i}`), expression as any)),
             ),
           );
         }
 
-        if (name === "gql") {
-          path.replaceWith(t.objectExpression(properties));
-        } else {
-          path.replaceWith(t.callExpression(t.identifier(name), [t.objectExpression(properties)]));
-        }
+        path.replaceWith(t.callExpression(t.identifier(name), args));
       },
     },
   };
