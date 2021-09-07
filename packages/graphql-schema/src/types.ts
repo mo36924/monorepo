@@ -16,13 +16,7 @@ export type Field = {
   directives: FieldDirectives;
 };
 
-export const buildTypes = (graphql: string | Source) => {
-  const documentNode = parse(graphql);
-  const types = buildAstTypes(documentNode);
-  return types;
-};
-
-export const buildAstTypes = (documentNode: DocumentNode) => {
+const buildAstTypes = (documentNode: DocumentNode) => {
   const types = createObjectNull<Types>();
 
   for (const definition of documentNode.definitions) {
@@ -96,6 +90,7 @@ export const sortTypes = (types: Types) => {
 };
 
 export const printTypes = (types: Types) => {
+  types = sortTypes(types);
   let graphql = "";
 
   for (const { name, directives, fields } of Object.values(types)) {
@@ -141,4 +136,10 @@ export const printDirectives = (directives: TypeDirectives | FieldDirectives) =>
   }
 
   return _directives;
+};
+
+export const buildTypes = (graphql: string | Source) => {
+  const documentNode = parse(graphql);
+  const types = buildAstTypes(documentNode);
+  return types;
 };

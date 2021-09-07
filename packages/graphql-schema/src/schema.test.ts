@@ -24,7 +24,6 @@ it("fixSchema", () => {
   `);
 
   expect(raw(graphql)).toMatchInlineSnapshot(`
-    scalar Unknown
     scalar UUID
     scalar Date
     directive @join on OBJECT

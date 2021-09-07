@@ -44,7 +44,7 @@ const getScalarType = (name: string) => {
 
 export const buildDeclaration = (schema: GraphQLSchema, filepath = "index.d.ts") => {
   const types = schema.getTypeMap();
-  let declaration = "export type {}\ndeclare global {\ndeclare namespace GraphQL {\n";
+  let declaration = "export type {}\ndeclare global {\nnamespace GraphQL {\n";
 
   for (const type of Object.values(types)) {
     const name = type.name;

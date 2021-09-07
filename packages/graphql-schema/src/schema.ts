@@ -30,7 +30,7 @@ export type FieldArguments = {
   offset?: number;
 };
 
-const fixSchemaTypes = (types: Types) => {
+export const fixSchemaTypes = (types: Types) => {
   for (const [typeName, type] of Object.entries(types)) {
     for (const [fieldName, field] of Object.entries(type.fields)) {
       if (field.scalar) {
@@ -317,8 +317,8 @@ const fixSchemaTypes = (types: Types) => {
   return types;
 };
 
-const printSchema = (types: Types) => {
-  let schema = `scalar Unknown\n${customScalars}${schemaDirectives}`;
+export const printSchema = (types: Types) => {
+  let schema = customScalars + schemaDirectives;
   let query = "";
   let mutation = "";
   let objectType = "";
@@ -523,7 +523,7 @@ const printSchema = (types: Types) => {
   return schema;
 };
 
-const buildGraphQL = (graphql: string | Source) => {
+export const buildGraphQL = (graphql: string | Source) => {
   let types = buildModel(graphql);
   types = fixSchemaTypes(types);
   graphql = printSchema(types);

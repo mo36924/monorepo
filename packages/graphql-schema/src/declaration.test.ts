@@ -29,7 +29,7 @@ it("buildDeclaration", () => {
   expect(raw(declaration)).toMatchInlineSnapshot(`
     export type {};
     declare global {
-      declare namespace GraphQL {
+      namespace GraphQL {
         export type CreateData = {
           class?: CreateDataClass | null;
           classes?: CreateDataClass[] | null;
