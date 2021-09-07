@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-middleware",
-  "version": "1.4.8",
+  "version": "1.4.20",
   "description": "graphql-middleware",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -24,8 +24,8 @@
   "module": "./dist/index.mjs",
   "dependencies": {
     "@mo36924/config": "^1.4.8",
-    "@mo36924/graphql-schema": "^1.4.0",
-    "@mo36924/http-server": "^1.4.8",
+    "@mo36924/graphql-schema": "^1.4.20",
+    "@mo36924/http-server": "^1.4.20",
     "graphql": "^15.5.0"
   },
   "publishConfig": {
