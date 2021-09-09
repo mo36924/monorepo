@@ -18,8 +18,8 @@ const init: server.PluginModuleFactory = ({ typescript: ts }) => {
       const languageService = info.languageService;
       const config = info.config;
       const cwd = info.project.getCurrentDirectory();
-      const modelPath = config.model ?? resolve(cwd, config.model);
-      const schemaPath = config.schema ?? resolve(cwd, config.schema);
+      const modelPath = config.model && resolve(cwd, config.model);
+      const schemaPath = config.schema && resolve(cwd, config.schema);
       const watchPath = modelPath || schemaPath;
       let schema = buildSchema("scalar Unknown");
 
