@@ -1,7 +1,7 @@
 import { readFileSync, unwatchFile, watch, watchFile } from "fs";
 import { resolve } from "path";
 import { fixSchema } from "@mo36924/graphql-schema";
-import { buildSchema, parse, validate } from "graphql";
+import { buildSchema, GraphQLError, parse, validate } from "graphql";
 import {
   getAutocompleteSuggestions,
   getDiagnostics,
@@ -185,8 +185,6 @@ const init: server.PluginModuleFactory = ({ typescript: ts }) => {
           if (match) {
             query = query.replace("Unknown", match[1]);
             offset += 7 - match[1].length;
-          } else {
-            throw error;
           }
         }
 
@@ -332,7 +330,18 @@ const init: server.PluginModuleFactory = ({ typescript: ts }) => {
                   length: end.character - start.character,
                 });
               }
-            } catch {}
+            } catch (error) {
+              if (error instanceof GraphQLError) {
+                diagnostics.push({
+                  category: ts.DiagnosticCategory.Error,
+                  code: 9999,
+                  messageText: error.message,
+                  file: sourceFile,
+                  start: node.template.getStart() + 1,
+                  length: node.template.getWidth() - 2,
+                });
+              }
+            }
           }
 
           ts.forEachChild(node, visitor);
