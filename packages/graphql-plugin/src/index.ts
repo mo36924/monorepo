@@ -1,5 +1,6 @@
 import { readFileSync, unwatchFile, watch, watchFile } from "fs";
 import { resolve } from "path";
+import { fixSchema } from "@mo36924/graphql-schema";
 import { buildSchema, parse, validate } from "graphql";
 import {
   getAutocompleteSuggestions,
@@ -17,22 +18,39 @@ const init: server.PluginModuleFactory = ({ typescript: ts }) => {
       const languageService = info.languageService;
       const config = info.config;
       const cwd = info.project.getCurrentDirectory();
+      const modelPath = config.model ?? resolve(cwd, config.model);
       const schemaPath = config.schema ?? resolve(cwd, config.schema);
+      const watchPath = modelPath || schemaPath;
       let schema = buildSchema("scalar Unknown");
 
-      const updateSchema = () => {
-        schema = buildSchema(readFileSync(schemaPath, "utf8"));
+      const addScalarUnknownType = (schemaCode: string) =>
+        schemaCode.includes("scalar Unknown") ? schemaCode : `${schemaCode}\nscalar Unknown`;
+
+      const changeModel = () => {
+        schema = buildSchema(addScalarUnknownType(fixSchema(readFileSync(modelPath, "utf8"))));
+      };
+
+      const changeSchema = () => {
+        schema = buildSchema(addScalarUnknownType(readFileSync(schemaPath, "utf8")));
+      };
+
+      const update = modelPath ? changeModel : changeSchema;
+
+      const listener = () => {
+        try {
+          update();
+        } catch {}
       };
 
       try {
-        updateSchema();
-        watch(schemaPath, updateSchema);
+        update();
+        watch(watchPath, listener);
       } catch {
-        watchFile(schemaPath, () => {
+        watchFile(watchPath, () => {
           try {
-            updateSchema();
-            watch(schemaPath, updateSchema);
-            unwatchFile(schemaPath);
+            update();
+            watch(watchPath, listener);
+            unwatchFile(watchPath);
           } catch {}
         });
       }
@@ -127,19 +145,18 @@ const init: server.PluginModuleFactory = ({ typescript: ts }) => {
           const templateWidth = head.getWidth() - 3;
           query = head.text.padStart(templateWidth);
 
-          for (let i = 0, len = templateSpans.length; i < len; i++) {
-            const templateSpan = templateSpans[i];
-            const templateSpanWidth = templateSpan.getFullWidth();
-            const literal = templateSpan.literal;
+          templateSpans.forEach((span, i) => {
+            const spanWidth = span.getFullWidth();
+            const literal = span.literal;
             const literalWidth = literal.getWidth();
-            const expressionWidth = templateSpanWidth - literalWidth;
+            const expressionWidth = spanWidth - literalWidth;
             const variableName = `$_${i}`;
             const variable = variableName.padStart(expressionWidth + 2).padEnd(expressionWidth + 3);
             const templateWidth = literalWidth - (ts.isTemplateTail(literal) ? 2 : 3);
             const template = literal.text.padStart(templateWidth);
             query += variable + template;
             variables += variableName + ":Unknown";
-          }
+          });
         }
 
         const tag = node.tag.getText();
