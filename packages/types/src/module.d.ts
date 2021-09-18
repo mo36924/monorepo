@@ -16,3 +16,4 @@ declare module "tailwindcss";
 declare module "preact-render-to-string/jsx" {
   export { default } from "preact-render-to-string/dist/jsx";
 }
+declare module "graphql/jsutils/inspect";

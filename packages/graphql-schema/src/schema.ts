@@ -1,11 +1,12 @@
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import { createObject } from "@mo36924/util";
-import { buildSchema as _buildSchema, Source } from "graphql";
+import type { Source } from "graphql";
 import { schemaDirectives } from "./directives";
 import { baseFields, baseJoinTypeFields } from "./fields";
 import { format } from "./format";
 import { buildModel } from "./model";
 import { comparisonOperators, ComparisonOperators, LogicalOperators } from "./operators";
-import { customScalars, primaryKeyTypeName, scalarTypeNames } from "./scalars";
+import { customScalars, GraphQLDate, GraphQLUUID, primaryKeyTypeName, scalarTypeNames } from "./scalars";
 import { printDirectives, printFieldType, sortTypes, Types } from "./types";
 import {
   getFieldName,
@@ -527,7 +528,7 @@ export const buildGraphQL = (graphql: string | Source) => {
   let types = buildModel(graphql);
   types = fixSchemaTypes(types);
   graphql = printSchema(types);
-  const schema = _buildSchema(graphql);
+  const schema = makeExecutableSchema({ typeDefs: graphql, resolvers: { UUID: GraphQLUUID, Date: GraphQLDate } });
   return { graphql, types, schema };
 };
 
