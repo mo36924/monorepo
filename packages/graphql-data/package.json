@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-data",
-  "version": "1.4.20",
+  "version": "1.4.25",
   "description": "graphql-data",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/graphql-schema": "^1.4.20",
+    "@mo36924/graphql-schema": "^1.4.25",
     "@mo36924/util": "^1.4.0"
   },
   "publishConfig": {
