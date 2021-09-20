@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/rollup-plugin-graphql-middleware",
-  "version": "1.4.26",
+  "version": "1.4.28",
   "description": "rollup-plugin-graphql-middleware",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -24,7 +24,7 @@
   "module": "./dist/index.mjs",
   "dependencies": {
     "@mo36924/config": "^1.4.8",
-    "@mo36924/graphql-schema": "^1.4.26",
+    "@mo36924/graphql-schema": "^1.4.28",
     "@mo36924/graphql-utilities": "^1.4.26",
     "graphql": "^15.5.0",
     "rollup": "^2.53.2"
