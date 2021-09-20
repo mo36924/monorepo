@@ -25,8 +25,7 @@
   "dependencies": {
     "@mo36924/graphql-schema": "^1.4.25",
     "@mo36924/postgres-escape": "^1.4.0",
-    "@mo36924/util": "^1.4.0",
-    "change-case": "^4.1.2"
+    "@mo36924/util": "^1.4.0"
   },
   "publishConfig": {
     "access": "public"

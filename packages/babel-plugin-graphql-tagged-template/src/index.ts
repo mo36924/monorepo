@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import type { default as babel, PluginObj, types as t } from "@babel/core";
-import { buildSchema } from "@mo36924/graphql-schema";
+import { buildSchemaModel } from "@mo36924/graphql-schema";
 import { DocumentNode, GraphQLSchema, parse, stripIgnoredCharacters, validate } from "graphql";
 
 export type Options = {
@@ -12,7 +12,7 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
 
   if (typeof options.schema === "string") {
     const graphql = readFileSync(options.schema || "index.graphql", "utf8");
-    schema = buildSchema(graphql);
+    schema = buildSchemaModel(graphql);
   } else if (options.schema) {
     schema = options.schema;
   }

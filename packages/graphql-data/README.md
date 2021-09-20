@@ -1,3 +1,0 @@
-# graphql-data
-
-graphql-data

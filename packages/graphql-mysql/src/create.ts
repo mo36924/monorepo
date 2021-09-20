@@ -1,4 +1,4 @@
-import { getFieldDefInfo } from "@mo36924/graphql-utilities";
+import { getFieldDefInfo } from "@mo36924/graphql-schema";
 import type { GraphQLObjectType } from "graphql";
 import { v4 as uuid } from "uuid";
 import type { MutationContext } from "./context";

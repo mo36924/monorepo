@@ -1,4 +1,4 @@
-import { getFieldInfo } from "@mo36924/graphql-utilities";
+import { getFieldInfo } from "@mo36924/graphql-schema";
 import type { FieldNode, GraphQLObjectType, OperationDefinitionNode } from "graphql";
 import type { Context } from "./context";
 import { createOrderClause } from "./order";

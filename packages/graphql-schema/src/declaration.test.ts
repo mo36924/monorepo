@@ -1,10 +1,10 @@
 import { expect, it } from "@jest/globals";
 import { raw } from "@mo36924/jest-snapshot-serializer-raw";
 import { buildDeclaration } from "./declaration";
-import { buildSchema } from "./schema";
+import { buildSchemaModel } from "./schema";
 
 it("buildDeclaration", () => {
-  const schema = buildSchema(`
+  const schema = buildSchemaModel(`
     type User {
       name: String!
       profile: Profile
@@ -131,7 +131,7 @@ it("buildDeclaration", () => {
           version?: WhereInt | null;
           createdAt?: WhereDate | null;
           updatedAt?: WhereDate | null;
-          isDeleted?: WhereBoolean | null;
+          isDeleted?: boolean | null;
           name?: WhereString | null;
           and?: WhereClass | null;
           or?: WhereClass | null;
@@ -142,7 +142,7 @@ it("buildDeclaration", () => {
           version?: WhereInt | null;
           createdAt?: WhereDate | null;
           updatedAt?: WhereDate | null;
-          isDeleted?: WhereBoolean | null;
+          isDeleted?: boolean | null;
           name?: WhereString | null;
           and?: WhereClub | null;
           or?: WhereClub | null;
@@ -153,7 +153,7 @@ it("buildDeclaration", () => {
           version?: WhereInt | null;
           createdAt?: WhereDate | null;
           updatedAt?: WhereDate | null;
-          isDeleted?: WhereBoolean | null;
+          isDeleted?: boolean | null;
           age?: WhereInt | null;
           userId?: WhereUUID | null;
           and?: WhereProfile | null;
@@ -165,7 +165,7 @@ it("buildDeclaration", () => {
           version?: WhereInt | null;
           createdAt?: WhereDate | null;
           updatedAt?: WhereDate | null;
-          isDeleted?: WhereBoolean | null;
+          isDeleted?: boolean | null;
           classId?: WhereUUID | null;
           name?: WhereString | null;
           and?: WhereUser | null;

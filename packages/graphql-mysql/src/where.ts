@@ -1,4 +1,4 @@
-import type { WhereArgument } from "@mo36924/graphql-schema";
+import type { ComparisonOperators, WhereArgument } from "@mo36924/graphql-schema";
 import { escape, escapeId } from "./util";
 
 export const createWherePredicates = (where: WhereArgument | null | undefined) => {
@@ -10,9 +10,17 @@ export const createWherePredicates = (where: WhereArgument | null | undefined) =
   let predicates: string[] = [];
 
   for (const [field, ops] of Object.entries(args)) {
-    for (const [op, value] of Object.entries<any>(ops)) {
+    if (field === "isDeleted") {
+      if (typeof ops === "boolean") {
+        predicates.push(`${escapeId(field)} = ${escape(ops)}`);
+      }
+
+      continue;
+    }
+
+    for (const [op, value] of Object.entries(ops)) {
       if (value === null) {
-        switch (op) {
+        switch (op as ComparisonOperators) {
           case "eq":
             predicates.push(`${escapeId(field)} is null`);
             break;
@@ -24,7 +32,7 @@ export const createWherePredicates = (where: WhereArgument | null | undefined) =
         continue;
       }
 
-      switch (op) {
+      switch (op as ComparisonOperators) {
         case "eq":
           predicates.push(`${escapeId(field)} = ${escape(value)}`);
           break;
@@ -46,14 +54,8 @@ export const createWherePredicates = (where: WhereArgument | null | undefined) =
         case "in":
           predicates.push(`${escapeId(field)} in (${value.map(escape).join()})`);
           break;
-        case "ni":
-          predicates.push(`${escapeId(field)} not in (${value.map(escape).join()})`);
-          break;
-        case "li":
+        case "like":
           predicates.push(`${escapeId(field)} like ${escape(value)}`);
-          break;
-        case "nl":
-          predicates.push(`${escapeId(field)} not like ${escape(value)}`);
           break;
       }
 

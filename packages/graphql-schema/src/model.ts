@@ -100,14 +100,14 @@ const fixModelTypes = (types: Types) => {
   return _types;
 };
 
-export const fixModel = (graphql: string | Source) => {
-  const types = buildModel(graphql);
-  graphql = printTypes(types);
-  return graphql;
+export const fixModel = (model: string | Source) => {
+  const types = buildTypesModel(model);
+  model = printTypes(types);
+  return model;
 };
 
-export const buildModel = (graphql: string | Source) => {
-  let types = buildTypes(graphql);
+export const buildTypesModel = (model: string | Source) => {
+  let types = buildTypes(model);
   types = fixModelTypes(types);
   types = sortTypes(types);
   return types;

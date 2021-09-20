@@ -25,6 +25,7 @@
   "dependencies": {
     "@mo36924/config": "^1.4.8",
     "@mo36924/graphql-schema": "^1.4.25",
+    "@mo36924/graphql-utilities": "^1.4.25",
     "graphql": "^15.5.0",
     "rollup": "^2.53.2"
   },

@@ -1,4 +1,5 @@
-import { buildSchema, FieldDefinitionNode, getDirectiveValues, ObjectTypeDefinitionNode } from "graphql";
+import { Directives, getDefDirectives, gql } from "@mo36924/graphql-utilities";
+import { buildSchema, FieldDefinitionNode, ObjectTypeDefinitionNode } from "graphql";
 
 export type TypeDirectives = { join?: {} };
 export type FieldDirectives = {
@@ -8,33 +9,31 @@ export type FieldDirectives = {
   ref?: { name: string };
   unique?: {};
 };
-export const modelDirectives = `
-directive @field(name: String!) on FIELD_DEFINITION
-directive @type(name: String!) on FIELD_DEFINITION
+export const modelDirectives = gql`
+  directive @field(name: String!) on FIELD_DEFINITION
+  directive @type(name: String!) on FIELD_DEFINITION
 `;
-export const schemaDirectives = `
-directive @join on OBJECT
-directive @unique on FIELD_DEFINITION
-directive @key(name: String!) on FIELD_DEFINITION
-directive @ref(name: String!) on FIELD_DEFINITION
-directive @field(name: String! key: String!) on FIELD_DEFINITION
-directive @type(name: String! keys: [String!]!) on FIELD_DEFINITION
+export const schemaDirectives = gql`
+  directive @join on OBJECT
+  directive @unique on FIELD_DEFINITION
+  directive @key(name: String!) on FIELD_DEFINITION
+  directive @ref(name: String!) on FIELD_DEFINITION
+  directive @field(name: String!, key: String!) on FIELD_DEFINITION
+  directive @type(name: String!, keys: [String!]!) on FIELD_DEFINITION
 `;
 const directiveSchema = buildSchema(schemaDirectives);
+const cacheDirectives = new WeakMap<ObjectTypeDefinitionNode | FieldDefinitionNode, Directives>();
 
 export const getDirectives = <T extends ObjectTypeDefinitionNode | FieldDefinitionNode>(
   node: T,
 ): T extends ObjectTypeDefinitionNode ? TypeDirectives : FieldDirectives => {
-  const directives = node.directives ?? [];
-  const directiveValues: any = {};
+  const directives = cacheDirectives.get(node);
 
-  for (const directiveNode of directives) {
-    const directiveName = directiveNode.name.value;
-
-    directiveValues[directiveName] = getDirectiveValues(directiveSchema.getDirective(directiveName)!, {
-      directives,
-    });
+  if (directives) {
+    return directives;
   }
 
-  return directiveValues;
+  const _directives = getDefDirectives(directiveSchema, node);
+  cacheDirectives.set(node, _directives);
+  return _directives;
 };

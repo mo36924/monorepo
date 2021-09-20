@@ -1,16 +1,13 @@
-import { memoize } from "@mo36924/memoize";
+import { memoize, createObject } from "@mo36924/util";
 import type { GraphQLSchema } from "graphql";
 
 export type Queries = [table: string, id: string, query: string][];
 
-const getSortKeys = memoize((schema: GraphQLSchema) => {
-  const sortKeys = Object.assign(
-    Object.create(null) as {},
-    Object.fromEntries(Object.keys(schema.getTypeMap()).map((name, i) => [name, i])),
-  );
-
-  return sortKeys;
-}, new WeakMap());
+const getSortKeys = memoize(
+  (schema: GraphQLSchema) =>
+    createObject(Object.fromEntries(Object.keys(schema.getTypeMap()).map((name, i) => [name, i]))),
+  new WeakMap(),
+);
 
 export const sortQueries = (schema: GraphQLSchema, queries: Queries) => {
   const sortKeys = getSortKeys(schema);

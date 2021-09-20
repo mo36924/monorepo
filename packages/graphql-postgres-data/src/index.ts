@@ -1,12 +1,13 @@
-import { buildData as _buildData } from "@mo36924/graphql-data";
+import { buildTestData } from "@mo36924/graphql-schema";
 import { escape, escapeId } from "@mo36924/postgres-escape";
+import type { GraphQLSchema } from "graphql";
 
-export const buildData = (graphql: string) => {
+export const buildData = (schema: GraphQLSchema) => {
   let disableForeignKeyCheck = "";
   let insert = "";
   let enableForeignKeyCheck = "";
 
-  for (const { typeName, fieldNames, values } of _buildData(graphql)) {
+  for (const { typeName, fieldNames, values } of buildTestData(schema)) {
     const table = escapeId(typeName);
     const columns = fieldNames.map(escapeId).join();
 

@@ -30,14 +30,17 @@ test("fixModel", () => {
       name: String!
       users: [User!]!
     }
+
     type Clubs {
       name: String!
       users: [User!]!
     }
+
     type Profile {
       age: Int
       uuid: UUID!
     }
+
     type User {
       class: Class!
       clubs: [Club!]!

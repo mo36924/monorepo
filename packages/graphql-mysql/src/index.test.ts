@@ -1,62 +1,22 @@
-import { describe, expect, test, beforeAll, afterAll } from "@jest/globals";
-import { buildData } from "@mo36924/graphql-mysql-data";
-import { buildDataSchema } from "@mo36924/graphql-mysql-data-schema";
-import { buildSchema } from "@mo36924/graphql-schema";
-import { retry } from "@mo36924/util";
-import { exec } from "@mo36924/util-node";
-import { createConnection, Connection } from "mysql2/promise";
-import { graphql as _graphql } from "./index";
+import { beforeAll, expect, test } from "@jest/globals";
+import { connection, schema } from "./setup";
+import { escapeId } from "./util";
+import { createSchemaQuery, createTestDataQuery, graphql as _graphql } from "./index";
 
-const database = "graphql_mysql";
-let connection: Connection;
-
-const model = `
-type User {
-  name: String!
-  profile: Profile
-  class: Class!
-  clubs: [Club!]!
-}
-type Profile {
-  age: Int
-}
-type Class {
-  name: String!
-  users: [User!]!
-}
-type Club {
-  name: String!
-  users: [User!]!
-}
-`;
-
-const schema = buildSchema(model);
-const dataSchema = buildDataSchema(model);
-const data = buildData(model);
+const schemaQuery = createSchemaQuery(schema);
+const testDataQuery = createTestDataQuery(schema);
 const graphql = (query: string) => _graphql({ schema, query, source: connection });
 
 beforeAll(async () => {
-  try {
-    await exec(`docker run --rm --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -p 3306:3306 -d mysql`);
-  } catch {}
+  const database = escapeId("graphql_mysql_index");
 
-  await retry(async () => {
-    connection = await createConnection({ user: "root", multipleStatements: true });
-
-    await connection.query(`
-      drop database if exists ${database};
-      create database if not exists ${database};
-      use ${database};
-      ${dataSchema}
-      ${data}
-    `);
-  });
-});
-
-afterAll(async () => {
-  try {
-    await connection?.end();
-  } catch {}
+  await connection.query(`
+    drop database if exists ${database};
+    create database if not exists ${database};
+    use ${database};
+    ${schemaQuery}
+    ${testDataQuery}
+  `);
 });
 
 test("query", async () => {

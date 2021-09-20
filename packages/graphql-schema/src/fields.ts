@@ -10,8 +10,5 @@ createdAt: Date!
 updatedAt: Date!
 isDeleted: Boolean!
 `);
-export const baseJoinTypeFields = parse(`
-id: ${primaryKeyTypeName}!
-`);
 export const baseFieldNames = Object.keys(baseFields);
 export const isBaseFieldName = (name: string) => baseFieldNames.includes(name);

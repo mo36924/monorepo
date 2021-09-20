@@ -23,7 +23,8 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/graphql-schema": "^1.4.25"
+    "@mo36924/graphql-schema": "^1.4.25",
+    "@mo36924/graphql-utilities": "^1.4.25"
   },
   "publishConfig": {
     "access": "public"

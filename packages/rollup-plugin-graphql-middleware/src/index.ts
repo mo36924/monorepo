@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import type { Config } from "@mo36924/config";
-import { minify, fixSchema } from "@mo36924/graphql-schema";
+import { fixSchema } from "@mo36924/graphql-schema";
+import { minify } from "@mo36924/graphql-utilities";
 import { parse } from "graphql";
 import type { Plugin, ResolvedId } from "rollup";
 

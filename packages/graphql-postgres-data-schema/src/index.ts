@@ -1,9 +1,8 @@
-import { buildSchemaTypes } from "@mo36924/graphql-schema";
+import { buildSchemaTypes, ScalarUnionTypeNames } from "@mo36924/graphql-schema";
 import { escapeId } from "@mo36924/postgres-escape";
 import { createObject } from "@mo36924/util";
-import { snakeCase } from "change-case";
 
-const dbTypes = createObject<[{ [key: string]: string }]>({
+const dbTypes: { [key: string]: string } = createObject<[{ [key in ScalarUnionTypeNames]: string }]>({
   UUID: "uuid",
   ID: "uuid",
   Int: "integer",

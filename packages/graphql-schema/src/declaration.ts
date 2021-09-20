@@ -9,6 +9,7 @@ import {
   isScalarType,
 } from "graphql";
 import prettier from "prettier";
+import type { ScalarUnionTypeNames } from "./scalars";
 
 const { format, resolveConfig } = prettier;
 
@@ -25,7 +26,7 @@ const getFieldType = (field: GraphQLInputField) => {
 };
 
 const getScalarType = (name: string) => {
-  switch (name) {
+  switch (name as ScalarUnionTypeNames) {
     case "ID":
     case "UUID":
     case "String":

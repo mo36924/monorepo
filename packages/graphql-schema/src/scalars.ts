@@ -3,12 +3,17 @@ import inspect from "graphql/jsutils/inspect";
 import { validate } from "uuid";
 
 export const primaryKeyTypeName = "UUID";
-export const customScalarTypeNames = ["UUID", "Date"];
-export const scalarTypeNames = ["ID", "Int", "Float", "String", "Boolean", ...customScalarTypeNames];
+export const customScalarTypeNames = ["UUID", "Date"] as const;
+export const scalarTypeNames = ["ID", "Int", "Float", "String", "Boolean", ...customScalarTypeNames] as const;
+export type CustomScalarTypeNames = typeof customScalarTypeNames;
+export type CustomScalarUnionTypeNames = CustomScalarTypeNames[number];
+export type ScalarTypeNames = typeof scalarTypeNames;
+export type ScalarUnionTypeNames = ScalarTypeNames[number];
 export const customScalars = `
 ${customScalarTypeNames.map((name) => `scalar ${name}`).join("\n")}
 `;
-export const isScalarTypeName = (type: string) => scalarTypeNames.includes(type);
+export const isScalarTypeName = (type: string): type is ScalarUnionTypeNames =>
+  (scalarTypeNames as readonly string[]).includes(type);
 
 const validateUUID = (uuid: any): string => {
   if (!validate(uuid)) {

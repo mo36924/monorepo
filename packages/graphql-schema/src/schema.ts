@@ -1,10 +1,10 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
+import { format } from "@mo36924/graphql-utilities";
 import { createObject } from "@mo36924/util";
-import type { Source } from "graphql";
+import { Source } from "graphql";
 import { schemaDirectives } from "./directives";
-import { baseFields, baseJoinTypeFields } from "./fields";
-import { format } from "./format";
-import { buildModel } from "./model";
+import { baseFields } from "./fields";
+import { buildTypesModel } from "./model";
 import { comparisonOperators, ComparisonOperators, LogicalOperators } from "./operators";
 import { customScalars, GraphQLDate, GraphQLUUID, primaryKeyTypeName, scalarTypeNames } from "./scalars";
 import { printDirectives, printFieldType, sortTypes, Types } from "./types";
@@ -18,10 +18,10 @@ import {
   getTypeName,
 } from "./util";
 
-export type WhereArgument<T extends string = "field1" | "field2" | "field3"> = {
-  [U in T | LogicalOperators]?: U extends LogicalOperators
-    ? WhereArgument<T> | undefined
-    : { [V in ComparisonOperators]?: any };
+export type WhereArgument = {
+  [fieldName: string]: boolean | ({ in: any[] } & { [comparisonOperator in Exclude<ComparisonOperators, "in">]: any });
+} & {
+  [logicalOperator in LogicalOperators]?: WhereArgument;
 };
 
 export type FieldArguments = {
@@ -308,11 +308,7 @@ export const fixSchemaTypes = (types: Types) => {
   types = sortTypes(types);
 
   for (const type of Object.values(types)) {
-    if (type.directives.join) {
-      type.fields = createObject({ ...baseJoinTypeFields, ...type.fields });
-    } else {
-      type.fields = createObject({ ...baseFields, ...type.fields });
-    }
+    type.fields = createObject({ ...baseFields, ...type.fields });
   }
 
   return types;
@@ -350,14 +346,16 @@ export const printSchema = (types: Types) => {
     objectType += `type ${typeName} ${typeDirectives} {`;
 
     for (const [fieldName, field] of Object.entries(fields)) {
-      const { list, type: fieldTypeName } = field;
+      const { scalar, list, type: fieldTypeName } = field;
       const fieldType = printFieldType(field);
       const fieldDirectives = printDirectives(field.directives);
 
-      if (list) {
-        objectType += `${fieldName}(where: Where${fieldTypeName}, order: [Order${fieldTypeName}!], limit: Int, offset: Int): ${fieldType} ${fieldDirectives}\n`;
-      } else {
+      if (scalar) {
         objectType += `${fieldName}: ${fieldType} ${fieldDirectives}\n`;
+      } else if (list) {
+        objectType += `${fieldName}(where: Where${fieldTypeName} = { isDeleted: false }, order: [Order${fieldTypeName}!], limit: Int, offset: Int): ${fieldType} ${fieldDirectives}\n`;
+      } else {
+        objectType += `${fieldName}(where: Where${fieldTypeName} = { isDeleted: false }): ${fieldType} ${fieldDirectives}\n`;
       }
     }
 
@@ -375,8 +373,8 @@ export const printSchema = (types: Types) => {
     const fieldListName = getListFieldName(fieldName);
 
     query += `
-      ${fieldName}(where: Where${typeName}, order: [Order${typeName}!], offset: Int): ${typeName}
-      ${fieldListName}(where: Where${typeName}, order: [Order${typeName}!], limit: Int, offset: Int): [${typeName}!]!
+      ${fieldName}(where: Where${typeName} = { isDeleted: false }, order: [Order${typeName}!], offset: Int): ${typeName}
+      ${fieldListName}(where: Where${typeName} = { isDeleted: false }, order: [Order${typeName}!], limit: Int, offset: Int): [${typeName}!]!
     `;
 
     createData += `
@@ -445,7 +443,15 @@ export const printSchema = (types: Types) => {
         }
       }
 
-      whereInput += `${fieldName}: ${printFieldType({ type: `Where${fieldTypeName}`, list: false, nullable: true })}\n`;
+      if (fieldName === "isDeleted") {
+        whereInput += `${fieldName}: Boolean = false\n`;
+      } else {
+        whereInput += `${fieldName}: ${printFieldType({
+          type: `Where${fieldTypeName}`,
+          list: false,
+          nullable: true,
+        })}\n`;
+      }
 
       const FIELD_NAME = getOrderName(fieldName);
 
@@ -525,7 +531,7 @@ export const printSchema = (types: Types) => {
 };
 
 export const buildGraphQL = (graphql: string | Source) => {
-  let types = buildModel(graphql);
+  let types = buildTypesModel(graphql);
   types = fixSchemaTypes(types);
   graphql = printSchema(types);
   const schema = makeExecutableSchema({ typeDefs: graphql, resolvers: { UUID: GraphQLUUID, Date: GraphQLDate } });
@@ -540,6 +546,13 @@ export const buildSchemaTypes = (graphql: string | Source) => {
   return buildGraphQL(graphql).types;
 };
 
-export const buildSchema = (graphql: string | Source) => {
-  return buildGraphQL(graphql).schema;
+export const buildSchema = (schema: string | Source) => {
+  return makeExecutableSchema({ typeDefs: schema, resolvers: { UUID: GraphQLUUID, Date: GraphQLDate } });
+};
+
+export const buildSchemaModel = (model: string | Source) => {
+  const graphql = printSchema(fixSchemaTypes(buildTypesModel(model)));
+  const source = new Source(graphql, typeof model === "string" ? undefined : model.name);
+  const schema = buildSchema(source);
+  return schema;
 };

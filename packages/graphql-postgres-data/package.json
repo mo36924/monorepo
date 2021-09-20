@@ -23,8 +23,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/graphql-data": "^1.4.25",
-    "@mo36924/postgres-escape": "^1.4.0"
+    "@mo36924/graphql-schema": "^1.4.25",
+    "@mo36924/postgres-escape": "^1.4.0",
+    "graphql": "^15.5.0"
   },
   "publishConfig": {
     "access": "public"

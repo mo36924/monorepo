@@ -1,7 +1,8 @@
 import { watch } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname } from "path";
-import { format, fixSchema } from "@mo36924/graphql-schema";
+import { fixSchema } from "@mo36924/graphql-schema";
+import { format } from "@mo36924/graphql-utilities";
 
 export type Options = {
   watch?: boolean;

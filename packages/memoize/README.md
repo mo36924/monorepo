@@ -1,3 +1,0 @@
-# memoize
-
-memoize
