@@ -24,6 +24,7 @@ test("query", async () => {
     query {
       user(offset: 3) {
         id
+        isDeleted
         name
         profile {
           age
@@ -39,6 +40,7 @@ test("query", async () => {
       "data": Object {
         "user": Object {
           "id": "00000000-0000-4000-a000-000400000004",
+          "isDeleted": false,
           "name": "name-4",
           "profile": Object {
             "age": 0,

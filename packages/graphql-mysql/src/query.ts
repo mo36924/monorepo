@@ -2,7 +2,7 @@ import { getFieldInfo } from "@mo36924/graphql-schema";
 import type { FieldNode, GraphQLObjectType, OperationDefinitionNode } from "graphql";
 import type { Context } from "./context";
 import { createOrderClause } from "./order";
-import { escape, escapedIdColumn, escapedNull, escapeId, escapeUUID } from "./util";
+import { escape, escapedIdColumn, escapedNull, escapedTrue, escapeId, escapeUUID } from "./util";
 import { createWherePredicates } from "./where";
 
 const query = (context: Context, parentType: GraphQLObjectType, node: OperationDefinitionNode | FieldNode): string =>
@@ -18,6 +18,8 @@ const value = (context: Context, parentType: GraphQLObjectType, fieldNode: Field
     const value = escapeId(info.name);
 
     switch (typeName) {
+      case "Boolean":
+        return `${escapedTrue} = ${value}`;
       case "UUID":
         return `bin_to_uuid(${value})`;
       case "Date":
