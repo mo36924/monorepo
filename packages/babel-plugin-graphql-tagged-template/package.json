@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/babel-plugin-graphql-tagged-template",
-  "version": "1.4.25",
+  "version": "1.4.26",
   "description": "babel-plugin-graphql-tagged-template",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -24,7 +24,7 @@
   "module": "./dist/index.mjs",
   "dependencies": {
     "@babel/core": "^7.15.0",
-    "@mo36924/graphql-schema": "^1.4.25",
+    "@mo36924/graphql-schema": "^1.4.26",
     "graphql": "^15.5.0"
   },
   "publishConfig": {
