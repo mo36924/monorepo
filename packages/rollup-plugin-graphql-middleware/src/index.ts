@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 import type { Config } from "@mo36924/config";
-import { fixSchema } from "@mo36924/graphql-schema";
+import { printBuildSchemaModel } from "@mo36924/graphql-schema";
 import { minify } from "@mo36924/graphql-utilities";
 import { parse } from "graphql";
 import type { Plugin, ResolvedId } from "rollup";
@@ -21,7 +21,7 @@ export default (options: Pick<Config, "database" | "graphql">): Plugin => {
     async load(id) {
       if (id === resolvedId?.id) {
         const gql = await readFile(options.graphql, "utf8");
-        const schema = await minify(fixSchema(gql));
+        const schema = minify(printBuildSchemaModel(gql));
         const ast = parse(schema, { noLocation: true });
         const { name, main, replica } = options.database;
         const json = JSON.stringify({ ast, main, replica });

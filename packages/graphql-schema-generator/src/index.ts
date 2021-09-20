@@ -1,7 +1,7 @@
 import { watch } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname } from "path";
-import { fixSchema } from "@mo36924/graphql-schema";
+import { printBuildSchemaModel } from "@mo36924/graphql-schema";
 import { format } from "@mo36924/graphql-utilities";
 
 export type Options = {
@@ -36,7 +36,7 @@ export default async (options?: Options) => {
   };
 
   await Promise.all([mkdir(dirname(modelPath), { recursive: true }), mkdir(dirname(schemaPath), { recursive: true })]);
-  const defaultModel = await format(`type User { name: String! }`, modelPath);
+  const defaultModel = format(`type User { name: String! }`, modelPath);
 
   try {
     await writeFile(modelPath, defaultModel, { flag: "wx" });
@@ -58,8 +58,7 @@ export default async (options?: Options) => {
 
   async function generate() {
     const model = await readFile(modelPath, "utf8");
-    const schema = fixSchema(model);
-    const formattedSchema = format(schema, schemaPath);
-    await writeFileAsync(schemaPath, formattedSchema);
+    const schema = printBuildSchemaModel(model);
+    await writeFileAsync(schemaPath, schema);
   }
 };

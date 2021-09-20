@@ -1,6 +1,6 @@
 import { readFileSync, unwatchFile, watch, watchFile } from "fs";
 import { resolve } from "path";
-import { fixSchema } from "@mo36924/graphql-schema";
+import { printSchemaModel } from "@mo36924/graphql-schema";
 import { buildSchema, GraphQLError, parse, validate } from "graphql";
 import {
   getAutocompleteSuggestions,
@@ -27,7 +27,7 @@ const init: server.PluginModuleFactory = ({ typescript: ts }) => {
         schemaCode.includes("scalar Unknown") ? schemaCode : `${schemaCode}\nscalar Unknown`;
 
       const changeModel = () => {
-        schema = buildSchema(addScalarUnknownType(fixSchema(readFileSync(modelPath, "utf8"))));
+        schema = buildSchema(addScalarUnknownType(printSchemaModel(readFileSync(modelPath, "utf8"))));
       };
 
       const changeSchema = () => {

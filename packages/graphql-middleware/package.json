@@ -24,9 +24,7 @@
   "module": "./dist/index.mjs",
   "dependencies": {
     "@mo36924/config": "^1.4.8",
-    "@mo36924/graphql-schema": "^1.4.26",
-    "@mo36924/http-server": "^1.4.26",
-    "graphql": "^15.5.0"
+    "@mo36924/http-server": "^1.4.26"
   },
   "publishConfig": {
     "access": "public"

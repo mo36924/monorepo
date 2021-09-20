@@ -83,3 +83,5 @@ export const GraphQLDate = new GraphQLScalarType({
     return date;
   },
 });
+
+export const resolvers = { UUID: GraphQLUUID, Date: GraphQLDate };

@@ -1,8 +1,6 @@
 import { readFile } from "fs/promises";
 import { database, databaseDevelopment, graphql } from "@mo36924/config";
-import { fixSchema } from "@mo36924/graphql-schema";
 import type { MiddlewareFactory } from "@mo36924/http-server";
-import { parse } from "graphql";
 
 export default (): MiddlewareFactory => async (server) => {
   const config = process.env.NODE_ENV === "development" ? databaseDevelopment : database;
@@ -14,8 +12,8 @@ export default (): MiddlewareFactory => async (server) => {
     return;
   }
 
-  const schema = fixSchema(gql);
-  const ast = parse(schema);
+  // const schema = fixSchema(gql);
+  // const ast = parse(schema);
   let middlewareFactory!: MiddlewareFactory;
 
   if (config.name === "postgres") {

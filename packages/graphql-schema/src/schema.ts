@@ -6,7 +6,7 @@ import { schemaDirectives } from "./directives";
 import { baseFields } from "./fields";
 import { buildTypesModel } from "./model";
 import { comparisonOperators, ComparisonOperators, LogicalOperators } from "./operators";
-import { customScalars, GraphQLDate, GraphQLUUID, primaryKeyTypeName, scalarTypeNames } from "./scalars";
+import { customScalars, primaryKeyTypeName, resolvers, scalarTypeNames } from "./scalars";
 import { printDirectives, printFieldType, sortTypes, Types } from "./types";
 import {
   getFieldName,
@@ -530,29 +530,25 @@ export const printSchema = (types: Types) => {
   return schema;
 };
 
-export const buildGraphQL = (graphql: string | Source) => {
-  let types = buildTypesModel(graphql);
+export const buildSchema = (schema: string | Source) => makeExecutableSchema({ typeDefs: schema, resolvers });
+
+export const buildGraphQL = (model: string | Source) => {
+  let types = buildTypesModel(model);
   types = fixSchemaTypes(types);
-  graphql = printSchema(types);
-  const schema = makeExecutableSchema({ typeDefs: graphql, resolvers: { UUID: GraphQLUUID, Date: GraphQLDate } });
-  return { graphql, types, schema };
-};
-
-export const fixSchema = (graphql: string | Source) => {
-  return buildGraphQL(graphql).graphql;
-};
-
-export const buildSchemaTypes = (graphql: string | Source) => {
-  return buildGraphQL(graphql).types;
-};
-
-export const buildSchema = (schema: string | Source) => {
-  return makeExecutableSchema({ typeDefs: schema, resolvers: { UUID: GraphQLUUID, Date: GraphQLDate } });
-};
-
-export const buildSchemaModel = (model: string | Source) => {
-  const graphql = printSchema(fixSchemaTypes(buildTypesModel(model)));
-  const source = new Source(graphql, typeof model === "string" ? undefined : model.name);
+  const schemaGraphQL = printSchema(types);
+  const source = new Source(schemaGraphQL, typeof model === "string" ? undefined : model.name);
   const schema = buildSchema(source);
-  return schema;
+  return { graphql: schemaGraphQL, types, schema };
 };
+
+export const printBuildSchemaModel = (model: string | Source) => buildGraphQL(model).graphql;
+
+export const printSchemaModel = (model: string | Source) => {
+  let types = buildTypesModel(model);
+  types = fixSchemaTypes(types);
+  const schemaGraphQL = printSchema(types);
+  return schemaGraphQL;
+};
+
+export const buildSchemaTypes = (model: string | Source) => buildGraphQL(model).types;
+export const buildSchemaModel = (model: string | Source) => buildGraphQL(model).schema;

@@ -1,9 +1,9 @@
-import { expect, it } from "@jest/globals";
+import { expect, test } from "@jest/globals";
 import { raw } from "@mo36924/jest-snapshot-serializer-raw";
-import { fixSchema } from "./schema";
+import { printBuildSchemaModel } from "./schema";
 
-it("fixSchema", () => {
-  const graphql = fixSchema(`
+test("printBuildSchemaModel", () => {
+  const graphql = printBuildSchemaModel(`
     type User {
       name: String!
       profile: Profile
