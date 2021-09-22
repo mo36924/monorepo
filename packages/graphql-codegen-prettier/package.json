@@ -1,0 +1,31 @@
+{
+  "name": "@mo36924/graphql-codegen-prettier",
+  "version": "1.0.0",
+  "description": "graphql-codegen-prettier",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/graphql-codegen-prettier"
+  },
+  "license": "MIT",
+  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "dependencies": {
+    "@graphql-codegen/plugin-helpers": "^2.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/typescript-operations",
-  "version": "1.4.37",
-  "description": "typescript-operations",
+  "name": "@mo36924/graphql-codegen-typescript",
+  "version": "1.0.0",
+  "description": "graphql-codegen-typescript",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/typescript-operations"
+    "directory": "packages/graphql-codegen-typescript"
   },
   "license": "MIT",
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -24,8 +24,8 @@
   "module": "./dist/index.mjs",
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^2.1.1",
-    "@graphql-codegen/typescript-operations": "^2.1.4",
-    "change-case": "^4.1.2",
+    "@graphql-codegen/typescript": "^2.2.2",
+    "@mo36924/graphql-codegen-prettier": "^1.0.0",
     "graphql": "^15.5.0"
   },
   "publishConfig": {

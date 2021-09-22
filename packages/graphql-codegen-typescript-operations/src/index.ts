@@ -1,21 +1,8 @@
 import type { PluginFunction, Types } from "@graphql-codegen/plugin-helpers";
 import { plugin as operations, TypeScriptDocumentsPluginConfig } from "@graphql-codegen/typescript-operations";
+import "@mo36924/graphql-codegen-prettier";
 import { pascalCase } from "change-case";
 import { FragmentDefinitionNode, OperationDefinitionNode, stripIgnoredCharacters, visit } from "graphql";
-
-try {
-  const prettier = require("prettier");
-  const core = require("@graphql-codegen/core");
-  const codegen = core.codegen;
-
-  core.codegen = async (options: Types.GenerateOptions) => {
-    const code = await codegen(options);
-    const filepath = options.filename;
-    const config = await prettier.resolveConfig(filepath);
-    const formattedCode = prettier.format(code, { ...config, filepath });
-    return formattedCode;
-  };
-} catch {}
 
 export type TypeScriptOperationsPluginConfig = TypeScriptDocumentsPluginConfig & { minify?: boolean };
 

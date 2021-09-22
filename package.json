@@ -172,6 +172,7 @@
     "@fullhuman/postcss-purgecss": "^4.0.3",
     "@gfx/zopfli": "^1.0.15",
     "@graphql-codegen/plugin-helpers": "^2.1.1",
+    "@graphql-codegen/typescript": "^2.2.2",
     "@graphql-codegen/typescript-operations": "^2.1.4",
     "@graphql-tools/schema": "^8.2.0",
     "@headlessui/react": "^1.2.0",

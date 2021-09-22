@@ -1,3 +1,0 @@
-# typescript-operations
-
-typescript-operations
