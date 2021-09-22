@@ -12,6 +12,7 @@ export type Options = {
   dynamicImport?: boolean | string;
   template?: string;
   routeTemplate?: string;
+  routeType?: string;
   bracket?: boolean;
   removeRoutePathExtensions?: string[];
   removeImportPathExtensions?: string[];
@@ -26,6 +27,7 @@ const defaultOptions: Required<Options> = {
   dynamicImport: "lazy",
   template: "src/components/Router.template.tsx",
   routeTemplate: "src/components/Route.template.tsx",
+  routeType: "ComponentType",
   bracket: false,
   removeRoutePathExtensions: [".tsx"],
   removeImportPathExtensions: [".tsx"],
@@ -161,6 +163,7 @@ export default async (options?: Options) => {
     file,
     template,
     routeTemplate,
+    routeType,
     dynamicImport,
     bracket,
     removeRoutePathExtensions,
@@ -327,7 +330,7 @@ export default async (options?: Options) => {
         .map(([name, type]) => `${JSON.stringify(name)}: ${type}`)
         .join()}}`;
 
-      const componentType = `ComponentType<${propsType}>`;
+      const componentType = `${routeType}<${propsType}>`;
 
       if (dynamicImport) {
         if (dynamicImport === true) {
