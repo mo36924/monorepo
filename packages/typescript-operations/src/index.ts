@@ -1,7 +1,7 @@
 import type { PluginFunction, Types } from "@graphql-codegen/plugin-helpers";
 import { plugin as operations, TypeScriptDocumentsPluginConfig } from "@graphql-codegen/typescript-operations";
 import { pascalCase } from "change-case";
-import { FragmentDefinitionNode, stripIgnoredCharacters, visit } from "graphql";
+import { FragmentDefinitionNode, OperationDefinitionNode, stripIgnoredCharacters, visit } from "graphql";
 
 try {
   const prettier = require("prettier");
@@ -56,22 +56,30 @@ export const plugin: PluginFunction<TypeScriptOperationsPluginConfig> = async (s
     );
 
     let i = 1;
-    let isFirstOperation: boolean = true;
+    let firstOperationQueryName!: string;
 
-    for (const definition of document.definitions) {
-      if (definition.kind !== "OperationDefinition") {
+    const operationDefinitions = document.definitions.filter(
+      (definition): definition is OperationDefinitionNode => definition.kind === "OperationDefinition",
+    );
+
+    for (const operationDefinition of operationDefinitions) {
+      if (operationDefinition.kind !== "OperationDefinition") {
         continue;
       }
 
-      const operation = omitOperationSuffix ? "" : pascalCase(definition.operation);
-      const name = (definition.name ? pascalCase(definition.name.value) : `Unnamed_${i++}_`) + operation;
+      const operation = omitOperationSuffix ? "" : pascalCase(operationDefinition.operation);
+
+      const name =
+        (operationDefinition.name ? pascalCase(operationDefinition.name.value) : `Unnamed_${i++}_`) + operation;
+
+      firstOperationQueryName ??= name;
 
       const definitionSet = new Set<string>([
-        definition.loc!.source.body.slice(definition.loc!.start, definition.loc!.end),
+        operationDefinition.loc!.source.body.slice(operationDefinition.loc!.start, operationDefinition.loc!.end),
       ]);
 
       if (fragmentDefinitionMap.size) {
-        visit(definition, {
+        visit(operationDefinition, {
           FragmentSpread(node) {
             definitionSet.add(fragmentDefinitionMap.get(node.name.value)!);
           },
@@ -87,13 +95,10 @@ export const plugin: PluginFunction<TypeScriptOperationsPluginConfig> = async (s
       output.content += `export const ${name}: string & { variables?: ${name}Variables, result?: ${name}Result } = ${JSON.stringify(
         graphql,
       )};\n\n`;
+    }
 
-      if (!isFirstOperation) {
-        continue;
-      }
-
-      output.content += `export default ${name};\n\n`;
-      isFirstOperation = false;
+    if (operationDefinitions.length === 1) {
+      output.content += `export default ${firstOperationQueryName};\n\n`;
     }
   }
 
