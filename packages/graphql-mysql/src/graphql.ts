@@ -1,17 +1,22 @@
 import { parse as jsonParse } from "@mo36924/graphql-json";
 import { DocumentNode, GraphQLError, GraphQLSchema, parse, validate, validateSchema } from "graphql";
-import type { Connection, FieldPacket, Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import type { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { buildContext } from "./context";
 import { createMutationQueries } from "./mutation";
 import { createQuery } from "./query";
+
+export type Result = RowDataPacket[] | OkPacket | ResultSetHeader;
+export type Query = <T = Result | Result[]>(
+  sql: string,
+) => Promise<[T, T extends Result ? FieldPacket[] : FieldPacket[][]]>;
 
 export type GraphQLMySQLArgs = {
   schema: GraphQLSchema;
   query: string;
   variables?: { [key: string]: any } | null | undefined;
   operationName?: string | null | undefined;
-  source: Connection | Pool;
-  replica?: Connection | Pool;
+  source: Query;
+  replica?: Query;
 };
 
 export const graphqlJSON = async (args: GraphQLMySQLArgs) => {
@@ -44,14 +49,11 @@ export const graphqlJSON = async (args: GraphQLMySQLArgs) => {
 
   switch (context.operation.operation) {
     case "query": {
-      const result = await replica.query<RowDataPacket[]>(createQuery(context));
+      const result = await replica<RowDataPacket[]>(createQuery(context));
       return `{"data":${result[0][0].data}}`;
     }
     case "mutation": {
-      const result: [(ResultSetHeader | RowDataPacket[])[], FieldPacket[]] = await source.query<any>(
-        createMutationQueries(context).join(""),
-      );
-
+      const result = await source<(ResultSetHeader | RowDataPacket[])[]>(createMutationQueries(context).join(""));
       const results: { [key: string]: string } = Object.create(null);
 
       for (const headerOrPackets of result[0]) {
