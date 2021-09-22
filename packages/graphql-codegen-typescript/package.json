@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-codegen-typescript",
-  "version": "1.0.0",
+  "version": "1.4.38",
   "description": "graphql-codegen-typescript",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -25,7 +25,7 @@
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^2.1.1",
     "@graphql-codegen/typescript": "^2.2.2",
-    "@mo36924/graphql-codegen-prettier": "^1.0.0",
+    "@mo36924/graphql-codegen-prettier": "^1.4.38",
     "graphql": "^15.5.0"
   },
   "publishConfig": {
