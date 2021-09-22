@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-postgres-data",
-  "version": "1.4.34",
+  "version": "1.4.35",
   "description": "graphql-postgres-data",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/graphql-schema": "^1.4.34",
+    "@mo36924/graphql-schema": "^1.4.35",
     "@mo36924/postgres-escape": "^1.4.0",
     "graphql": "^15.5.0"
   },
