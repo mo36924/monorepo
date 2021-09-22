@@ -1,7 +1,7 @@
 import type { PluginFunction, Types } from "@graphql-codegen/plugin-helpers";
 import { plugin as operations, TypeScriptDocumentsPluginConfig } from "@graphql-codegen/typescript-operations";
 import { pascalCase } from "change-case";
-import { FragmentDefinitionNode, visit } from "graphql";
+import { FragmentDefinitionNode, stripIgnoredCharacters, visit } from "graphql";
 
 try {
   const prettier = require("prettier");
@@ -17,7 +17,9 @@ try {
   };
 } catch {}
 
-export const plugin: PluginFunction<TypeScriptDocumentsPluginConfig> = async (schema, documents, config, info) => {
+export type TypeScriptOperationsPluginConfig = TypeScriptDocumentsPluginConfig & { minify?: boolean };
+
+export const plugin: PluginFunction<TypeScriptOperationsPluginConfig> = async (schema, documents, config, info) => {
   const { prepend, content, append } = await operations(
     schema,
     documents,
@@ -27,7 +29,7 @@ export const plugin: PluginFunction<TypeScriptDocumentsPluginConfig> = async (sc
 
   const output: Required<Types.ComplexPluginOutput> = {
     prepend: prepend ?? [],
-    content: content,
+    content: content + "\n\n",
     append: append ?? [],
   };
 
@@ -37,7 +39,7 @@ export const plugin: PluginFunction<TypeScriptDocumentsPluginConfig> = async (sc
     return output;
   }
 
-  const omitOperationSuffix = config.omitOperationSuffix;
+  const { minify, omitOperationSuffix } = config;
 
   for (const { document } of documents) {
     if (!document) {
@@ -75,8 +77,14 @@ export const plugin: PluginFunction<TypeScriptDocumentsPluginConfig> = async (sc
         });
       }
 
+      let graphql = [...definitionSet].join("\n\n");
+
+      if (minify) {
+        graphql = stripIgnoredCharacters(graphql);
+      }
+
       output.content += `export const ${name}: string & { variables?: ${name}Variables, result?: ${name}Result } = ${JSON.stringify(
-        [...definitionSet].join("\n\n"),
+        graphql,
       )};\n\n`;
     }
   }
