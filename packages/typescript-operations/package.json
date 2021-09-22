@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/redirect-middleware",
-  "version": "1.4.26",
-  "description": "redirect-middleware",
+  "name": "@mo36924/typescript-operations",
+  "version": "1.0.0",
+  "description": "typescript-operations",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/redirect-middleware"
+    "directory": "packages/typescript-operations"
   },
   "license": "MIT",
   "author": "mo36924 <mo36924@users.noreply.github.com>",
@@ -23,10 +23,12 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/http-server": "^1.4.28"
+    "@graphql-codegen/plugin-helpers": "^2.1.1",
+    "@graphql-codegen/typescript-operations": "^2.1.4",
+    "change-case": "^4.1.2",
+    "graphql": "^15.5.0"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "799c930706ccb3870075911885808bac0bff9342"
+  }
 }

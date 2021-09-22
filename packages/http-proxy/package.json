@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/http-server": "^1.4.26",
+    "@mo36924/http-server": "^1.4.28",
     "http-proxy": "^1.18.1"
   },
   "publishConfig": {
