@@ -56,6 +56,7 @@ export const plugin: PluginFunction<TypeScriptOperationsPluginConfig> = async (s
     );
 
     let i = 1;
+    let isFirstOperation: boolean = true;
 
     for (const definition of document.definitions) {
       if (definition.kind !== "OperationDefinition") {
@@ -86,6 +87,13 @@ export const plugin: PluginFunction<TypeScriptOperationsPluginConfig> = async (s
       output.content += `export const ${name}: string & { variables?: ${name}Variables, result?: ${name}Result } = ${JSON.stringify(
         graphql,
       )};\n\n`;
+
+      if (!isFirstOperation) {
+        continue;
+      }
+
+      output.content += `export default ${name};\n\n`;
+      isFirstOperation = false;
     }
   }
 
