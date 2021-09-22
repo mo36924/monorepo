@@ -92,9 +92,9 @@ export const plugin: PluginFunction<TypeScriptOperationsPluginConfig> = async (s
         graphql = stripIgnoredCharacters(graphql);
       }
 
-      output.content += `export const ${name}: string & { variables?: ${name}Variables, result?: ${name}Result } = ${JSON.stringify(
+      output.content += `export const ${name}: string & { variables: ${name}Variables, result: ${name}Result } = ${JSON.stringify(
         graphql,
-      )};\n\n`;
+      )} as any;\n\n`;
     }
 
     if (operationDefinitions.length === 1) {
