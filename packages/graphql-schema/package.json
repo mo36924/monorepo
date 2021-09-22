@@ -22,6 +22,9 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "bin": {
+    "graphql-schema": "./dist/bin.js"
+  },
   "dependencies": {
     "@graphql-tools/schema": "^8.2.0",
     "@mo36924/graphql-utilities": "^1.4.26",
