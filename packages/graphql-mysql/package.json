@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-mysql",
-  "version": "1.4.40",
+  "version": "1.4.41",
   "description": "graphql-mysql",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -24,7 +24,7 @@
   "module": "./dist/index.mjs",
   "dependencies": {
     "@mo36924/graphql-json": "^1.4.0",
-    "@mo36924/graphql-schema": "^1.4.35",
+    "@mo36924/graphql-schema": "^1.4.41",
     "@mo36924/graphql-utilities": "^1.4.26",
     "@mo36924/mysql-escape": "^1.4.25",
     "@mo36924/util": "^1.4.0",
