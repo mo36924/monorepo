@@ -7,13 +7,13 @@ import { printBuildSchemaModel } from "./index";
 let [model, schema] = process.argv.slice(2);
 
 if (!model || !schema) {
-  const config = cosmiconfigSync("graphql").search()?.config ?? {};
+  const config = cosmiconfigSync("graphql-schema").search()?.config ?? {};
   model = config.model;
   schema = config.schema;
 }
 
 if (!model || !schema) {
-  throw new Error("Not found graphql config.");
+  throw new Error("Not found graphql-schema config.");
 }
 
 if (process.env.NODE_ENV === "production") {

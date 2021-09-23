@@ -22,6 +22,9 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "bin": {
+    "graphql-mysql": "./dist/bin.js"
+  },
   "dependencies": {
     "@mo36924/graphql-json": "^1.4.0",
     "@mo36924/graphql-schema": "^1.4.41",
@@ -30,6 +33,7 @@
     "@mo36924/util": "^1.4.0",
     "@mo36924/util-node": "^1.4.0",
     "change-case": "^4.1.2",
+    "cosmiconfig": "^7.0.0",
     "graphql": "^15.5.0",
     "mysql2": "^2.3.0",
     "uuid": "^8.3.2"
