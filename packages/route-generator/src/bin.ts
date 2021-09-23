@@ -2,7 +2,7 @@ import { cosmiconfig } from "cosmiconfig";
 import routeGenerator from "./index";
 
 async function main() {
-  const result = await cosmiconfig("route").search();
+  const result = await cosmiconfig("route-generator").search();
   const config = result?.config;
 
   try {

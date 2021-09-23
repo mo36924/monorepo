@@ -1,12 +1,19 @@
 import { readFileSync, watch, writeFileSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import { retry } from "@mo36924/util";
+import { cosmiconfigSync } from "cosmiconfig";
 import { printBuildSchemaModel } from "./index";
 
-const [model, schema] = process.argv.slice(2);
+let [model, schema] = process.argv.slice(2);
 
 if (!model || !schema) {
-  throw new Error("Invalid argument.");
+  const config = cosmiconfigSync("graphql").search()?.config ?? {};
+  model = config.model;
+  schema = config.schema;
+}
+
+if (!model || !schema) {
+  throw new Error("Not found graphql config.");
 }
 
 if (process.env.NODE_ENV === "production") {
