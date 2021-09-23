@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-plugin",
-  "version": "1.4.41",
+  "version": "1.4.42",
   "description": "graphql-plugin",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -23,7 +23,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "dependencies": {
-    "@mo36924/graphql-schema": "^1.4.41",
+    "@mo36924/graphql-schema": "^1.4.42",
     "graphql": "^15.5.0",
     "graphql-language-service-interface": "^2.8.4",
     "graphql-language-service-utils": "^2.5.3",
