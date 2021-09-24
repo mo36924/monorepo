@@ -35,7 +35,7 @@ export const executeJSON = async (args: ExecutionArgs) => {
   switch (context.operation.operation) {
     case "query": {
       const result = await replica<{ data: string }[]>(createQuery(context));
-      return { data: `{"data":${result[0][0].data}}` };
+      return `{"data":${result[0][0].data}}`;
     }
     case "mutation": {
       const result = await primary<(ResultSetHeader | RowDataPacket[])[]>(createMutationQueries(context).join(""));
@@ -51,7 +51,7 @@ export const executeJSON = async (args: ExecutionArgs) => {
         .map(([key, value]) => `${JSON.stringify(key)}:${value}`)
         .join();
 
-      return { data: `{"data":{${data}}}` };
+      return `{"data":{${data}}}`;
     }
     default:
       return { errors: [new GraphQLError(`Unsupported ${context.operation.operation} operation.`)] };
@@ -61,8 +61,8 @@ export const executeJSON = async (args: ExecutionArgs) => {
 export const execute = async (args: ExecutionArgs) => {
   const result = await executeJSON(args);
 
-  if (result.data != null) {
-    return graphqlJSONParse(result.data) as { data: { [key: string]: any }; errors?: undefined };
+  if (typeof result === "string") {
+    return graphqlJSONParse(result) as { data: { [key: string]: any } };
   }
 
   return result;
@@ -98,8 +98,8 @@ export const graphqlJSON = async (args: GraphQLArgs) => {
 export const graphql = async (args: GraphQLArgs) => {
   const result = await graphqlJSON(args);
 
-  if (result.data != null) {
-    return graphqlJSONParse(result.data) as { data: { [key: string]: any }; errors?: undefined };
+  if (typeof result === "string") {
+    return graphqlJSONParse(result) as { data: { [key: string]: any } };
   }
 
   return result;
