@@ -5,7 +5,7 @@ import { createSchemaQuery, createTestDataQuery, graphql as _graphql } from "./i
 
 const schemaQuery = createSchemaQuery(schema);
 const testDataQuery = createTestDataQuery(schema);
-const graphql = (query: string) => _graphql({ schema, query, source: connection.query.bind(connection) });
+const graphql = (source: string) => _graphql({ schema, source, primary: connection.query.bind(connection) });
 
 beforeAll(async () => {
   const database = escapeId("graphql_mysql_index");

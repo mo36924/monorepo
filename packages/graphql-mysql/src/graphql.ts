@@ -1,5 +1,14 @@
-import { parse as jsonParse } from "@mo36924/graphql-json";
-import { DocumentNode, GraphQLError, GraphQLSchema, parse, validate, validateSchema } from "graphql";
+import { parse as graphqlJSONParse } from "@mo36924/graphql-json";
+import {
+  DocumentNode,
+  ExecutionArgs as _ExecutionArgs,
+  GraphQLArgs as _GraphQLArgs,
+  GraphQLError,
+  parse,
+  validate,
+  validateSchema,
+} from "graphql";
+import { assertValidExecutionArguments } from "graphql/execution/execute";
 import type { FieldPacket, OkPacket, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { buildContext } from "./context";
 import { createMutationQueries } from "./mutation";
@@ -10,17 +19,59 @@ export type Query = <T = Result | Result[]>(
   sql: string,
 ) => Promise<[T, T extends Result ? FieldPacket[] : FieldPacket[][]]>;
 
-export type GraphQLMySQLArgs = {
-  schema: GraphQLSchema;
-  query: string;
-  variables?: { [key: string]: any } | null | undefined;
-  operationName?: string | null | undefined;
-  source: Query;
-  replica?: Query;
+export type DatabaseArgs = { primary: Query; replica?: Query };
+export type ExecutionArgs = _ExecutionArgs & DatabaseArgs;
+export type GraphQLArgs = _GraphQLArgs & DatabaseArgs;
+
+export const executeJSON = async (args: ExecutionArgs) => {
+  const { schema, document, variableValues, operationName, primary, replica = primary } = args;
+
+  assertValidExecutionArguments(schema, document, variableValues);
+
+  const context = buildContext(schema, document, variableValues, operationName);
+
+  if (!("schema" in context)) {
+    return { errors: context };
+  }
+
+  switch (context.operation.operation) {
+    case "query": {
+      const result = await replica<{ data: string }[]>(createQuery(context));
+      return `{"data":${result[0][0].data}}`;
+    }
+    case "mutation": {
+      const result = await primary<(ResultSetHeader | RowDataPacket[])[]>(createMutationQueries(context).join(""));
+      const results: { [key: string]: string } = Object.create(null);
+
+      for (const headerOrPackets of result[0]) {
+        if (Array.isArray(headerOrPackets) && headerOrPackets[0]) {
+          Object.assign(results, headerOrPackets[0]);
+        }
+      }
+
+      const data = Object.entries(results)
+        .map(([key, value]) => `${JSON.stringify(key)}:${value}`)
+        .join();
+
+      return `{"data":{${data}}}`;
+    }
+    default:
+      return { errors: [new GraphQLError(`Unsupported ${context.operation.operation} operation.`)] };
+  }
 };
 
-export const graphqlJSON = async (args: GraphQLMySQLArgs) => {
-  const { schema, query, variables, operationName, source, replica = source } = args;
+export const execute = async (args: ExecutionArgs) => {
+  const result = await executeJSON(args);
+
+  if (typeof result === "string") {
+    return graphqlJSONParse(result) as { data: { [key: string]: any } };
+  }
+
+  return result;
+};
+
+export const graphqlJSON = async (args: GraphQLArgs) => {
+  const { schema, source, variableValues, operationName, primary, replica = primary } = args;
   const schemaValidationErrors = validateSchema(schema);
 
   if (schemaValidationErrors.length > 0) {
@@ -30,7 +81,7 @@ export const graphqlJSON = async (args: GraphQLMySQLArgs) => {
   let document: DocumentNode;
 
   try {
-    document = parse(query);
+    document = parse(source);
   } catch (syntaxError: any) {
     return { errors: [syntaxError as GraphQLError] };
   }
@@ -41,52 +92,17 @@ export const graphqlJSON = async (args: GraphQLMySQLArgs) => {
     return { errors: validationErrors };
   }
 
-  const context = buildContext(schema, document, variables, operationName);
+  const result = await executeJSON({ schema, document, variableValues, operationName, primary, replica });
 
-  if (!("schema" in context)) {
-    return { errors: context };
-  }
-
-  switch (context.operation.operation) {
-    case "query": {
-      const result = await replica<RowDataPacket[]>(createQuery(context));
-      return `{"data":${result[0][0].data}}`;
-    }
-    case "mutation": {
-      const result = await source<(ResultSetHeader | RowDataPacket[])[]>(createMutationQueries(context).join(""));
-      const results: { [key: string]: string } = Object.create(null);
-
-      for (const headerOrPackets of result[0]) {
-        if (Array.isArray(headerOrPackets) && headerOrPackets[0]) {
-          Object.assign(results, headerOrPackets[0]);
-        }
-      }
-
-      const raw = Object.entries(results)
-        .map(([key, value]) => `${JSON.stringify(key)}:${value}`)
-        .join();
-
-      return `{"data":{${raw}}}`;
-    }
-    default:
-      return { errors: [new GraphQLError(`Unsupported ${context.operation.operation} operation.`)] };
-  }
+  return result;
 };
 
-export const graphql = async (
-  args: GraphQLMySQLArgs,
-): Promise<
-  | {
-      data?: undefined;
-      errors: readonly GraphQLError[];
-    }
-  | {
-      data: {
-        [key: string]: any;
-      };
-      errors?: undefined;
-    }
-> => {
+export const graphql = async (args: GraphQLArgs) => {
   const result = await graphqlJSON(args);
-  return typeof result === "string" ? (jsonParse(result) as { data: { [key: string]: any } }) : result;
+
+  if (typeof result === "string") {
+    return graphqlJSONParse(result) as { data: { [key: string]: any } };
+  }
+
+  return result;
 };
