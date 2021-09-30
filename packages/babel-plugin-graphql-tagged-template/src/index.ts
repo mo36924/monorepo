@@ -1,18 +1,33 @@
 import { readFileSync } from "fs";
 import type { default as babel, PluginObj, types as t } from "@babel/core";
-import { buildSchemaModel } from "@mo36924/graphql-schema";
-import { DocumentNode, GraphQLSchema, parse, stripIgnoredCharacters, validate } from "graphql";
+import { encode } from "@mo36924/base52";
+import { buildSchema, buildSchemaModel } from "@mo36924/graphql-schema";
+import {
+  DocumentNode,
+  GraphQLInputType,
+  GraphQLSchema,
+  parse,
+  stripIgnoredCharacters,
+  TypeInfo,
+  validate,
+  visit,
+  visitWithTypeInfo,
+} from "graphql";
 
 export type Options = {
+  model: string;
   schema: string | GraphQLSchema;
 };
 
 export default ({ types: t }: typeof babel, options: Options): PluginObj => {
   let schema: GraphQLSchema;
 
-  if (typeof options.schema === "string") {
-    const graphql = readFileSync(options.schema || "index.graphql", "utf8");
-    schema = buildSchemaModel(graphql);
+  if (options.model) {
+    const model = readFileSync(options.model || "index.graphql", "utf8");
+    schema = buildSchemaModel(model);
+  } else if (typeof options.schema === "string") {
+    const graphqlSchema = readFileSync(options.schema || "index.graphql", "utf8");
+    schema = buildSchema(graphqlSchema);
   } else if (options.schema) {
     schema = options.schema;
   }
@@ -31,62 +46,47 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
 
         const name = tag.name;
 
-        if (
-          name !== "gql" &&
-          name !== "query" &&
-          name !== "mutation" &&
-          name !== "useQuery" &&
-          name !== "useMutation"
-        ) {
+        if (name !== "gql" && name !== "query" && name !== "mutation" && name !== "subscription") {
           return;
         }
 
-        if (name === "gql" && expressions.length) {
-          throw path.buildCodeFrameError("gql invalid expressions.");
-        }
-
         let query = quasis[0].value.cooked ?? quasis[0].value.raw;
-        let variables = "";
 
         for (let i = 0; i < expressions.length; i++) {
-          query += `$_${i}${quasis[i + 1].value.cooked ?? quasis[i + 1].value.raw}`;
-          variables += `$_${i}:Unknown`;
+          query += `$${encode(i)}${quasis[i + 1].value.cooked ?? quasis[i + 1].value.raw}`;
         }
 
-        if (name === "query" || name === "useQuery") {
-          if (variables) {
-            query = `query(${variables}){${query}}`;
-          } else {
-            query = `{${query}}`;
-          }
-        } else if (name === "mutation" || name === "useMutation") {
-          if (variables) {
-            query = `mutation(${variables}){${query}}`;
-          } else {
-            query = `mutation{${query}}`;
-          }
+        if (name === "mutation" || name === "subscription") {
+          query = name + query;
         }
 
         let documentNode: DocumentNode;
 
         try {
-          query = stripIgnoredCharacters(query);
           documentNode = parse(query);
         } catch (err) {
           throw path.buildCodeFrameError(String(err));
         }
 
-        let errors = validate(schema, documentNode);
+        const values: GraphQLInputType[] = [];
+        const typeInfo = new TypeInfo(schema);
 
-        for (const error of errors) {
-          const match = error.message.match(
-            /^Variable ".*?" of type "Unknown" used in position expecting type "(.*?)"\.$/,
-          );
+        visit(
+          documentNode,
+          visitWithTypeInfo(typeInfo, {
+            Variable() {
+              values.push(typeInfo.getInputType()!);
+            },
+          }),
+        );
 
-          if (match) {
-            query = query.replace("Unknown", match[1]);
-          } else {
-            throw path.buildCodeFrameError(error.message);
+        if (values.length) {
+          const variables = `(${values.map((value, i) => `$${encode(i)}:${value}`).join()})`;
+
+          if (name === "query") {
+            query = name + variables + query;
+          } else if (name === "mutation" || name === "subscription") {
+            query = name + variables + query.slice(name.length);
           }
         }
 
@@ -96,18 +96,18 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
           throw path.buildCodeFrameError(String(err));
         }
 
-        errors = validate(schema, documentNode);
+        const errors = validate(schema, documentNode);
 
-        for (const error of errors) {
-          throw path.buildCodeFrameError(error.message);
+        if (errors.length) {
+          throw path.buildCodeFrameError(errors[0].message);
         }
 
-        const args: t.Expression[] = [t.stringLiteral(query)];
+        const args: t.Expression[] = [t.stringLiteral(stripIgnoredCharacters(query))];
 
-        if (variables) {
+        if (expressions.length) {
           args.push(
             t.objectExpression(
-              expressions.map((expression, i) => t.objectProperty(t.identifier(`_${i}`), expression as any)),
+              expressions.map((expression, i) => t.objectProperty(t.identifier(encode(i)), expression as any)),
             ),
           );
         }
