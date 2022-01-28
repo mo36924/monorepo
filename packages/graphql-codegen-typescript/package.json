@@ -16,12 +16,22 @@
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.cjs"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./index.cjs",
+  "module": "./index.mjs",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^2.1.1",
     "@graphql-codegen/typescript": "^2.2.2",

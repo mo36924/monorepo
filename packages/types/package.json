@@ -16,13 +16,23 @@
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.cjs"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./index.cjs",
+  "module": "./index.mjs",
   "types": "./index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
   "dependencies": {
     "preact-render-to-string": "^5.1.19"
   },

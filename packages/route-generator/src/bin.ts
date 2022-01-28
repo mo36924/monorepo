@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { cosmiconfig } from "cosmiconfig";
 import routeGenerator from "./index";
 

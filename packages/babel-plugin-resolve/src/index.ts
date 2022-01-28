@@ -120,7 +120,7 @@ export default (
 
     try {
       modulePath = resolve(state.filename, modulePath, state.file.metadata.deps);
-    } catch (e) {
+    } catch (e: any) {
       console.log(path.buildCodeFrameError(e?.message));
       return;
     }
@@ -156,7 +156,7 @@ export default (
 
     try {
       modulePath = resolve(state.filename, modulePath, state.file.metadata.deps);
-    } catch (e) {
+    } catch (e: any) {
       console.log(path.buildCodeFrameError(e?.message));
       return;
     }

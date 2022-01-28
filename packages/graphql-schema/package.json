@@ -16,15 +16,30 @@
   "author": "mo36924 <mo36924@users.noreply.github.com>",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.cjs"
+    },
+    "./bin": {
+      "types": "./dist/bin.d.ts",
+      "browser": "./dist/bin.js",
+      "import": "./dist/bin.mjs",
+      "require": "./dist/bin.cjs",
+      "default": "./dist/bin.cjs"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "bin": {
-    "graphql-schema": "./dist/bin.js"
+  "main": "./index.cjs",
+  "module": "./index.mjs",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
   },
+  "bin": "./dist/bin.cjs",
   "dependencies": {
     "@graphql-tools/schema": "^8.2.0",
     "@mo36924/graphql-utilities": "^1.4.26",

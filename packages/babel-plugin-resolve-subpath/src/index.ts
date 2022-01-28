@@ -86,7 +86,7 @@ export default ({ types: t }: typeof babel, { ignore = [], cache = false, ...res
 
     try {
       modulePath = resolve(state.filename, modulePath);
-    } catch (e) {
+    } catch (e: any) {
       console.log(path.buildCodeFrameError(e?.message));
       return;
     }
@@ -122,7 +122,7 @@ export default ({ types: t }: typeof babel, { ignore = [], cache = false, ...res
 
     try {
       modulePath = resolve(state.filename, modulePath);
-    } catch (e) {
+    } catch (e: any) {
       console.log(path.buildCodeFrameError(e?.message));
       return;
     }

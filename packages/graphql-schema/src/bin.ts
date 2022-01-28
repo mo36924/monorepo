@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { readFileSync, watch, writeFileSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import { retry } from "@mo36924/util";
