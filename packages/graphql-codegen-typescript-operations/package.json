@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-codegen-typescript-operations",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "graphql-codegen-typescript-operations",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -35,7 +35,7 @@
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^2.1.1",
     "@graphql-codegen/typescript-operations": "^2.1.4",
-    "@mo36924/graphql-codegen-prettier": "^1.5.0",
+    "@mo36924/graphql-codegen-prettier": "^1.5.1",
     "change-case": "^4.1.2",
     "graphql": "^15.5.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-postgres-data-schema",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "graphql-postgres-data-schema",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -33,9 +33,9 @@
     }
   },
   "dependencies": {
-    "@mo36924/graphql-schema": "^1.5.0",
-    "@mo36924/postgres-escape": "^1.5.0",
-    "@mo36924/util": "^1.5.0"
+    "@mo36924/graphql-schema": "^1.5.1",
+    "@mo36924/postgres-escape": "^1.5.1",
+    "@mo36924/util": "^1.5.1"
   },
   "publishConfig": {
     "access": "public"
