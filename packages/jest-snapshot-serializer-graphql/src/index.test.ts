@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
+import { raw } from "@mo36924/jest-snapshot-serializer-raw";
 import { parse, Source } from "graphql";
 import { serialize, test } from "./index";
 
@@ -12,26 +13,24 @@ describe("jest-snapshot-serializer-graphql", () => {
   });
 
   it("format", () => {
-    expect(serialize(new Source(gql))).toMatchInlineSnapshot(`
-      "scalar Date
-
+    expect(raw(serialize(new Source(gql)))).toMatchInlineSnapshot(`
+      scalar Date
+      
       type User {
         id: ID!
         name: String
         createdAt: Date!
       }
-      "
     `);
 
-    expect(serialize(parse(gql))).toMatchInlineSnapshot(`
-      "scalar Date
-
+    expect(raw(serialize(parse(gql)))).toMatchInlineSnapshot(`
+      scalar Date
+      
       type User {
         id: ID!
         name: String
         createdAt: Date!
       }
-      "
     `);
   });
 });

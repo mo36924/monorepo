@@ -19,7 +19,14 @@ describe("http-server", () => {
       index({
         ast,
         async execute(req, res, schema, document, variables, operationName) {
-          return await execute(schema, document, { count: 1 }, {}, variables, operationName);
+          return await execute({
+            schema,
+            document,
+            rootValue: { count: 1 },
+            contextValue: {},
+            variableValues: variables,
+            operationName,
+          });
         },
       }),
     );

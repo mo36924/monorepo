@@ -17,7 +17,7 @@ export const plugin: PluginFunction<TypeScriptPluginConfig> = async (schema, doc
     return output;
   }
 
-  let { body, name }: Partial<Source> = schema.astNode?.loc?.source ?? schema.extensions?.sources?.[0] ?? {};
+  let { body, name }: Partial<Source> = schema.astNode?.loc?.source ?? (schema.extensions?.sources as any)?.[0] ?? {};
 
   if (body === undefined) {
     return output;

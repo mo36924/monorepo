@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import vfs from "@mo36924/rollup-plugin-vfs";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import { rollup } from "rollup";

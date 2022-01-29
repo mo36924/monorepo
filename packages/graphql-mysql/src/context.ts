@@ -12,16 +12,12 @@ export const buildContext = (
   rawVariableValues: Maybe<{ [key: string]: any }>,
   operationName: Maybe<string>,
 ): Context | readonly GraphQLError[] => {
-  const context = buildExecutionContext(
+  const context = buildExecutionContext({
     schema,
     document,
-    undefined,
-    undefined,
-    rawVariableValues,
+    variableValues: rawVariableValues,
     operationName,
-    undefined,
-    undefined,
-  );
+  });
 
   if (!("schema" in context)) {
     return context;

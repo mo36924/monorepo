@@ -17,7 +17,7 @@ export const isScalarTypeName = (type: string): type is ScalarUnionTypeNames =>
 
 const validateUUID = (uuid: any): string => {
   if (!validate(uuid)) {
-    throw new GraphQLError("UUID cannot represent value: ".concat(inspect(uuid)));
+    throw new GraphQLError("UUID cannot represent value: ".concat(inspect(uuid)), {});
   }
 
   return uuid;
@@ -30,7 +30,9 @@ export const GraphQLUUID = new GraphQLScalarType({
   parseValue: validateUUID,
   parseLiteral(valueNode) {
     if (valueNode.kind !== Kind.STRING) {
-      throw new GraphQLError("UUID cannot represent a non string value: ".concat(print(valueNode)), valueNode);
+      throw new GraphQLError("UUID cannot represent a non string value: ".concat(print(valueNode)), {
+        nodes: valueNode,
+      });
     }
 
     return validateUUID(valueNode.value);
@@ -42,12 +44,12 @@ export const GraphQLDate = new GraphQLScalarType({
   description: "The `Date` scalar type represents date value.",
   serialize(date) {
     if (date == null || !(date instanceof Date) || Number.isNaN(date.getTime())) {
-      throw new GraphQLError("Date cannot represent value: ".concat(inspect(date)));
+      throw new GraphQLError("Date cannot represent value: ".concat(inspect(date)), {});
     }
 
     return [0, date.toJSON()];
   },
-  parseValue(value) {
+  parseValue(value: any) {
     let date: Date;
 
     if (Array.isArray(value) && value.length === 2 && value[0] === 0 && typeof value[1] === "string") {
@@ -55,7 +57,7 @@ export const GraphQLDate = new GraphQLScalarType({
       date = new Date(value1);
 
       if (value1 !== date.toJSON()) {
-        throw new GraphQLError("Date cannot represent value: ".concat(inspect(value)));
+        throw new GraphQLError("Date cannot represent value: ".concat(inspect(value)), {});
       }
     } else if (value instanceof Date) {
       date = value;
@@ -64,20 +66,22 @@ export const GraphQLDate = new GraphQLScalarType({
     }
 
     if (Number.isNaN(date.getTime())) {
-      throw new GraphQLError("Date cannot represent value: ".concat(inspect(value)));
+      throw new GraphQLError("Date cannot represent value: ".concat(inspect(value)), {});
     }
 
     return date;
   },
   parseLiteral(valueNode) {
     if (valueNode.kind !== Kind.STRING) {
-      throw new GraphQLError("Date cannot represent a non string value: ".concat(print(valueNode)), valueNode);
+      throw new GraphQLError("Date cannot represent a non string value: ".concat(print(valueNode)), {
+        nodes: valueNode,
+      });
     }
 
     const date = new Date(valueNode.value);
 
     if (Number.isNaN(date.getTime())) {
-      throw new GraphQLError("Date cannot represent value: ".concat(inspect(valueNode.value)));
+      throw new GraphQLError("Date cannot represent value: ".concat(inspect(valueNode.value)), {});
     }
 
     return date;

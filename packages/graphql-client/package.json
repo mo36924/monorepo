@@ -23,8 +23,8 @@
       "default": "./dist/index.cjs"
     }
   },
-  "main": "./index.cjs",
-  "module": "./index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "browser": "./dist/index.client.js",
   "typesVersions": {
     "*": {

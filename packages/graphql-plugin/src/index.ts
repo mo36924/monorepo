@@ -264,8 +264,7 @@ const init: server.PluginModuleFactory = ({ typescript: ts }) => {
 
         const { query, offset } = result;
         const cursor = new Position(0, position - offset);
-        const token = getTokenAtPosition(query, cursor);
-        const items = getAutocompleteSuggestions(schema, query, cursor, token);
+        const items = getAutocompleteSuggestions(schema, query, cursor);
 
         if (!items.length) {
           return;

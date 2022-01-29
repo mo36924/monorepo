@@ -9,7 +9,5 @@ export function serialize(value: Source | DocumentNode) {
     return print(parse(value));
   }
 
-  if (value.kind === "Document" && Array.isArray(value.definitions)) {
-    return print(value);
-  }
+  return print(value);
 }

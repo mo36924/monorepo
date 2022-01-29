@@ -32,7 +32,7 @@ export const getFieldDefInfo = (
   parentType: GraphQLObjectType,
   fieldName: string,
 ): FieldDefInfo => {
-  const fieldDef = getFieldDef(schema, parentType, fieldName)!;
+  const fieldDef = parentType.getFields()[fieldName];
   const fieldDefInfo = cacheFieldDefInfo.get(fieldDef);
 
   if (fieldDefInfo) {
@@ -68,5 +68,5 @@ export const getFieldInfo = (
 ): FieldInfo => ({
   ...getFieldDefInfo(schema, parentType, fieldNode.name.value),
   alias: fieldNode.alias?.value,
-  args: getArgumentValues(getFieldDef(schema, parentType, fieldNode.name.value)!, fieldNode, variableValues),
+  args: getArgumentValues(getFieldDef(schema, parentType, fieldNode)!, fieldNode, variableValues),
 });

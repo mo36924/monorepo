@@ -30,8 +30,8 @@
       "default": "./dist/bin.cjs"
     }
   },
-  "main": "./index.cjs",
-  "module": "./index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
   "typesVersions": {
     "*": {
       "*": [

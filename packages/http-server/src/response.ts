@@ -98,7 +98,7 @@ export class Response extends ServerResponse {
     this.setHeader("content-length", data.length.toString());
     this.end(data);
   }
-  error(...args: UnknownError[]): never {
+  error(...args: [UnknownError, ...UnknownError[]]): never {
     throw httpError(...args);
   }
 }

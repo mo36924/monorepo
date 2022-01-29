@@ -19,8 +19,8 @@ import {
   SelectionSetNode,
   typeFromAST,
 } from "graphql";
-import type { ExecutionContext } from "graphql/execution/execute.js";
-import { getArgumentValues } from "graphql/execution/values.js";
+import type { ExecutionContext } from "graphql/execution/execute";
+import { getArgumentValues } from "graphql/execution/values";
 import { getDirectives } from "./directives";
 
 export type Types = { [typeName: string]: Fields };

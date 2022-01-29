@@ -57,7 +57,7 @@ export default (): Plugin => {
                   data = result.generator(result);
                 },
               }),
-            ).process(result.css, { from: path });
+            ).process(result!.css, { from: path });
 
             break;
           }

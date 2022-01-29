@@ -8,7 +8,7 @@ export default async (code: string, filepath?: string) => {
 
   if (messages.length) {
     const { format } = await eslint.loadFormatter("codeframe");
-    throw new Error(format(results));
+    throw new Error(await format(results));
   }
 
   return output ?? code;

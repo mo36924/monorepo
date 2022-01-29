@@ -9,18 +9,18 @@ const cwd = process.cwd();
 export default ({ types: t }: typeof babel): PluginObj<State> => {
   return {
     pre() {
-      this.displayName = pascalCase(relative(cwd, this.filename.replace(/\.(t|j)sx$/, "")));
+      this.displayName = pascalCase(relative(cwd, this.filename!.replace(/\.(t|j)sx$/, "")));
     },
     visitor: {
       Program: {
         exit(path, state) {
-          if (!state.filename.includes("/node_modules/")) {
+          if (!state.filename!.includes("/node_modules/")) {
             path.unshiftContainer("body", t.importDeclaration([], t.stringLiteral("@mo36924/react-refresh-runtime")));
           }
         },
       },
       ExportDefaultDeclaration(path, state) {
-        if (!/\.(t|j)sx$/.test(state.filename)) {
+        if (!/\.(t|j)sx$/.test(state.filename!)) {
           return;
         }
 

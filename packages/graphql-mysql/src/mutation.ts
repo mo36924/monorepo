@@ -16,7 +16,7 @@ export const createMutationQueries = (context: Context) => {
 
   for (const field of operation.selectionSet.selections as FieldNode[]) {
     const name = field.name.value;
-    const data = getArgumentValues(fields[name], field, variableValues).data;
+    const data: any = getArgumentValues(fields[name], field, variableValues).data;
     const mutationContext = buildMutationContext(context);
     let _queries: string[];
 

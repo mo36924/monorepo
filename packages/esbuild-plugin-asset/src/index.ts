@@ -78,7 +78,7 @@ export default (options: Options = {}): Plugin => {
           case ".scss": {
             const result = await sassRender({ file: path });
             ext = ".css";
-            data = result.css;
+            data = result!.css;
             break;
           }
           case ".tsx":

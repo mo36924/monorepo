@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/jest-snapshot-serializer-preact",
-  "version": "1.5.0",
-  "description": "jest-snapshot-serializer-preact",
+  "name": "@mo36924/patch-graphql16",
+  "version": "0.0.1",
+  "description": "patch-graphql16",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
@@ -10,10 +10,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/jest-snapshot-serializer-preact"
+    "directory": "packages/patch-graphql16"
   },
   "license": "MIT",
-  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "author": "mo36924",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -21,6 +21,13 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "default": "./dist/index.cjs"
+    },
+    "./bin": {
+      "types": "./dist/bin.d.ts",
+      "browser": "./dist/bin.js",
+      "import": "./dist/bin.mjs",
+      "require": "./dist/bin.cjs",
+      "default": "./dist/bin.cjs"
     }
   },
   "main": "./dist/index.cjs",
@@ -32,9 +39,9 @@
       ]
     }
   },
-  "dependencies": {
-    "preact": "^10.5.14",
-    "preact-render-to-string": "^5.1.19"
+  "bin": "./dist/bin.cjs",
+  "scripts": {
+    "postinstall": "patch-graphql16"
   },
   "publishConfig": {
     "access": "public"

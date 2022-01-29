@@ -71,11 +71,9 @@ export type PartialConfig = {
   databaseDevelopment?: DatabaseDevelopmentConfig;
 };
 
-type DeepRequired<T> = Required<
-  {
-    [K in keyof T]: Required<T>[K] extends {} ? Required<T[K]> : T[K];
-  }
->;
+type DeepRequired<T> = Required<{
+  [K in keyof T]: Required<T>[K] extends {} ? Required<T[K]> : T[K];
+}>;
 
 export type Config = DeepRequired<PartialConfig>;
 const filename = fileURLToPath(import.meta.url);

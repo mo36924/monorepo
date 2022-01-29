@@ -13,8 +13,8 @@ const transform = (code: string, options: Options = {}) =>
 
 describe("babel-plugin-resolve-subpath", () => {
   test("subpath module", () => {
-    const result = transform(`import execute from "graphql/execution/execute"`);
-    expect(result).toMatchInlineSnapshot(`import execute from "graphql/execution/execute.mjs";`);
+    const result = transform(`import execute from "uuid/dist/v4"`);
+    expect(result).toMatchInlineSnapshot('import execute from "uuid/dist/v4.js";');
   });
 
   test("builtin module", () => {

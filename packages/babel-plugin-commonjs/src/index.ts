@@ -37,7 +37,7 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj<State> 
             return;
           }
 
-          const names = namedExports[state.filename];
+          const names = namedExports[state.filename!];
           const hasNamedExports = !!names;
 
           let moduleExports = hasModule

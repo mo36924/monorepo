@@ -42,12 +42,12 @@ export default async () => {
             url: pkg.repository?.url ?? `git+https://github.com/${pkg.author}/${pkg.name}.git`,
             directory: pkg.repository?.directory ?? `packages/${name}`,
           },
+          main: "./dist/index.cjs",
+          module: "./dist/index.mjs",
           publishConfig: {
             access: "public",
           },
           ..._pkg,
-          main: "./index.cjs",
-          module: "./index.mjs",
           exports,
           typesVersions: { "*": { "*": ["dist/*.d.ts"] } },
         };
