@@ -40,6 +40,9 @@
     }
   },
   "bin": "./dist/bin.cjs",
+  "dependencies": {
+    "@mo36924/monorepo-update-package-json": "^1.5.1"
+  },
   "publishConfig": {
     "access": "public"
   }

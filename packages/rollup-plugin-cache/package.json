@@ -37,7 +37,7 @@
     "@mo36924/base64url": "^1.5.1",
     "fast-glob": "^3.2.5",
     "mime-types": "^2.1.29",
-    "rollup": "^2.53.2"
+    "rollup": "^2.66.1"
   },
   "publishConfig": {
     "access": "public"

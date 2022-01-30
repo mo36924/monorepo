@@ -35,7 +35,7 @@
   "dependencies": {
     "@mo36924/graphql-schema": "^1.5.1",
     "@mo36924/postgres-escape": "^1.5.1",
-    "graphql": "^15.5.0"
+    "graphql": "^16.3.0"
   },
   "publishConfig": {
     "access": "public"

@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/rollup-plugin-static",
-  "version": "1.5.1",
-  "description": "rollup-plugin-static",
+  "name": "@mo36924/monorepo-depcheck",
+  "version": "0.0.1",
+  "description": "monorepo-depcheck",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
@@ -10,10 +10,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/rollup-plugin-static"
+    "directory": "packages/monorepo-depcheck"
   },
   "license": "MIT",
-  "author": "mo36924 <mo36924@users.noreply.github.com>",
+  "author": "mo36924",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -33,8 +33,7 @@
     }
   },
   "dependencies": {
-    "@mo36924/rollup-plugin-cache": "^1.5.1",
-    "rollup": "^2.66.1"
+    "depcheck": "^1.4.3"
   },
   "publishConfig": {
     "access": "public"

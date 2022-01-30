@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { raw } from "jest-snapshot-serializer-raw";
+import { raw } from "@mo36924/jest-snapshot-serializer-raw";
 import { escape, escapeId } from "./index";
 
 const _escape = (value: Parameters<typeof escape>[0]) => raw(escape(value));

@@ -33,7 +33,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "^7.15.0"
+    "@babel/core": "^7.16.12"
   },
   "publishConfig": {
     "access": "public"

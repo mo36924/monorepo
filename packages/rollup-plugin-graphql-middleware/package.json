@@ -36,8 +36,8 @@
     "@mo36924/config": "^1.5.1",
     "@mo36924/graphql-schema": "^1.5.1",
     "@mo36924/graphql-utilities": "^1.5.1",
-    "graphql": "^15.5.0",
-    "rollup": "^2.53.2"
+    "graphql": "^16.3.0",
+    "rollup": "^2.66.1"
   },
   "publishConfig": {
     "access": "public"

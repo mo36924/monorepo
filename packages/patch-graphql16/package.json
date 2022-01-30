@@ -43,6 +43,9 @@
   "scripts": {
     "postinstall": "patch-graphql16"
   },
+  "dependencies": {
+    "graphql": "^16.3.0"
+  },
   "publishConfig": {
     "access": "public"
   }

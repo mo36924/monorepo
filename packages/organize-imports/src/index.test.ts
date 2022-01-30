@@ -1,5 +1,5 @@
 import { expect, test } from "@jest/globals";
-import { format } from "jest-snapshot-serializer-prettier";
+import { format } from "@mo36924/jest-snapshot-serializer-prettier";
 import index from "./index";
 
 test("organize-imports", async () => {

@@ -33,10 +33,10 @@
     }
   },
   "dependencies": {
-    "@babel/core": "^7.15.0",
+    "@babel/core": "^7.16.12",
     "@mo36924/base52": "^1.5.1",
     "@mo36924/graphql-schema": "^1.5.1",
-    "graphql": "^15.5.0"
+    "graphql": "^16.3.0"
   },
   "publishConfig": {
     "access": "public"

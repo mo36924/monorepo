@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "memfs": "^3.2.2",
-    "rollup": "^2.53.2",
+    "rollup": "^2.66.1",
     "webpack": "^5.31.0"
   },
   "publishConfig": {

@@ -33,6 +33,7 @@
       ]
     }
   },
+  "dependencies": {},
   "publishConfig": {
     "access": "public"
   }

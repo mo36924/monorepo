@@ -1,58 +1,96 @@
 import { readdir, readFile, writeFile } from "fs/promises";
-
-const workspaceDir = "packages";
+import { join, resolve } from "path";
+import depcheck from "depcheck";
+import prettier from "prettier";
+import sort from "sort-package-json";
 
 export default async () => {
-  const pkg = JSON.parse(await readFile("package.json", "utf8"));
-  const names = await readdir(workspaceDir);
+  const dir = resolve("packages");
+
+  const [pkg, pkgs, config] = await Promise.all([
+    readFile("package.json", "utf8").then(JSON.parse),
+    readdir(dir).then((names) =>
+      Promise.all(
+        names
+          .filter((name) => name[0] !== ".")
+          .map((name) =>
+            Promise.all([
+              name,
+              readFile(join(dir, name, "package.json"), "utf8").then(JSON.parse),
+              depcheck(join(dir, name), {
+                ignoreDirs: ["dist", "__tests__", "test"],
+                ignorePatterns: ["*.test.*", "test"],
+              }),
+            ]),
+          ),
+      ),
+    ),
+    prettier.resolveConfig("package.json"),
+  ]);
+
+  const _config = { ...config, filepath: "package.json" };
+
+  const deps = Object.assign(
+    Object.create(null),
+    pkg.devDependencies,
+    Object.fromEntries(
+      pkgs.filter(([, pkg]) => pkg.name && pkg.version).map(([, pkg]) => [pkg.name, `^${pkg.version}`]),
+    ),
+  );
 
   await Promise.all(
-    names
-      .filter((name) => name[0] !== ".")
-      .map(async (name) => {
-        const path = `${workspaceDir}/${name}/package.json`;
-        let _pkg: { [name: string]: any } = JSON.parse(await readFile(path, "utf8"));
-        const { exports = { ".": {} } } = _pkg;
-
-        for (const key of Object.keys(exports)) {
-          const name = key.slice(2) || "index";
-
-          exports[key] = {
-            types: `./dist/${name}.d.ts`,
-            browser: `./dist/${name}.js`,
-            import: `./dist/${name}.mjs`,
-            require: `./dist/${name}.cjs`,
-            default: `./dist/${name}.cjs`,
-          };
-        }
-
-        _pkg = {
-          version: "0.0.1",
-          description: name,
-          keywords: [],
-          license: "MIT",
-          name: `@${pkg.author}/${name}`,
-          author: pkg.author,
-          homepage: pkg.homepage ?? `https://github.com/${pkg.author}/${pkg.name}#readme`,
-          bugs: {
-            url: pkg.bugs?.url ?? `https://github.com/${pkg.author}/${pkg.name}/issues`,
-          },
-          repository: {
-            type: pkg.repository?.type ?? "git",
-            url: pkg.repository?.url ?? `git+https://github.com/${pkg.author}/${pkg.name}.git`,
-            directory: pkg.repository?.directory ?? `packages/${name}`,
-          },
-          main: "./dist/index.cjs",
-          module: "./dist/index.mjs",
-          publishConfig: {
-            access: "public",
-          },
-          ..._pkg,
-          exports,
-          typesVersions: { "*": { "*": ["dist/*.d.ts"] } },
-        };
-
-        await writeFile(path, JSON.stringify(_pkg));
-      }),
+    pkgs.map(([name, _pkg, result]) =>
+      writeFile(
+        join(dir, name, "package.json"),
+        prettier.format(
+          JSON.stringify(
+            sort({
+              version: "0.0.1",
+              description: name,
+              keywords: [],
+              license: "MIT",
+              name: `@${pkg.author}/${name}`,
+              author: pkg.author,
+              homepage: pkg.homepage ?? `https://github.com/${pkg.author}/${pkg.name}#readme`,
+              bugs: {
+                url: pkg.bugs?.url ?? `https://github.com/${pkg.author}/${pkg.name}/issues`,
+              },
+              repository: {
+                type: pkg.repository?.type ?? "git",
+                url: pkg.repository?.url ?? `git+https://github.com/${pkg.author}/${pkg.name}.git`,
+                directory: pkg.repository?.directory ?? `packages/${name}`,
+              },
+              main: "./dist/index.cjs",
+              module: "./dist/index.mjs",
+              publishConfig: {
+                access: "public",
+              },
+              ..._pkg,
+              exports: Object.fromEntries(
+                Object.keys(_pkg.exports ?? { ".": {} }).map((key) => {
+                  const name = key.slice(2) || "index";
+                  return [
+                    key,
+                    {
+                      types: `./dist/${name}.d.ts`,
+                      browser: `./dist/${name}.js`,
+                      import: `./dist/${name}.mjs`,
+                      require: `./dist/${name}.cjs`,
+                      default: `./dist/${name}.cjs`,
+                    },
+                  ];
+                }),
+              ),
+              typesVersions: { "*": { "*": ["dist/*.d.ts"] } },
+              dependencies: {
+                ..._pkg.dependencies,
+                ...Object.fromEntries(Object.keys(result.using).map((name) => [name, deps[name]])),
+              },
+            }),
+          ),
+          _config,
+        ),
+      ),
+    ),
   );
 };

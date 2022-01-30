@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from "fs/promises";
+import update from "@mo36924/monorepo-update-package-json";
 
 const workspaceDir = "packages";
 
@@ -13,4 +14,6 @@ export default async (name: string) => {
     writeFile(`${workspaceDir}/${name}/package.json`, "{}", { flag: "wx" }),
     writeFile(`${workspaceDir}/${name}/README.md`, `# ${name}\n\n${name}\n`, { flag: "wx" }),
   ]);
+
+  await update();
 };

@@ -33,7 +33,7 @@
     }
   },
   "dependencies": {
-    "rollup": "^2.53.2"
+    "rollup": "^2.66.1"
   },
   "publishConfig": {
     "access": "public"
