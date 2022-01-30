@@ -38,6 +38,8 @@ export default async () => {
     ),
   );
 
+  const _deps = (obj: any) => (Object.keys(obj).length ? obj : undefined);
+
   await Promise.all(
     pkgs.map(([name, _pkg, result]) =>
       writeFile(
@@ -82,10 +84,10 @@ export default async () => {
                 }),
               ),
               typesVersions: { "*": { "*": ["dist/*.d.ts"] } },
-              dependencies: {
+              dependencies: _deps({
                 ..._pkg.dependencies,
                 ...Object.fromEntries(Object.keys(result.using).map((name) => [name, deps[name]])),
-              },
+              }),
             }),
           ),
           _config,
