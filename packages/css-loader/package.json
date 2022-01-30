@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/css-loader",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "css-loader",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -33,7 +33,6 @@
       ]
     }
   },
-  "dependencies": {},
   "publishConfig": {
     "access": "public"
   }

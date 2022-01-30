@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/escape",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "escape",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -32,7 +32,6 @@
       ]
     }
   },
-  "dependencies": {},
   "publishConfig": {
     "access": "public"
   }
