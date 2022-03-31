@@ -1,5 +1,5 @@
 import { dirname, isAbsolute, relative, resolve, sep } from "path";
-import type { default as babel, NodePath, PluginObj, types as t } from "@babel/core";
+import type { NodePath, PluginObj, default as babel, types as t } from "@babel/core";
 
 export type Options = {
   baseUrl?: string;

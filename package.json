@@ -14,11 +14,10 @@
   },
   "license": "MIT",
   "author": "mo36924",
-  "type": "module",
   "scripts": {
-    "init": "monorepo-init",
-    "update": "monorepo-update-package-json",
-    "build": "run-s clean test lint format build:*",
+    "init": "esbuild-node packages/monorepo-init/src/bin.ts",
+    "update": "esbuild-node packages/monorepo-update-package-json/src/bin.ts",
+    "build": "run-s clean test lint update format build:*",
     "build:rollup": "rollup -c --configPlugin typescript",
     "dev": "tsc -w --noEmit",
     "clean": "del \"packages/*/dist\"",
@@ -26,7 +25,9 @@
     "format:sort-package-json": "sort-package-json \"package.json\" \"packages/*/package.json\"",
     "format:prettier": "prettier --write .",
     "lint": "eslint --ext .ts,.tsx --fix .",
-    "test": "jest"
+    "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --passWithNoTests",
+    "publish": "run-s build publish:*",
+    "publish:lerna": "lerna publish"
   },
   "prettier": {
     "printWidth": 120,
@@ -51,7 +52,7 @@
           "next": "*"
         },
         {
-          "blankLine": "any",
+          "blankLine": "never",
           "prev": "import",
           "next": "import"
         },
@@ -108,6 +109,12 @@
           "next": "*"
         }
       ],
+      "sort-imports": [
+        "error",
+        {
+          "ignoreDeclarationSort": true
+        }
+      ],
       "import/no-absolute-path": "error",
       "import/no-dynamic-require": "error",
       "import/no-self-import": "error",
@@ -116,6 +123,13 @@
       "import/order": [
         "error",
         {
+          "groups": [
+            "builtin",
+            "external",
+            "parent",
+            "sibling",
+            "index"
+          ],
           "alphabetize": {
             "order": "asc"
           }
@@ -130,43 +144,22 @@
   },
   "jest": {
     "extensionsToTreatAsEsm": [
-      ".ts"
+      ".ts",
+      ".tsx"
     ],
     "globals": {
       "ts-jest": {
         "useESM": true,
-        "babelConfig": {
-          "babelrc": false,
-          "configFile": false,
-          "presets": [
-            [
-              "@babel/preset-env",
-              {
-                "modules": "commonjs",
-                "targets": {
-                  "node": "current"
-                }
-              }
-            ],
-            [
-              "@babel/preset-react",
-              {
-                "runtime": "automatic"
-              }
-            ]
-          ],
-          "plugins": [
-            [
-              "babel-plugin-import-meta-url"
-            ]
-          ]
+        "tsconfig": {
+          "jsx": "react-jsx"
         }
       }
     },
     "moduleNameMapper": {
-      "^@mo36924/([^/]+)/?": "<rootDir>/packages/$1/src/"
+      "^@mo36924/([^/]+)/?": "<rootDir>/packages/$1/src/",
+      "@eslint/eslintrc/universal": "@eslint/eslintrc/dist/eslintrc-universal.cjs"
     },
-    "preset": "ts-jest",
+    "preset": "ts-jest/presets/default-esm",
     "setupFilesAfterEnv": [
       "./jest.setup.ts"
     ],
@@ -188,15 +181,14 @@
     "@graphql-codegen/typescript-operations": "^2.2.2",
     "@graphql-tools/schema": "^8.3.1",
     "@headlessui/react": "^1.2.0",
-    "@mo36924/monorepo-init": "^1.5.2",
-    "@mo36924/monorepo-update-package-json": "^1.5.2",
+    "@mo36924/esbuild-node": "^0.0.9",
     "@mo36924/postcss-modules": "^1.4.2",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.1.3",
-    "@rollup/plugin-typescript": "^8.3.0",
-    "@rollup/pluginutils": "^4.1.2",
+    "@rollup/plugin-typescript": "^8.3.1",
+    "@rollup/pluginutils": "^4.2.0",
     "@tailwindcss/forms": "^0.3.2",
     "@types/accepts": "^1.3.5",
     "@types/babel__core": "^7.1.18",
@@ -204,6 +196,7 @@
     "@types/better-sqlite3": "^7.4.2",
     "@types/cookie": "^0.4.0",
     "@types/encodeurl": "^1.0.0",
+    "@types/eslint": "^8.4.1",
     "@types/http-errors": "^1.8.0",
     "@types/http-proxy": "^1.17.5",
     "@types/lru-cache": "^5.1.0",
@@ -217,7 +210,7 @@
     "@types/sqlstring": "^2.3.0",
     "@types/uuid": "^8.3.0",
     "@types/validate-npm-package-name": "^3.0.3",
-    "@typescript-eslint/parser": "^5.10.1",
+    "@typescript-eslint/parser": "^5.17.0",
     "@vitejs/plugin-react": "^1.1.4",
     "accepts": "^1.3.7",
     "acorn": "^8.1.0",
@@ -243,10 +236,10 @@
     "depcheck": "^1.4.3",
     "encodeurl": "^1.0.2",
     "enhanced-resolve": "^5.7.0",
-    "esbuild": "^0.14.14",
-    "eslint": "^8.7.0",
+    "esbuild": "^0.14.29",
+    "eslint": "^8.12.0",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-react-hooks": "^4.3.0",
+    "eslint-plugin-react-hooks": "^4.4.0",
     "events": "^3.3.0",
     "express-graphql": "^0.12.0",
     "fast-glob": "^3.2.5",
@@ -255,7 +248,7 @@
     "graphql-language-service-utils": "^2.7.1",
     "http-errors": "^2.0.0",
     "http-proxy": "^1.18.1",
-    "jest": "^27.4.7",
+    "jest": "^27.5.1",
     "lerna": "^4.0.0",
     "magic-string": "^0.25.7",
     "memfs": "^3.2.2",
@@ -277,8 +270,7 @@
     "react-refresh": "^0.10.0",
     "reserved-words": "^0.1.2",
     "rollup": "^2.66.1",
-    "rollup-plugin-dts": "^4.1.0",
-    "rollup-plugin-import-meta-url": "npm:@mo36924/rollup-plugin-import-meta-url@1.4.0",
+    "rollup-plugin-dts": "^4.2.0",
     "rollup-plugin-preserve-shebang": "^1.0.1",
     "rollup-plugin-terser": "^7.0.2",
     "sass": "^1.37.0",
@@ -287,14 +279,13 @@
     "sqlstring": "^2.3.2",
     "tailwindcss": "^2.1.2",
     "terser": "^5.7.1",
-    "ts-jest": "^27.1.3",
-    "tsconfig-paths": "^3.10.1",
-    "tslib": "^2.1.0",
-    "typescript": "^4.5.5",
+    "ts-jest": "^27.1.4",
+    "tsconfig-paths": "^3.14.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.3",
     "uuid": "^8.3.2",
     "validate-npm-package-name": "^3.0.0",
-    "vscode-languageserver-types": "^3.16.0",
-    "webpack": "^5.31.0"
+    "vscode-languageserver-types": "^3.16.0"
   },
   "engines": {
     "node": ">=16"

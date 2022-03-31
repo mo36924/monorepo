@@ -1,5 +1,5 @@
 import { Directives, getDefDirectives, gql } from "@mo36924/graphql-utilities";
-import { buildSchema, FieldDefinitionNode, ObjectTypeDefinitionNode } from "graphql";
+import { FieldDefinitionNode, ObjectTypeDefinitionNode, buildSchema } from "graphql";
 
 export type TypeDirectives = { join?: {} };
 export type FieldDirectives = {

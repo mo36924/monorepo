@@ -25,6 +25,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -32,9 +33,13 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@gfx/zopfli": "^1.0.15",
     "@mo36924/base64url": "^1.5.2",
+    "@types/mime-types": "^2.1.0",
     "fast-glob": "^3.2.5",
     "mime-types": "^2.1.29",
     "rollup": "^2.66.1"

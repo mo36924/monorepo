@@ -1,5 +1,5 @@
-import { transformSync, TransformOptions } from "@babel/core";
-import { describe, test, expect } from "@jest/globals";
+import { TransformOptions, transformSync } from "@babel/core";
+import { describe, expect, test } from "@jest/globals";
 import plugin from "./index";
 
 const options: TransformOptions = {

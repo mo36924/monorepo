@@ -1,4 +1,4 @@
-import type { default as _babel, PluginObj } from "@babel/core";
+import type { PluginObj, default as _babel } from "@babel/core";
 import babelPluginMinifyDeadCodeElimination from "babel-plugin-minify-dead-code-elimination";
 
 export default (babel: typeof _babel, options: any): PluginObj => {

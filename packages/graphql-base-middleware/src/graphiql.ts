@@ -6,14 +6,14 @@ import type { Middleware } from "@mo36924/http-server";
 import accepts from "accepts";
 import type { GraphiQLOptions } from "express-graphql/renderGraphiQL";
 import {
+  DocumentNode,
+  GraphQLError,
+  Source,
   buildASTSchema,
   buildSchema,
-  DocumentNode,
   executeSync,
   getOperationAST,
-  GraphQLError,
   parse,
-  Source,
   specifiedRules,
   validate,
 } from "graphql";

@@ -1,9 +1,9 @@
 import { FieldDirectives, getDirectives } from "@mo36924/graphql-schema";
 import {
-  getNamedType,
-  getNullableType,
   GraphQLField,
   GraphQLObjectType,
+  getNamedType,
+  getNullableType,
   isListType,
   isNullableType,
   isScalarType,

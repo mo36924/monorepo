@@ -25,6 +25,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -32,8 +33,13 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@mo36924/http-server": "^1.5.2",
+    "@types/accepts": "^1.3.5",
+    "@types/http-errors": "^1.8.0",
     "accepts": "^1.3.7",
     "express-graphql": "^0.12.0",
     "graphql": "^16.3.0",

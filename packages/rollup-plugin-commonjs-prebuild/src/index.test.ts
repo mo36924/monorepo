@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import vfs from "@mo36924/rollup-plugin-vfs";
-import nodeResolve from "@rollup/plugin-node-resolve";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { rollup } from "rollup";
 import prebuild from "./index";
 
@@ -11,7 +11,7 @@ describe("rollup-plugin-commonjs-prebuild", () => {
       plugins: [
         vfs({ "src/index.js": `import "readable-stream"` }),
         nodeResolve(),
-        prebuild({ prebuild: ["readable-stream"] }),
+        prebuild({ include: "node_modules/readable-stream/**/*" }),
       ],
     });
 

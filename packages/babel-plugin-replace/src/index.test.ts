@@ -1,5 +1,5 @@
-import { transformAsync, TransformOptions } from "@babel/core";
-import { describe, test, expect } from "@jest/globals";
+import { TransformOptions, transformAsync } from "@babel/core";
+import { describe, expect, test } from "@jest/globals";
 import babelPluginReplace from "./index";
 
 const env = `process.env.NODE_EN${"V"}`;

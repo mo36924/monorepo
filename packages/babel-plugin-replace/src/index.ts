@@ -1,4 +1,4 @@
-import type { default as babel, PluginObj, PluginPass } from "@babel/core";
+import type { PluginObj, PluginPass, default as babel } from "@babel/core";
 
 export type Options = {
   [key: string]: any;

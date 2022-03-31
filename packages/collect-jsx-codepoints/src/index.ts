@@ -1,5 +1,5 @@
 import { readFile } from "fs/promises";
-import { parseAsync, traverse, types as t } from "@babel/core";
+import { parseAsync, types as t, traverse } from "@babel/core";
 import jsx from "@babel/plugin-syntax-jsx";
 import typescript from "@babel/plugin-syntax-typescript";
 import glob from "fast-glob";

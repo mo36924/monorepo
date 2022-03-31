@@ -1,5 +1,5 @@
 import type { PluginFunction } from "@graphql-codegen/plugin-helpers";
-import { plugin as typescript, TypeScriptPluginConfig as _TypeScriptPluginConfig } from "@graphql-codegen/typescript";
+import { TypeScriptPluginConfig as _TypeScriptPluginConfig, plugin as typescript } from "@graphql-codegen/typescript";
 import "@mo36924/graphql-codegen-prettier";
 import { Source, stripIgnoredCharacters } from "graphql";
 // eslint-disable-next-line import/order

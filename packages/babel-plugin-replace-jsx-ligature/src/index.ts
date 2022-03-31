@@ -1,4 +1,4 @@
-import type { default as babel, PluginObj } from "@babel/core";
+import type { PluginObj, default as babel } from "@babel/core";
 import jsx from "@babel/plugin-syntax-jsx";
 
 export type Options = {

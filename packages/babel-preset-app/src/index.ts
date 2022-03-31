@@ -1,7 +1,7 @@
 import { createRequire } from "module";
 import { resolve } from "path";
 import process from "process";
-import type { ConfigAPI, default as babel, TransformOptions } from "@babel/core";
+import type { ConfigAPI, TransformOptions, default as babel } from "@babel/core";
 import constant from "@babel/plugin-transform-react-constant-elements";
 import env, { Options as EnvOptions } from "@babel/preset-env";
 import react from "@babel/preset-react";

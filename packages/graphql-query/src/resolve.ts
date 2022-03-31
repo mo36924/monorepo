@@ -1,22 +1,22 @@
 import type { FieldDirectives } from "@mo36924/graphql-schema";
 import {
   FieldNode,
-  getDirectiveValues,
-  getNamedType,
-  getNullableType,
   GraphQLCompositeType,
   GraphQLIncludeDirective,
   GraphQLInterfaceType,
   GraphQLNamedType,
   GraphQLObjectType,
   GraphQLSkipDirective,
+  Kind,
+  SelectionNode,
+  SelectionSetNode,
+  getDirectiveValues,
+  getNamedType,
+  getNullableType,
   isInterfaceType,
   isListType,
   isObjectType,
   isScalarType,
-  Kind,
-  SelectionNode,
-  SelectionSetNode,
   typeFromAST,
 } from "graphql";
 import type { ExecutionContext } from "graphql/execution/execute";

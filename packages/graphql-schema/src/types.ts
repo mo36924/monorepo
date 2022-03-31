@@ -1,7 +1,7 @@
 import { format } from "@mo36924/graphql-utilities";
 import { createObject, createObjectNull } from "@mo36924/util";
-import { DocumentNode, parse, Source } from "graphql";
-import { FieldDirectives, getDirectives, TypeDirectives } from "./directives";
+import { DocumentNode, Source, parse } from "graphql";
+import { FieldDirectives, TypeDirectives, getDirectives } from "./directives";
 import { isScalarTypeName } from "./scalars";
 
 export type Types = { [typeName: string]: Type };

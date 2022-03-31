@@ -25,6 +25,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -32,9 +33,13 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@babel/core": "^7.16.12",
-    "@babel/plugin-syntax-jsx": "^7.16.7"
+    "@babel/plugin-syntax-jsx": "^7.16.7",
+    "@types/babel__core": "^7.1.18"
   },
   "publishConfig": {
     "access": "public"

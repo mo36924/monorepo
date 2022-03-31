@@ -1,4 +1,4 @@
-import { format, FormatOptions } from "sql-formatter";
+import { FormatOptions, format } from "sql-formatter";
 
 const SQL = Symbol.for("jest-snapshot-serializer-sql");
 

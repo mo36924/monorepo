@@ -1,7 +1,7 @@
 import { createObjectNull } from "@mo36924/util";
 import type { Source } from "graphql";
 import type { FieldDirectives } from "./directives";
-import { buildTypes, Field, Fields, printTypes, sortTypes, Types } from "./types";
+import { Field, Fields, Types, buildTypes, printTypes, sortTypes } from "./types";
 import {
   getFieldName,
   getJoinTypeName,

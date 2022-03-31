@@ -13,8 +13,8 @@ test("eslint-lint-text", async () => {
   );
 
   expect(format(code, { filepath: "index.tsx" })).toMatchInlineSnapshot(`
-    import { write, read } from "fs";
-    import { resolve, join } from "path";
+    import { read, write } from "fs";
+    import { join, resolve } from "path";
 
     console.log(<div />);
   `);

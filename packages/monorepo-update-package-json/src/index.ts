@@ -1,4 +1,4 @@
-import { readdir, readFile, writeFile } from "fs/promises";
+import { readFile, readdir, writeFile } from "fs/promises";
 import { join, resolve } from "path";
 import depcheck from "depcheck";
 import prettier from "prettier";
@@ -27,8 +27,6 @@ export default async () => {
     ),
     prettier.resolveConfig("package.json"),
   ]);
-
-  const _config = { ...config, filepath: "package.json" };
 
   const deps = Object.assign(
     Object.create(null),
@@ -64,6 +62,9 @@ export default async () => {
               },
               main: "./dist/index.cjs",
               module: "./dist/index.mjs",
+              types: "./dist/index.d.ts",
+              typesVersions: { "*": { "*": ["dist/*.d.ts"] } },
+              files: ["dist"],
               publishConfig: {
                 access: "public",
               },
@@ -83,14 +84,18 @@ export default async () => {
                   ];
                 }),
               ),
-              typesVersions: { "*": { "*": ["dist/*.d.ts"] } },
               dependencies: _deps({
                 ..._pkg.dependencies,
+                ...Object.fromEntries(
+                  Object.keys(result.using)
+                    .map((name) => `@types/${name.replace("@", "").replace("/", "__")}`)
+                    .map((name) => [name, deps[name]]),
+                ),
                 ...Object.fromEntries(Object.keys(result.using).map((name) => [name, deps[name]])),
               }),
             }),
           ),
-          _config,
+          { ...config, filepath: "package.json" },
         ),
       ),
     ),

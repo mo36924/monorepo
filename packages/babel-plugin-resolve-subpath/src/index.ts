@@ -1,7 +1,7 @@
 import fs from "fs";
 import { builtinModules } from "module";
 import { dirname, relative, resolve as resolvePath, sep } from "path";
-import type { default as babel, NodePath, PluginObj, types as t, PluginPass } from "@babel/core";
+import type { NodePath, PluginObj, PluginPass, default as babel, types as t } from "@babel/core";
 import enhancedResolve, { ResolveOptions } from "enhanced-resolve";
 
 const create = enhancedResolve.create;

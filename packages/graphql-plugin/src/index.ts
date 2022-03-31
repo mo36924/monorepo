@@ -1,7 +1,7 @@
 import { readFileSync, unwatchFile, watch, watchFile } from "fs";
 import { resolve } from "path";
 import { printSchemaModel } from "@mo36924/graphql-schema";
-import { buildSchema, GraphQLError, parse, validate } from "graphql";
+import { GraphQLError, buildSchema, parse, validate } from "graphql";
 import {
   getAutocompleteSuggestions,
   getDiagnostics,
@@ -9,7 +9,7 @@ import {
   getTokenAtPosition,
 } from "graphql-language-service-interface";
 import { Position } from "graphql-language-service-utils";
-import type { LanguageService, server, SourceFile, TaggedTemplateExpression } from "typescript/lib/tsserverlibrary";
+import type { LanguageService, SourceFile, TaggedTemplateExpression, server } from "typescript/lib/tsserverlibrary";
 import { CompletionItemKind, DiagnosticSeverity } from "vscode-languageserver-types";
 
 const init: server.PluginModuleFactory = ({ typescript: ts }) => {

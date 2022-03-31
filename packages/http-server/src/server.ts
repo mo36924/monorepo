@@ -1,4 +1,4 @@
-import { createServer as createHttpServer, Server as HttpServer, ServerOptions } from "http";
+import { Server as HttpServer, ServerOptions, createServer as createHttpServer } from "http";
 import { types } from "util";
 import cacheMiddleware from "@mo36924/cache-middleware";
 import graphqlMiddleware from "@mo36924/graphql-middleware";

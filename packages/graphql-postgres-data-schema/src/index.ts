@@ -1,4 +1,4 @@
-import { buildSchemaTypes, ScalarUnionTypeNames } from "@mo36924/graphql-schema";
+import { ScalarUnionTypeNames, buildSchemaTypes } from "@mo36924/graphql-schema";
 import { escapeId } from "@mo36924/postgres-escape";
 import { createObject } from "@mo36924/util";
 

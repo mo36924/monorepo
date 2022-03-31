@@ -25,6 +25,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -32,7 +33,11 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
+    "@types/sqlstring": "^2.3.0",
     "sqlstring": "^2.3.2"
   },
   "publishConfig": {

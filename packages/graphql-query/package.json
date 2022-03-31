@@ -25,6 +25,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -32,6 +33,9 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@mo36924/graphql-schema": "^1.5.2",
     "@mo36924/util": "^1.5.2",

@@ -31,9 +31,8 @@ describe("http-server", () => {
       }),
     );
 
-    await server.listen(10000);
-
-    const res = await fetch(`http://localhost:10000/graphql?${stringify({ query: "{ count }" })}`);
+    await server.listen(10002);
+    const res = await fetch(`http://localhost:10002/graphql?${stringify({ query: "{ count }" })}`);
     const json = await res.json();
 
     expect(json).toMatchInlineSnapshot(`

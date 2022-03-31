@@ -1,4 +1,4 @@
-import type { default as babel, PluginObj } from "@babel/core";
+import type { PluginObj, default as babel } from "@babel/core";
 
 export default ({ types: t }: typeof babel): PluginObj => {
   return {

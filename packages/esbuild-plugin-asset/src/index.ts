@@ -7,7 +7,7 @@ import presetEnv, { Options as PresetEnvOptions } from "@babel/preset-env";
 import { normalizePath, removeExtension, writeFile } from "@mo36924/util-node";
 import cssnano from "cssnano";
 import advanced from "cssnano-preset-advanced";
-import { build, Plugin } from "esbuild";
+import { Plugin, build } from "esbuild";
 import postcss from "postcss";
 import postcssrc from "postcss-load-config";
 import sass from "sass";

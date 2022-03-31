@@ -25,6 +25,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -32,8 +33,12 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@mo36924/http-server": "^1.5.2",
+    "@types/http-proxy": "^1.17.5",
     "http-proxy": "^1.18.1"
   },
   "publishConfig": {

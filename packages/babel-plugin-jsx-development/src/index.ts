@@ -1,5 +1,5 @@
 import { relative } from "path";
-import type { default as babel, PluginObj, PluginPass } from "@babel/core";
+import type { PluginObj, PluginPass, default as babel } from "@babel/core";
 import { pascalCase } from "change-case";
 
 type State = PluginPass & { displayName: string };

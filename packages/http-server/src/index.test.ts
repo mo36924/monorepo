@@ -17,5 +17,6 @@ describe("http-server", () => {
     const text = await res.text();
     expect(text).toEqual("test");
     await server.close();
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 });

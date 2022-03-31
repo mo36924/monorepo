@@ -26,6 +26,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "browser": "./dist/index.client.js",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -33,6 +34,9 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   }

@@ -32,6 +32,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -39,6 +40,9 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "depcheck": "^1.4.3",
     "prettier": "^2.3.2",

@@ -25,6 +25,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -32,10 +33,14 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@mo36924/postcss-modules": "^1.5.2",
     "@mo36924/util-node": "^1.5.2",
-    "esbuild": "^0.14.14",
+    "@types/sass": "^1.16.1",
+    "esbuild": "^0.14.29",
     "postcss": "^8.3.5",
     "postcss-load-config": "^3.1.0",
     "sass": "^1.37.0"

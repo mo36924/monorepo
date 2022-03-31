@@ -1,14 +1,14 @@
 import { readFileSync } from "fs";
-import type { default as babel, PluginObj, types as t } from "@babel/core";
+import type { PluginObj, default as babel, types as t } from "@babel/core";
 import { encode } from "@mo36924/base52";
 import { buildSchema, buildSchemaModel } from "@mo36924/graphql-schema";
 import {
   DocumentNode,
   GraphQLInputType,
   GraphQLSchema,
+  TypeInfo,
   parse,
   stripIgnoredCharacters,
-  TypeInfo,
   validate,
   visit,
   visitWithTypeInfo,

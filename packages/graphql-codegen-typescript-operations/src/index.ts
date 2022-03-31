@@ -1,5 +1,5 @@
 import type { PluginFunction, Types } from "@graphql-codegen/plugin-helpers";
-import { plugin as operations, TypeScriptDocumentsPluginConfig } from "@graphql-codegen/typescript-operations";
+import { TypeScriptDocumentsPluginConfig, plugin as operations } from "@graphql-codegen/typescript-operations";
 import "@mo36924/graphql-codegen-prettier";
 import { pascalCase } from "change-case";
 import { FragmentDefinitionNode, OperationDefinitionNode, stripIgnoredCharacters, visit } from "graphql";

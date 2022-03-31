@@ -1,4 +1,4 @@
-import { isValidElement, VNode } from "preact";
+import { VNode, isValidElement } from "preact";
 import render from "preact-render-to-string/jsx";
 
 export function test(value: any) {

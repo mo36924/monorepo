@@ -1,6 +1,6 @@
 import { createObjectNull } from "@mo36924/util";
-import { DocumentNode, getOperationRootType, GraphQLError, GraphQLSchema } from "graphql";
-import { buildExecutionContext, ExecutionContext } from "graphql/execution/execute";
+import { DocumentNode, GraphQLError, GraphQLSchema, getOperationRootType } from "graphql";
+import { ExecutionContext, buildExecutionContext } from "graphql/execution/execute";
 import { Fields, resolve } from "./resolve";
 
 export * from "./field";

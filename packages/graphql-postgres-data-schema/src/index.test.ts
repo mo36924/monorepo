@@ -5,7 +5,9 @@ import { describe, expect, test } from "@jest/globals";
 // import { Client } from "pg";
 // import { buildDataSchema } from "./index";
 
-test("", () => {});
+test("", () => {
+  expect(1).toEqual(1);
+});
 
 // describe("graphql-postgres-data-schema", () => {
 //   const graphql = `

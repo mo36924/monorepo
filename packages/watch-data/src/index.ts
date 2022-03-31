@@ -1,4 +1,4 @@
-import { watch, watchFile, promises, unwatchFile, readFileSync } from "fs";
+import { promises, readFileSync, unwatchFile, watch, watchFile } from "fs";
 import { resolve } from "path";
 
 const { readFile } = promises;

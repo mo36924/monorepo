@@ -25,6 +25,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -32,6 +33,9 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@babel/core": "^7.16.12",
     "@babel/plugin-transform-react-constant-elements": "^7.16.7",
@@ -46,6 +50,8 @@
     "@mo36924/babel-plugin-replace": "^1.5.2",
     "@mo36924/babel-plugin-resolve": "^1.5.2",
     "@mo36924/babel-plugin-resolve-subpath": "^1.5.2",
+    "@types/babel__core": "^7.1.18",
+    "@types/babel__preset-env": "^7.9.2",
     "react-refresh": "^0.10.0"
   },
   "publishConfig": {

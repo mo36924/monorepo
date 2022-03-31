@@ -1,6 +1,6 @@
 import { createRequire } from "module";
 import { resolve } from "path";
-import type { default as babel, NodePath, PluginObj, PluginPass } from "@babel/core";
+import type { NodePath, PluginObj, PluginPass, default as babel } from "@babel/core";
 
 export type Options = { [name: string]: string[] };
 

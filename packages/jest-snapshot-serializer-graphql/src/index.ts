@@ -1,4 +1,4 @@
-import { DocumentNode, parse, print, Source } from "graphql";
+import { DocumentNode, Source, parse, print } from "graphql";
 
 export function test(value: Source | DocumentNode) {
   return value && (value instanceof Source || (value.kind === "Document" && Array.isArray(value.definitions)));

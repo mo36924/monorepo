@@ -5,9 +5,9 @@ import { Source } from "graphql";
 import { schemaDirectives } from "./directives";
 import { baseFields } from "./fields";
 import { buildTypesModel } from "./model";
-import { comparisonOperators, ComparisonOperators, LogicalOperators } from "./operators";
+import { ComparisonOperators, LogicalOperators, comparisonOperators } from "./operators";
 import { customScalars, primaryKeyTypeName, resolvers, scalarTypeNames } from "./scalars";
-import { printDirectives, printFieldType, sortTypes, Types } from "./types";
+import { Types, printDirectives, printFieldType, sortTypes } from "./types";
 import {
   getFieldName,
   getJoinTypeName,

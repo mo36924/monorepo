@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { raw } from "@mo36924/jest-snapshot-serializer-raw";
-import { parse, Source } from "graphql";
+import { Source, parse } from "graphql";
 import { serialize, test } from "./index";
 
 describe("jest-snapshot-serializer-graphql", () => {

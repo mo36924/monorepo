@@ -26,6 +26,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "browser": "./dist/index.client.js",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -33,6 +34,9 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@mo36924/graphql-json": "^1.5.2",
     "@mo36924/node-fetch-polyfill": "^1.5.2",

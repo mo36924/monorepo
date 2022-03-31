@@ -1,11 +1,11 @@
 import {
   FieldNode,
-  getNamedType,
-  getNullableType,
   GraphQLField,
   GraphQLObjectType,
   GraphQLScalarType,
   GraphQLSchema,
+  getNamedType,
+  getNullableType,
   isListType,
   isNullableType,
   isScalarType,

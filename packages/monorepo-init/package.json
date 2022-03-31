@@ -32,6 +32,7 @@
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -40,6 +41,9 @@
     }
   },
   "bin": "./dist/bin.cjs",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@mo36924/monorepo-update-package-json": "^1.5.3"
   },

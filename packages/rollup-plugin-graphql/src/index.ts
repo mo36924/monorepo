@@ -1,4 +1,4 @@
-import { createFilter, FilterPattern } from "@rollup/pluginutils";
+import { FilterPattern, createFilter } from "@rollup/pluginutils";
 import { parse } from "graphql";
 import type { Plugin } from "rollup";
 

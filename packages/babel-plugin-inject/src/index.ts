@@ -1,5 +1,5 @@
 import { resolve } from "path";
-import type { default as babel, PluginObj } from "@babel/core";
+import type { PluginObj, default as babel } from "@babel/core";
 
 export type Options = {
   declarations?: {

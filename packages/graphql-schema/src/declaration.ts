@@ -1,8 +1,8 @@
 import {
-  getNamedType,
-  getNullableType,
   GraphQLInputField,
   GraphQLSchema,
+  getNamedType,
+  getNullableType,
   isInputObjectType,
   isListType,
   isNonNullType,

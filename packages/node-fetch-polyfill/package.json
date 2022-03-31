@@ -26,6 +26,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "browser": "./dist/index.client.js",
+  "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -33,7 +34,11 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
+    "@types/node-fetch": "^2.5.8",
     "node-fetch": "^2.6.1"
   },
   "publishConfig": {

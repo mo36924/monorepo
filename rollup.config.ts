@@ -52,6 +52,7 @@ export default async () => {
             sourcemap: true,
             entryFileNames: "[name].mjs",
             chunkFileNames: "[name]-[hash].mjs",
+            generatedCode: "es2015",
           },
           {
             dir: `${workspaceDir}/${name}/dist`,
@@ -59,6 +60,7 @@ export default async () => {
             sourcemap: true,
             entryFileNames: "[name].cjs",
             chunkFileNames: "[name]-[hash].cjs",
+            generatedCode: "es2015",
             interop: "auto",
             exports: "auto",
           },
@@ -74,6 +76,7 @@ export default async () => {
           sourcemap: true,
           entryFileNames: "[name].js",
           chunkFileNames: "[name]-[hash].js",
+          generatedCode: "es2015",
         },
         external,
         plugins: clientPlugins,

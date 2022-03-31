@@ -1,3 +1,0 @@
-# graphql-mysql
-
-graphql-mysql
