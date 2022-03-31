@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/esbuild-node",
-  "version": "1.6.1",
-  "description": "esbuild-node",
+  "name": "@mo36924/esbuild-plugin-external",
+  "version": "0.0.1",
+  "description": "esbuild-plugin-external",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/esbuild-node"
+    "directory": "packages/esbuild-plugin-external"
   },
   "license": "MIT",
   "author": "mo36924",
@@ -21,20 +21,6 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "default": "./dist/index.cjs"
-    },
-    "./bin": {
-      "types": "./dist/bin.d.ts",
-      "browser": "./dist/bin.js",
-      "import": "./dist/bin.mjs",
-      "require": "./dist/bin.cjs",
-      "default": "./dist/bin.cjs"
-    },
-    "./loader": {
-      "types": "./dist/loader.d.ts",
-      "browser": "./dist/loader.js",
-      "import": "./dist/loader.mjs",
-      "require": "./dist/loader.cjs",
-      "default": "./dist/loader.cjs"
     }
   },
   "main": "./dist/index.cjs",
@@ -47,12 +33,10 @@
       ]
     }
   },
-  "bin": "./dist/bin.cjs",
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@mo36924/esbuild-plugin-external": "^0.0.1",
     "esbuild": "^0.14.29"
   },
   "publishConfig": {

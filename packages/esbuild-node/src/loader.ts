@@ -1,6 +1,6 @@
 import { access } from "fs/promises";
 import { fileURLToPath } from "url";
-import nodeExternals from "@mo36924/esbuild-plugin-node-externals";
+import external from "@mo36924/esbuild-plugin-external";
 import { build } from "esbuild";
 
 export type Resolve = (
@@ -52,7 +52,7 @@ export const load: Load = async (url, context, defaultLoad) => {
       write: false,
       outfile: path + ".mjs",
       allowOverwrite: true,
-      plugins: [nodeExternals()],
+      plugins: [external()],
     });
 
     return { format: "module", source: result.outputFiles[0].contents };
