@@ -15,7 +15,7 @@
   "license": "MIT",
   "author": "mo36924",
   "scripts": {
-    "init": "esbuild-node packages/monorepo-init/src/bin.ts",
+    "init": "monorepo-init",
     "update": "esbuild-node packages/monorepo-update-package-json/src/bin.ts",
     "build": "run-s clean test lint update format build:*",
     "build:rollup": "rollup -c --configPlugin typescript",
@@ -253,6 +253,7 @@
     "magic-string": "^0.25.7",
     "memfs": "^3.2.2",
     "mime-types": "^2.1.29",
+    "monorepo-init": "npm:@mo36924/monorepo-init@^1.6.0",
     "mysql2": "^2.3.0",
     "node-fetch": "^2.6.1",
     "npm-run-all": "^4.1.5",
