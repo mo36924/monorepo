@@ -10,7 +10,7 @@ export default (path: string, argv: string[]) => {
       "--enable-source-maps",
       "--experimental-specifier-resolution=node",
       "--experimental-loader",
-      fileURLToPath(new URL("loader.js", import.meta.url)),
+      fileURLToPath(new URL("loader.mjs", import.meta.url)),
     ],
   });
 
