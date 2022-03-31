@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/rollup-plugin-static",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "rollup-plugin-static",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,7 +37,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/rollup-plugin-cache": "^1.6.0",
+    "@mo36924/rollup-plugin-cache": "^1.6.1",
     "rollup": "^2.66.1"
   },
   "publishConfig": {

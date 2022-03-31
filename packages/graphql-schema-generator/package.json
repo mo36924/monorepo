@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-schema-generator",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "graphql-schema-generator",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,8 +37,8 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/graphql-schema": "^1.6.0",
-    "@mo36924/graphql-utilities": "^1.6.0"
+    "@mo36924/graphql-schema": "^1.6.1",
+    "@mo36924/graphql-utilities": "^1.6.1"
   },
   "publishConfig": {
     "access": "public"
