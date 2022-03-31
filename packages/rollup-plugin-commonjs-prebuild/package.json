@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/rollup-plugin-commonjs-prebuild",
-  "version": "1.6.2",
+  "version": "1.6.4",
   "description": "rollup-plugin-commonjs-prebuild",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",

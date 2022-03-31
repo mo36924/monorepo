@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/jest-snapshot-serializer-sql",
-  "version": "1.6.2",
+  "version": "1.6.4",
   "description": "jest-snapshot-serializer-sql",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",

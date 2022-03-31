@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/monorepo-init",
-  "version": "1.6.2",
+  "version": "1.6.4",
   "description": "monorepo-init",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -45,7 +45,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/monorepo-update-package-json": "^1.6.2"
+    "@mo36924/monorepo-update-package-json": "^1.6.4"
   },
   "publishConfig": {
     "access": "public"

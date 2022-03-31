@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-base-middleware",
-  "version": "1.6.2",
+  "version": "1.6.4",
   "description": "graphql-base-middleware",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,7 +37,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/http-server": "^1.6.2",
+    "@mo36924/http-server": "^1.6.4",
     "@types/accepts": "^1.3.5",
     "@types/http-errors": "^1.8.0",
     "accepts": "^1.3.7",

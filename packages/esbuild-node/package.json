@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/esbuild-node",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "esbuild-node",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -52,7 +52,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/esbuild-plugin-external": "^1.6.2",
+    "@mo36924/esbuild-plugin-external": "^1.6.4",
     "esbuild": "^0.14.29"
   },
   "publishConfig": {
