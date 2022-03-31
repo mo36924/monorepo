@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/asset-generator",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "asset-generator",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -45,7 +45,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/util-node": "^1.6.1",
+    "@mo36924/util-node": "^1.6.2",
     "chokidar": "^3.5.1",
     "commander": "^8.1.0",
     "esbuild": "^0.14.29",

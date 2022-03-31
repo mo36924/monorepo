@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/static-middleware",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "static-middleware",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,7 +37,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/http-server": "^1.6.1"
+    "@mo36924/http-server": "^1.6.2"
   },
   "publishConfig": {
     "access": "public"

@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-schema",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "graphql-schema",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -46,8 +46,8 @@
   ],
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",
-    "@mo36924/graphql-utilities": "^1.6.1",
-    "@mo36924/util": "^1.6.1",
+    "@mo36924/graphql-utilities": "^1.6.2",
+    "@mo36924/util": "^1.6.2",
     "@types/pluralize": "^0.0.29",
     "@types/uuid": "^8.3.0",
     "change-case": "^4.1.2",

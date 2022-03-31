@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/rollup-plugin-cache",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "rollup-plugin-cache",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -38,7 +38,7 @@
   ],
   "dependencies": {
     "@gfx/zopfli": "^1.0.15",
-    "@mo36924/base64url": "^1.6.1",
+    "@mo36924/base64url": "^1.6.2",
     "@types/mime-types": "^2.1.0",
     "fast-glob": "^3.2.5",
     "mime-types": "^2.1.29",
