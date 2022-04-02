@@ -39,9 +39,9 @@ export const executeJSON = async (args: ExecutionArgs): Promise<ExecutionJSONRes
       const data: { [key: string]: string } = Object.create(null);
 
       for (const [sql, values] of result.mutation) {
-        const { command, rows, rowCount } = await primary(sql, values);
+        const { rows, rowCount } = await primary(sql, values);
 
-        if (command === "SELECT") {
+        if (sql.startsWith("select")) {
           Object.assign(data, rows[0]);
         } else if (rowCount !== 1) {
           throw new GraphQLError("Mutation failed.", {});

@@ -1,7 +1,7 @@
 {
-  "name": "@mo36924/graphql-patch",
-  "version": "1.6.6",
-  "description": "graphql-patch",
+  "name": "@mo36924/prettier-patch",
+  "version": "0.0.1",
+  "description": "prettier-patch",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
   "bugs": {
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mo36924/monorepo.git",
-    "directory": "packages/graphql-patch"
+    "directory": "packages/prettier-patch"
   },
   "license": "MIT",
   "author": "mo36924",
@@ -40,7 +40,6 @@
       ]
     }
   },
-  "bin": "./dist/index.cjs",
   "files": [
     "dist"
   ],

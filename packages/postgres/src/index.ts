@@ -1,7 +1,6 @@
 import pg from "pg";
 
 export type Result<T extends { [column: string]: any } = any> = {
-  command: string;
   rows: T[];
   rowCount: number;
 };
@@ -17,10 +16,7 @@ const Pool = pg.Pool;
 const primaryPool = new Pool();
 const replicaPools: pg.Pool[] = hosts ? hosts.split(",").map((host) => new Pool({ host })) : [primaryPool];
 
-export const primary: SQL = <T = any>(
-  strings: TemplateStringsArray | string,
-  ...values: any[]
-): Promise<pg.QueryResult<T>> =>
+export const primary: SQL = <T = any>(strings: TemplateStringsArray | string, ...values: any[]): Promise<Result<T>> =>
   typeof strings === "string"
     ? primaryPool.query(strings, values[0])
     : primaryPool.query(
@@ -28,10 +24,7 @@ export const primary: SQL = <T = any>(
         values,
       );
 
-export const replica: SQL = <T = any>(
-  strings: TemplateStringsArray | string,
-  ...values: any[]
-): Promise<pg.QueryResult<T>> => {
+export const replica: SQL = <T = any>(strings: TemplateStringsArray | string, ...values: any[]): Promise<Result<T>> => {
   const replica = replicaPools[(i = (i + 1) % replicaPools.length)];
 
   return typeof strings === "string"
