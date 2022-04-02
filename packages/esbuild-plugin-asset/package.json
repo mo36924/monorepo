@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/esbuild-plugin-asset",
-  "version": "1.6.6",
+  "version": "1.6.7",
   "description": "esbuild-plugin-asset",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -39,7 +39,7 @@
   "dependencies": {
     "@babel/core": "^7.17.8",
     "@babel/preset-env": "^7.16.11",
-    "@mo36924/util-node": "^1.6.6",
+    "@mo36924/util-node": "^1.6.7",
     "@types/babel__core": "^7.1.19",
     "@types/babel__preset-env": "^7.9.2",
     "@types/sass": "^1.16.1",
