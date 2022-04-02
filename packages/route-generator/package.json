@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/route-generator",
-  "version": "1.6.7",
+  "version": "1.6.8",
   "description": "route-generator",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -45,7 +45,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/util-node": "^1.6.7",
+    "@mo36924/util-node": "^1.6.8",
     "change-case": "^4.1.2",
     "chokidar": "^3.5.1",
     "cosmiconfig": "^7.0.1",

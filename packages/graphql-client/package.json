@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-client",
-  "version": "1.6.7",
+  "version": "1.6.8",
   "description": "graphql-client",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -38,8 +38,8 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/graphql-json": "^1.6.7",
-    "@mo36924/node-fetch-polyfill": "^1.6.7",
+    "@mo36924/graphql-json": "^1.6.8",
+    "@mo36924/node-fetch-polyfill": "^1.6.8",
     "graphql": "^16.3.0"
   },
   "publishConfig": {
