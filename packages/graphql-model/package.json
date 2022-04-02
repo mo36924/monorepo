@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-model",
-  "version": "0.0.1",
+  "version": "1.6.5",
   "description": "graphql-model",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,11 +37,11 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/graphql-base-fields": "^0.0.1",
-    "@mo36924/graphql-build": "^0.0.1",
-    "@mo36924/graphql-custom-scalars": "^0.0.1",
-    "@mo36924/graphql-directives": "^0.0.1",
-    "@mo36924/graphql-operators": "^0.0.1",
+    "@mo36924/graphql-base-fields": "^1.6.5",
+    "@mo36924/graphql-build": "^1.6.5",
+    "@mo36924/graphql-custom-scalars": "^1.6.5",
+    "@mo36924/graphql-directives": "^1.6.5",
+    "@mo36924/graphql-operators": "^1.6.5",
     "@types/pluralize": "^0.0.29",
     "change-case": "^4.1.2",
     "graphql": "^16.3.0",

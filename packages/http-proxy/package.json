@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/http-proxy",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "description": "http-proxy",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,7 +37,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/http-server": "^1.6.4",
+    "@mo36924/http-server": "^1.6.5",
     "@types/http-proxy": "^1.17.5",
     "http-proxy": "^1.18.1"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/css-modules",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "description": "css-modules",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -45,7 +45,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/postcss-modules": "^1.6.4",
+    "@mo36924/postcss-modules": "^1.6.5",
     "chokidar": "^3.5.1",
     "commander": "^8.1.0",
     "events": "^3.3.0",

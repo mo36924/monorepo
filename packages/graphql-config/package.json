@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-config",
-  "version": "0.0.1",
+  "version": "1.6.5",
   "description": "graphql-config",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,7 +37,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/graphql-model": "^0.0.1",
+    "@mo36924/graphql-model": "^1.6.5",
     "cosmiconfig": "^7.0.1"
   },
   "publishConfig": {
