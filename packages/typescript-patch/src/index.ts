@@ -36,9 +36,9 @@ const replaces: { [key: string]: string | undefined } = Object.assign(
   Object.create(null),
   Object.fromEntries(
     ["ScriptElementKind", "DiagnosticCategory", "SymbolFlags"].flatMap((prop) =>
-      Object.keys((ts as any)[prop])
+      Object.keys((typescript as any)[prop])
         .filter((key) => !/^-?\d+$/.test(key))
-        .map((key) => [`ts.${prop}.${key}`, JSON.stringify((ts as any)[prop][key])]),
+        .map((key) => [`ts.${prop}.${key}`, JSON.stringify((typescript as any)[prop][key])]),
     ),
   ),
 );
