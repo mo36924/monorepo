@@ -1,0 +1,60 @@
+{
+  "name": "@mo36924/typescript-patch",
+  "version": "0.0.1",
+  "description": "typescript-patch",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/typescript-patch"
+  },
+  "license": "MIT",
+  "author": "mo36924",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.cjs"
+    },
+    "./bin": {
+      "types": "./dist/bin.d.ts",
+      "browser": "./dist/bin.js",
+      "import": "./dist/bin.mjs",
+      "require": "./dist/bin.cjs",
+      "default": "./dist/bin.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "postinstall": "node -e \"try{require('./dist/bin.cjs')}catch{}\""
+  },
+  "dependencies": {
+    "@mo36924/graphql-config": "^1.6.7",
+    "graphql": "^16.3.0",
+    "graphql-language-service-interface": "^2.10.2",
+    "graphql-language-service-utils": "^2.7.1",
+    "typescript": "^4.6.3",
+    "vscode-languageserver-types": "^3.16.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
