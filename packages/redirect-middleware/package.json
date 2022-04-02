@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/redirect-middleware",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "redirect-middleware",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,7 +37,7 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/http-server": "^1.6.5"
+    "@mo36924/http-server": "^1.6.6"
   },
   "publishConfig": {
     "access": "public"

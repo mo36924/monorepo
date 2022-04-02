@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-postgres-execute",
-  "version": "0.0.1",
+  "version": "1.6.6",
   "description": "graphql-postgres-execute",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -37,9 +37,9 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/graphql-json": "^1.6.5",
-    "@mo36924/graphql-postgres-sql": "^0.0.1",
-    "@mo36924/postgres": "^0.0.1",
+    "@mo36924/graphql-json": "^1.6.6",
+    "@mo36924/graphql-postgres-sql": "^1.6.6",
+    "@mo36924/postgres": "^1.6.6",
     "graphql": "^16.3.0"
   },
   "publishConfig": {
