@@ -1,0 +1,54 @@
+{
+  "name": "@mo36924/graphql-model",
+  "version": "0.0.1",
+  "description": "graphql-model",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/graphql-model"
+  },
+  "license": "MIT",
+  "author": "mo36924",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@mo36924/graphql-base-fields": "^0.0.1",
+    "@mo36924/graphql-build": "^0.0.1",
+    "@mo36924/graphql-custom-scalars": "^0.0.1",
+    "@mo36924/graphql-directives": "^0.0.1",
+    "@mo36924/graphql-operators": "^0.0.1",
+    "@types/pluralize": "^0.0.29",
+    "change-case": "^4.1.2",
+    "graphql": "^16.3.0",
+    "pluralize": "^8.0.0",
+    "prettier": "^2.6.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

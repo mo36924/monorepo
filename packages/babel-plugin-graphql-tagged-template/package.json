@@ -37,10 +37,11 @@
     "dist"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.12",
-    "@mo36924/base52": "^1.6.4",
-    "@mo36924/graphql-schema": "^1.6.4",
-    "@types/babel__core": "^7.1.18",
+    "@babel/core": "^7.17.8",
+    "@mo36924/graphql-build": "^0.0.1",
+    "@mo36924/graphql-config": "^0.0.1",
+    "@mo36924/graphql-model": "^0.0.1",
+    "@types/babel__core": "^7.1.19",
     "graphql": "^16.3.0"
   },
   "publishConfig": {

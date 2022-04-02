@@ -37,10 +37,10 @@
     "dist"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.12",
+    "@babel/core": "^7.17.8",
     "@babel/preset-env": "^7.16.11",
     "@mo36924/util-node": "^1.6.4",
-    "@types/babel__core": "^7.1.18",
+    "@types/babel__core": "^7.1.19",
     "@types/babel__preset-env": "^7.9.2",
     "@types/sass": "^1.16.1",
     "cssnano": "^5.0.7",

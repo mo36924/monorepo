@@ -1,0 +1,42 @@
+{
+  "name": "@mo36924/graphql-base-fields",
+  "version": "0.0.1",
+  "description": "graphql-base-fields",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/graphql-base-fields"
+  },
+  "license": "MIT",
+  "author": "mo36924",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

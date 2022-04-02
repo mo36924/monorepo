@@ -1,0 +1,46 @@
+{
+  "name": "@mo36924/graphql-config",
+  "version": "0.0.1",
+  "description": "graphql-config",
+  "keywords": [],
+  "homepage": "https://github.com/mo36924/monorepo#readme",
+  "bugs": {
+    "url": "https://github.com/mo36924/monorepo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mo36924/monorepo.git",
+    "directory": "packages/graphql-config"
+  },
+  "license": "MIT",
+  "author": "mo36924",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@mo36924/graphql-model": "^0.0.1",
+    "cosmiconfig": "^7.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

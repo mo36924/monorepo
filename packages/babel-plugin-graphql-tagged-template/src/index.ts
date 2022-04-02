@@ -1,7 +1,8 @@
 import { readFileSync } from "fs";
-import type { PluginObj, default as babel, types as t } from "@babel/core";
-import { encode } from "@mo36924/base52";
-import { buildSchema, buildSchemaModel } from "@mo36924/graphql-schema";
+import babel, { PluginObj, types as t } from "@babel/core";
+import { buildASTSchema } from "@mo36924/graphql-build";
+import { config } from "@mo36924/graphql-config";
+import { buildModel } from "@mo36924/graphql-model";
 import {
   DocumentNode,
   GraphQLInputType,
@@ -15,24 +16,28 @@ import {
 } from "graphql";
 
 export type Options = {
-  model: string;
-  schema: string | GraphQLSchema;
+  parse?: boolean;
+  model?: string | DocumentNode;
+  schema?: string | GraphQLSchema;
 };
 
 export default ({ types: t }: typeof babel, options: Options): PluginObj => {
   let schema: GraphQLSchema;
 
-  if (options.model) {
-    const model = readFileSync(options.model || "index.graphql", "utf8");
-    schema = buildSchemaModel(model);
-  } else if (typeof options.schema === "string") {
-    const graphqlSchema = readFileSync(options.schema || "index.graphql", "utf8");
-    schema = buildSchema(graphqlSchema);
-  } else if (options.schema) {
+  if (typeof options.schema === "string") {
+    schema = buildASTSchema(parse(readFileSync(options.schema, "utf-8")));
+  } else if (options.schema && typeof options.schema === "object") {
     schema = options.schema;
+  } else if (typeof options.model === "string") {
+    schema = buildModel(readFileSync(options.model, "utf-8")).schema;
+  } else if (options.model && typeof options.model === "object") {
+    schema = buildASTSchema(options.model);
+  } else {
+    schema = config().schema;
   }
 
   return {
+    name: "graphql-tagged-template",
     visitor: {
       TaggedTemplateExpression(path) {
         const {
@@ -45,19 +50,29 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
         }
 
         const name = tag.name;
+        let operation = "";
 
-        if (name !== "gql" && name !== "query" && name !== "mutation" && name !== "subscription") {
-          return;
+        switch (name) {
+          case "gql":
+          case "query":
+          case "useQuery":
+            break;
+          case "mutation":
+          case "useMutation":
+            operation = "mutation";
+            break;
+          case "subscription":
+          case "useSubscription":
+            operation = "subscription";
+            break;
+          default:
+            return;
         }
 
-        let query = quasis[0].value.cooked ?? quasis[0].value.raw;
+        let query = operation + (quasis[0].value.cooked ?? quasis[0].value.raw);
 
         for (let i = 0; i < expressions.length; i++) {
-          query += `$${encode(i)}${quasis[i + 1].value.cooked ?? quasis[i + 1].value.raw}`;
-        }
-
-        if (name === "mutation" || name === "subscription") {
-          query = name + query;
+          query += `$_${i}${quasis[i + 1].value.cooked ?? quasis[i + 1].value.raw}`;
         }
 
         let documentNode: DocumentNode;
@@ -81,17 +96,17 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
         );
 
         if (values.length) {
-          const variables = `(${values.map((value, i) => `$${encode(i)}:${value}`).join()})`;
+          const variables = `(${values.map((value, i) => `$_${i}:${value}`).join()})`;
 
-          if (name === "query") {
-            query = name + variables + query;
-          } else if (name === "mutation" || name === "subscription") {
-            query = name + variables + query.slice(name.length);
+          if (operation) {
+            query = operation + variables + query.slice(operation.length);
+          } else if (name !== "gql") {
+            query = "query" + variables + query;
           }
         }
 
         try {
-          documentNode = parse(query);
+          documentNode = parse(query, { noLocation: true });
         } catch (err) {
           throw path.buildCodeFrameError(String(err));
         }
@@ -102,17 +117,40 @@ export default ({ types: t }: typeof babel, options: Options): PluginObj => {
           throw path.buildCodeFrameError(errors[0].message);
         }
 
-        const args: t.Expression[] = [t.stringLiteral(stripIgnoredCharacters(query))];
+        const properties: t.ObjectProperty[] = [];
+
+        if (options.parse) {
+          const id = path.scope.generateUid("gql");
+          path.scope.getProgramParent().push({ kind: "let", id: t.identifier(id) });
+
+          properties.push(
+            t.objectProperty(
+              t.identifier("document"),
+              t.assignmentExpression(
+                "||=",
+                t.identifier(id),
+                t.callExpression(t.memberExpression(t.identifier("JSON"), t.identifier("parse")), [
+                  t.stringLiteral(JSON.stringify(documentNode)),
+                ]),
+              ),
+            ),
+          );
+        } else {
+          properties.push(t.objectProperty(t.identifier("query"), t.stringLiteral(stripIgnoredCharacters(query))));
+        }
 
         if (expressions.length) {
-          args.push(
-            t.objectExpression(
-              expressions.map((expression, i) => t.objectProperty(t.identifier(encode(i)), expression as any)),
+          properties.push(
+            t.objectProperty(
+              t.identifier("variables"),
+              t.objectExpression(
+                expressions.map((expression, i) => t.objectProperty(t.identifier("_" + i), expression as t.Expression)),
+              ),
             ),
           );
         }
 
-        path.replaceWith(t.callExpression(t.identifier(name), args));
+        path.replaceWith(t.callExpression(t.identifier(name), [t.objectExpression(properties)]));
       },
     },
   };

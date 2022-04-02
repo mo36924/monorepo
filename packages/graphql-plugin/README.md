@@ -1,3 +1,0 @@
-# graphql-plugin
-
-graphql-plugin

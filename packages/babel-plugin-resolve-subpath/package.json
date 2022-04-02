@@ -37,8 +37,8 @@
     "dist"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.12",
-    "@types/babel__core": "^7.1.18",
+    "@babel/core": "^7.17.8",
+    "@types/babel__core": "^7.1.19",
     "enhanced-resolve": "^5.7.0"
   },
   "publishConfig": {

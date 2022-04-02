@@ -45,7 +45,7 @@
   ],
   "dependencies": {
     "depcheck": "^1.4.3",
-    "prettier": "^2.3.2",
+    "prettier": "^2.6.1",
     "sort-package-json": "^1.50.0"
   },
   "publishConfig": {

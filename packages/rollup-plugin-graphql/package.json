@@ -37,6 +37,7 @@
     "dist"
   ],
   "dependencies": {
+    "@mo36924/graphql-config": "^0.0.1",
     "@rollup/pluginutils": "^4.2.0",
     "graphql": "^16.3.0",
     "rollup": "^2.66.1"

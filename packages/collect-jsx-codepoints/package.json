@@ -37,10 +37,10 @@
     "dist"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.12",
+    "@babel/core": "^7.17.8",
     "@babel/plugin-syntax-jsx": "^7.16.7",
     "@babel/plugin-syntax-typescript": "^7.16.7",
-    "@types/babel__core": "^7.1.18",
+    "@types/babel__core": "^7.1.19",
     "fast-glob": "^3.2.5"
   },
   "publishConfig": {

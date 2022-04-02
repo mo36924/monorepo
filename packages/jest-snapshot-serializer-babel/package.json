@@ -37,9 +37,9 @@
     "dist"
   ],
   "dependencies": {
-    "@babel/core": "^7.16.12",
-    "@types/babel__core": "^7.1.18",
-    "prettier": "^2.3.2"
+    "@babel/core": "^7.17.8",
+    "@types/babel__core": "^7.1.19",
+    "prettier": "^2.6.1"
   },
   "publishConfig": {
     "access": "public"

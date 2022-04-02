@@ -1,11 +1,3 @@
-export * from "./data";
-export * from "./declaration";
-export * from "./directives";
-export * from "./fields";
-export * from "./info";
-export * from "./model";
-export * from "./operators";
-export * from "./scalars";
-export * from "./schema";
-export * from "./types";
-export * from "./util";
+import { config } from "@mo36924/graphql-config";
+
+export default config().schema;

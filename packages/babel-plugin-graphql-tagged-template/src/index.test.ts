@@ -34,7 +34,11 @@ describe("babel-plugin-graphql-tagged-template", () => {
       }\`
     `);
 
-    expect(result).toMatchInlineSnapshot(`const params = gql("{user(offset:2){name}}");`);
+    expect(result).toMatchInlineSnapshot(`
+      const params = gql({
+        query: "{user(offset:2){name}}",
+      });
+    `);
   });
 
   test("gql mutation", () => {
@@ -46,7 +50,11 @@ describe("babel-plugin-graphql-tagged-template", () => {
       }\`
     `);
 
-    expect(result).toMatchInlineSnapshot(`const params = gql("mutation($name:String!){create(name:$name){name}}");`);
+    expect(result).toMatchInlineSnapshot(`
+      const params = gql({
+        query: "mutation($name:String!){create(name:$name){name}}",
+      });
+    `);
   });
 
   test("query", () => {
@@ -63,8 +71,11 @@ describe("babel-plugin-graphql-tagged-template", () => {
 
     expect(result).toMatchInlineSnapshot(`
       const offset = 2;
-      query("query($a:Int){user(offset:$a){name}}", {
-        a: offset,
+      query({
+        query: "query($_0:Int){user(offset:$_0){name}}",
+        variables: {
+          _0: offset,
+        },
       });
     `);
   });
@@ -83,8 +94,11 @@ describe("babel-plugin-graphql-tagged-template", () => {
 
     expect(result).toMatchInlineSnapshot(`
       const name = "hoge";
-      mutation("mutation($a:String){create(name:$a){name}}", {
-        a: name,
+      mutation({
+        query: "mutation($_0:String){create(name:$_0){name}}",
+        variables: {
+          _0: name,
+        },
       });
     `);
   });

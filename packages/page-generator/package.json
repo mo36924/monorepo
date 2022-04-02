@@ -39,7 +39,7 @@
   "dependencies": {
     "chokidar": "^3.5.1",
     "events": "^3.3.0",
-    "prettier": "^2.3.2"
+    "prettier": "^2.6.1"
   },
   "publishConfig": {
     "access": "public"
