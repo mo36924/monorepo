@@ -63,12 +63,12 @@ export default async () => {
               main: "./dist/index.cjs",
               module: "./dist/index.mjs",
               types: "./dist/index.d.ts",
-              typesVersions: { "*": { "*": ["dist/*.d.ts"] } },
-              files: ["dist"],
               publishConfig: {
                 access: "public",
               },
               ..._pkg,
+              typesVersions: { "*": { "*": ["dist/*.d.ts", "*"] } },
+              files: ["dist"],
               exports: Object.fromEntries(
                 Object.keys(_pkg.exports ?? { ".": {} }).map((key) => {
                   const name = key.slice(2) || "index";

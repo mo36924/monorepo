@@ -36,7 +36,8 @@
   "typesVersions": {
     "*": {
       "*": [
-        "dist/*.d.ts"
+        "dist/*.d.ts",
+        "*"
       ]
     }
   },
@@ -46,6 +47,9 @@
   ],
   "scripts": {
     "postinstall": "node -e \"try{require('./dist/bin.cjs')}catch{}\""
+  },
+  "dependencies": {
+    "graphql": "^16.3.0"
   },
   "publishConfig": {
     "access": "public"

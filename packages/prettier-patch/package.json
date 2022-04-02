@@ -36,15 +36,20 @@
   "typesVersions": {
     "*": {
       "*": [
-        "dist/*.d.ts"
+        "dist/*.d.ts",
+        "*"
       ]
     }
   },
+  "bin": "./dist/bin.cjs",
   "files": [
     "dist"
   ],
   "scripts": {
     "postinstall": "node -e \"try{require('./dist/bin.cjs')}catch{}\""
+  },
+  "dependencies": {
+    "prettier": "^2.6.1"
   },
   "publishConfig": {
     "access": "public"
