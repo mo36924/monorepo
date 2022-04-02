@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/config",
-  "version": "1.6.8",
+  "version": "1.6.9",
   "description": "config",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -38,9 +38,9 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/babel-plugin-inject": "^1.6.8",
-    "@mo36924/page-generator": "^1.6.8",
-    "@mo36924/util": "^1.6.8",
+    "@mo36924/babel-plugin-inject": "^1.6.9",
+    "@mo36924/page-generator": "^1.6.9",
+    "@mo36924/util": "^1.6.9",
     "cosmiconfig": "^7.0.1"
   },
   "publishConfig": {
