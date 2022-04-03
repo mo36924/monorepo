@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/graphql-postgres-sql",
-  "version": "1.6.9",
+  "version": "1.6.11",
   "description": "graphql-postgres-sql",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -38,9 +38,9 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/graphql-base-fields": "^1.6.9",
-    "@mo36924/graphql-directives": "^1.6.9",
-    "@mo36924/graphql-operators": "^1.6.9",
+    "@mo36924/graphql-base-fields": "^1.6.11",
+    "@mo36924/graphql-directives": "^1.6.11",
+    "@mo36924/graphql-operators": "^1.6.11",
     "graphql": "^16.3.0"
   },
   "publishConfig": {

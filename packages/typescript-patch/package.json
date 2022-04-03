@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/typescript-patch",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "description": "typescript-patch",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -49,7 +49,7 @@
     "postinstall": "node -e \"try{require('./dist/bin.cjs')}catch{}\""
   },
   "dependencies": {
-    "@mo36924/graphql-config": "^1.6.9",
+    "@mo36924/graphql-config": "^1.6.11",
     "graphql": "^16.3.0",
     "graphql-language-service-interface": "^2.10.2",
     "graphql-language-service-utils": "^2.7.1",

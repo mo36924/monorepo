@@ -1,6 +1,6 @@
 {
   "name": "@mo36924/esbuild-plugin-css-modules",
-  "version": "1.6.9",
+  "version": "1.6.11",
   "description": "esbuild-plugin-css-modules",
   "keywords": [],
   "homepage": "https://github.com/mo36924/monorepo#readme",
@@ -38,8 +38,8 @@
     "dist"
   ],
   "dependencies": {
-    "@mo36924/postcss-modules": "^1.6.9",
-    "@mo36924/util-node": "^1.6.9",
+    "@mo36924/postcss-modules": "^1.6.11",
+    "@mo36924/util-node": "^1.6.11",
     "@types/sass": "^1.16.1",
     "esbuild": "^0.14.29",
     "postcss": "^8.3.5",
