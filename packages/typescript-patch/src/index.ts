@@ -50,8 +50,8 @@ const getFunctionCode = (fn: Function) => {
 
 const replaceUseStrict = (code: string) => code.replace('"use strict";', (m) => m + getFunctionCode(useStrict));
 
-/* eslint-disable no-var */
 const useStrict = () => {
+  // eslint-disable-next-line no-var
   var ts;
 
   (function (ts) {
